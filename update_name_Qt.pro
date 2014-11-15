@@ -20,7 +20,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     authdialog.cpp \
     settings.cpp \
-    aboutdialog.cpp \
     preferencesdialog.cpp \
     userstream.cpp \
     twitter.cpp \
@@ -31,7 +30,6 @@ HEADERS  += mainwindow.h \
     authdialog.h \
     update_name_oauth.h \
     settings.h \
-    aboutdialog.h \
     preferencesdialog.h \
     userstream.h \
     twitter.h \
@@ -40,7 +38,6 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     authdialog.ui \
-    aboutdialog.ui \
     preferencesdialog.ui \
     updatenamesender.ui
 
@@ -51,4 +48,5 @@ OTHER_FILES += \
     update_name_icon.xcf \
     update_name_Qt_Windows.ico \
     README.md \
-    LICENSE
+    LICENSE \
+    WindowsApplicationIcon.rc
