@@ -16,6 +16,7 @@
 const QString Twitter::ACCOUNT_VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
 const QString Twitter::ACCOUNT_UPDATE_PROFILE_URL     = "https://api.twitter.com/1.1/account/update_profile.json";
 const QString Twitter::STATUSES_UPDATE_URL            = "https://api.twitter.com/1.1/statuses/update.json";
+const QString Twitter::MEDIA_UPLOAD_URL               = "https://upload.twitter.com/1.1/media/upload.json";
 
 Twitter::Twitter(QObject *parent) :
     QObject(parent)
@@ -24,7 +25,8 @@ Twitter::Twitter(QObject *parent) :
 
 QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation method,
                                       const QString &url,
-                                      const QVariantMap &data_params)
+                                      const QVariantMap &data_params,
+                                      const QString &content_type)
 {
     const QByteArray signature_key = settings.consumerSecret().toUtf8()
             + "&"
@@ -99,7 +101,7 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
     }
     oauth_header.remove(oauth_header.length() - 2, 2);
 
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, content_type);
     request.setRawHeader("Authorization", oauth_header);
 
     switch (method) {
@@ -170,12 +172,15 @@ QString Twitter::getName()
     return QJsonDocument::fromJson(response).object().value("name").toString();
 }
 
-void Twitter::statusUpdate(const QString &text, const QString &in_reply_to_status_id)
+void Twitter::statusUpdate(const QString &text, const QString &in_reply_to_status_id, const QStringList &media_ids)
 {
     QVariantMap data_params;
     data_params["status"] = text;
     if(!in_reply_to_status_id.isEmpty()) {
         data_params["in_reply_to_status_id"] = in_reply_to_status_id;
+    }
+    if(!media_ids.isEmpty()) {
+        data_params["media_ids"] = media_ids.join(",");
     }
     try {
         requestTwitterApi(QNetworkAccessManager::PostOperation, STATUSES_UPDATE_URL, data_params);
@@ -191,6 +196,47 @@ void Twitter::updateName(const QString &name)
     try {
         requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, data_params);
     } catch(...) {
+        throw;
+    }
+}
+
+void Twitter::udpateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
+{
+    QVariantMap data_params;
+    if(!name.isEmpty()) {
+        data_params["name"] = name;
+    }
+    if(!url.isEmpty()) {
+        data_params["url"] = url;
+    }
+    if(!location.isEmpty()) {
+        data_params["location"] = location;
+    }
+    if(!description.isEmpty()) {
+        data_params["description"] = description;
+    }
+    if(data_params.isEmpty()) {
+        return;
+    }
+    try {
+        requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, data_params);
+    } catch(...) {
+        throw;
+    }
+}
+
+QString Twitter::mediaUpload(const QString &media_file_name)
+{
+    QVariantMap data_params;
+    QFile media_file(media_file_name);
+    media_file.open(QFile::ReadOnly);
+    data_params["media"] = media_file.readAll().toBase64();
+    media_file.close();
+    try {
+        return requestTwitterApi(QNetworkAccessManager::PostOperation,
+                                 MEDIA_UPLOAD_URL,
+                                 data_params);
+    }catch(...) {
         throw;
     }
 }
