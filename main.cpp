@@ -3,13 +3,24 @@
 #include "settings.h"
 #include <QApplication>
 #include <QLockFile>
+#include <QDir>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_MAC
+    qDebug() << QCoreApplication::libraryPaths();
+    QDir dir(argv[0]);
+    dir.cdUp();
+    dir.cdUp();
+    dir.cd("PlugIns");
+    qDebug() << dir.path();
+    qDebug() << QCoreApplication::libraryPaths();
+    QCoreApplication::addLibraryPath(dir.path());
+#endif
     QApplication a(argc, argv);
     QLockFile lockfile(".update_name_Qt_lockfile");
     Settings settings;
-
     int result = 0;
 
     lockfile.tryLock();
