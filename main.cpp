@@ -3,20 +3,18 @@
 #include "settings.h"
 #include <QApplication>
 #include <QLockFile>
-#include <QStandardPaths>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QLockFile lockfile(QStandardPaths::writableLocation(QStandardPaths::CacheLocation).append("/.~lockfile"));
+    QLockFile lockfile(".update_name_Qt_lockfile");
     Settings settings;
 
     int result = 0;
 
-    if(lockfile.isLocked()) {
+    lockfile.tryLock();
+    if(lockfile.error() != QLockFile::NoError) {
         return 1;
-    } else {
-        lockfile.lock();
     }
 
     a.setQuitOnLastWindowClosed(false);
