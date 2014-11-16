@@ -5,15 +5,6 @@ Update::Update(QObject *parent) :
 {
 }
 
-void Update::updateProfile(const TweetObject, const QString)
-{
-}
-
-void Update::exec(const TweetObject &tweet, const QString &update_profile_value)
-{
-    updateProfile(tweet, update_profile_value);
-}
-
 QString Update::errorString()
 {
     return error_message;

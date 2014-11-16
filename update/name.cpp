@@ -10,9 +10,9 @@ QString UpdateName::name()
     return updated_name;
 }
 
-void UpdateName::updateProfile(const TweetObject &tweet, const QString &update_profile_value)
+void UpdateName::exec(const TweetObject &tweet, const QString &new_name)
 {
-    if(update_profile_value.isEmpty()) {
+    if(new_name.isEmpty()) {
         return;
     }
 
@@ -22,15 +22,18 @@ void UpdateName::updateProfile(const TweetObject &tweet, const QString &update_p
     emit executed(user_screen_name);
 
     /*nameは20文字まで*/
-    if(update_profile_value.length() > 20) {
+    if(new_name.length() > 20) {
         emit stateChanged(Aborted);
         recieveResult(tr(".@%1 nameは20文字までです").arg(user_screen_name));
         return;
     }
 
+    qDebug() << "update";
+
     /*nameの更新*/
     try {
-        twitter.updateName(update_profile_value);
+        twitter.updateName(new_name);
+        qDebug() << new_name;
         emit stateChanged(UpdateSuccessed);
     } catch(const std::runtime_error &e) {
         /*更新失敗時の処理*/
@@ -42,7 +45,7 @@ void UpdateName::updateProfile(const TweetObject &tweet, const QString &update_p
         if(settings.isPostUpdateNameFailedMessage()) {
             recieveResult(settings.updateNameFailedMessage()
                           .replace("%u", user_screen_name)
-                          .replace("%n", update_profile_value)
+                          .replace("%n", new_name)
                           .replace("%e", error_message), status_id);
         }
         return;
@@ -52,7 +55,7 @@ void UpdateName::updateProfile(const TweetObject &tweet, const QString &update_p
     try {
         updated_name = twitter.getName();
     } catch(...) {
-        updated_name = update_profile_value;
+        updated_name = new_name;
     }
 
     emit stateChanged(UpdateSuccessed);

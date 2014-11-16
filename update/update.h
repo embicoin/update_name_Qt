@@ -31,14 +31,9 @@ signals:
     void stateChanged(const Update::State);
 
 protected:
-    virtual void updateProfile(const TweetObject, const QString);
-
     Twitter twitter;
     Settings settings;
     QString error_message;
-
-public slots:
-    void exec(const TweetObject &tweet, const QString &update_profile_value);
 
 protected slots:
     void recieveResult(const QString &message, const QString &in_reply_to_status_id = NULL);
