@@ -113,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&user_stream, SIGNAL(stateChanged(UserStream::State)), this, SLOT(writeUserStreamLog(UserStream::State)));
     connect(&user_stream, SIGNAL(receivedData(QByteArray)), &update_profile, SLOT(exec(QByteArray)));
     qRegisterMetaType<Update::State>("Update::State");
-    qRegisterMetaType<UpdateProfile::ProfileType>("UpdateProfile::Profile");
+    qRegisterMetaType<UpdateProfile::ProfileType>("UpdateProfile::ProfileType");
     connect(&update_profile, SIGNAL(stateChanged(Update::State,UpdateProfile::ProfileType)), this, SLOT(writeUpdateProfileLog(Update::State,UpdateProfile::ProfileType)));
 
     if(settings.isAutoStartUpdateName()) {
