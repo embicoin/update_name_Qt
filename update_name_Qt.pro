@@ -23,8 +23,12 @@ SOURCES += main.cpp\
     preferencesdialog.cpp \
     userstream.cpp \
     twitter.cpp \
-    updatename.cpp \
-    updatenamesender.cpp
+    updatenamesender.cpp \
+    updateprofile.cpp \
+    update/name.cpp \
+    update/update.cpp \
+    tweetobject.cpp \
+    usersobject.cpp
 
 HEADERS  += mainwindow.h \
     authdialog.h \
@@ -33,8 +37,12 @@ HEADERS  += mainwindow.h \
     preferencesdialog.h \
     userstream.h \
     twitter.h \
-    updatename.h \
-    updatenamesender.h
+    updatenamesender.h \
+    updateprofile.h \
+    update/name.h \
+    update/update.h \
+    tweetobject.h \
+    usersobject.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \
