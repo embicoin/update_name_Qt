@@ -25,8 +25,7 @@ Twitter::Twitter(QObject *parent) :
 
 QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation method,
                                       const QString &url,
-                                      const QVariantMap &data_params,
-                                      const QString &content_type)
+                                      const QVariantMap &data_params)
 {
     const QByteArray signature_key = settings.consumerSecret().toUtf8()
             + "&"
@@ -101,7 +100,7 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
     }
     oauth_header.remove(oauth_header.length() - 2, 2);
 
-    request.setHeader(QNetworkRequest::ContentTypeHeader, content_type);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", oauth_header);
 
     switch (method) {
@@ -191,16 +190,41 @@ void Twitter::statusUpdate(const QString &text, const QString &in_reply_to_statu
 
 void Twitter::updateName(const QString &name)
 {
-    QVariantMap data_params;
-    data_params["name"] = name;
     try {
-        requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, data_params);
+        updateProfile(name);
     } catch(...) {
         throw;
     }
 }
 
-void Twitter::udpateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
+void Twitter::updateUrl(const QString &url)
+{
+    try {
+        updateProfile(NULL, url);
+    } catch(...) {
+        throw;
+    }
+}
+
+void Twitter::updateLocation(const QString &location)
+{
+    try {
+        updateProfile(NULL, NULL, location);
+    } catch(...) {
+        throw;
+    }
+}
+
+void Twitter::updateDescroption(const QString &description)
+{
+    try {
+        updateProfile(NULL, NULL, NULL, description);
+    } catch(...) {
+        throw;
+    }
+}
+
+void Twitter::updateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
 {
     QVariantMap data_params;
     if(!name.isEmpty()) {
@@ -229,14 +253,17 @@ QString Twitter::mediaUpload(const QString &media_file_name)
 {
     QVariantMap data_params;
     QFile media_file(media_file_name);
-    media_file.open(QFile::ReadOnly);
-    data_params["media"] = media_file.readAll().toBase64();
-    media_file.close();
-    try {
-        return requestTwitterApi(QNetworkAccessManager::PostOperation,
-                                 MEDIA_UPLOAD_URL,
-                                 data_params);
-    }catch(...) {
-        throw;
+    if(media_file.open(QFile::ReadOnly)) {
+        data_params["media"] = media_file.readAll().toBase64();
+        media_file.close();
+        try {
+            return QJsonDocument::fromJson(requestTwitterApi(QNetworkAccessManager::PostOperation,
+                                                             MEDIA_UPLOAD_URL,
+                                                             data_params)).object().value("media_id_string").toString();
+        }catch(...) {
+            throw;
+        }
+    } else {
+        throw std::runtime_error(media_file.errorString().toStdString());
     }
 }

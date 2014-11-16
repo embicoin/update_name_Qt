@@ -19,7 +19,10 @@ public:
                       const QString &in_reply_to_status_id = NULL,
                       const QStringList &media_ids = QStringList());
     void updateName(const QString &name);
-    void udpateProfile(const QString &name = NULL,
+    void updateUrl(const QString &url);
+    void updateLocation(const QString &location);
+    void updateDescroption(const QString &description);
+    void updateProfile(const QString &name = NULL,
                         const QString &url = NULL,
                         const QString &location = NULL,
                         const QString &description = NULL);
@@ -28,8 +31,7 @@ public:
 private:
     QByteArray requestTwitterApi(const QNetworkAccessManager::Operation method,
                                  const QString &url,
-                                 const QVariantMap &dataParams = QVariantMap(),
-                                 const QString &content_type = "application/x-www-form-urlencoded");
+                                 const QVariantMap &dataParams = QVariantMap());
 
     static const QString ACCOUNT_VERIFY_CREDENTIALS_URL;
     static const QString ACCOUNT_UPDATE_PROFILE_URL;
