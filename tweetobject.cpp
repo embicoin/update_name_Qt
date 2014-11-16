@@ -2,6 +2,8 @@
 
 #include <QJsonDocument>
 
+#include <QDebug>
+
 TweetObject::TweetObject(const QByteArray &json)
 {
     object = QJsonDocument::fromJson(json).object();
@@ -19,5 +21,7 @@ QString TweetObject::text() const
 
 UsersObject TweetObject::user() const
 {
-    return UsersObject(object.value("user").toString().toUtf8());
+    QJsonDocument doc;
+    doc.setObject(object.value("user").toObject());
+    return UsersObject(doc.toJson());
 }
