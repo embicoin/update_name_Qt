@@ -37,7 +37,7 @@ bool Settings::is_enabled_update_description = Settings::s->value("IsEnabledUpda
 
 bool Settings::is_post_startup_message                      = Settings::s->value("IsPostStartupMessage", true).toBool();
 bool Settings::is_post_closed_message                       = Settings::s->value("IsPostClosedMessage", true).toBool();
-bool Settings::is_post_udpate_name_successed_message        = Settings::s->value("isPostUpdateNameSuccessedMessage", true).toBool();
+bool Settings::is_post_update_name_successed_message        = Settings::s->value("isPostUpdateNameSuccessedMessage", true).toBool();
 bool Settings::is_post_update_name_failed_message           = Settings::s->value("IsPostUpdateNameFailedMessage", true).toBool();
 bool Settings::is_post_update_url_successed_message         = Settings::s->value("IsPostUpdateUrlSuccessedMessage", true).toBool();
 bool Settings::is_post_update_url_failed_message            = Settings::s->value("IsPostUpdateUrlFailedMessage", true).toBool();
@@ -374,7 +374,7 @@ void Settings::setIsPostClosedMessage(const bool &on)
 
 void Settings::setIsPostUpdateNameSuccessedMessage(const bool &on)
 {
-    is_post_udpate_name_successed_message = on;
+    is_post_update_name_successed_message = on;
     s->setValue("IsPostUpdateNameSuccessedMessage", on);
 }
 
