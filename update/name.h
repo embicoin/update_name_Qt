@@ -15,6 +15,7 @@ public:
 signals:
 
 protected:
+    using Update::updateProfile;
     virtual void updateProfile(const TweetObject &tweet, const QString &update_profile_value);
 
 public slots:
