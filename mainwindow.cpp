@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     system_tray->setContextMenu(system_tray_menu);
     system_tray->show();
 
-    update_name.moveToThread(update_name_thread);
+    update_profile.moveToThread(update_name_thread);
 
     //about_dialog.setParent(this, Qt::Dialog | Qt::FramelessWindowHint);
     QMetaObject::invokeMethod(this, "writeWelcomeLog", Qt::QueuedConnection);
@@ -111,9 +111,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     qRegisterMetaType<UserStream::State>("UserStream::State");
     connect(&user_stream, SIGNAL(stateChanged(UserStream::State)), this, SLOT(writeUserStreamLog(UserStream::State)));
-    connect(&user_stream, SIGNAL(receivedData(QByteArray)), &update_name, SLOT(exec(QByteArray)));
-    qRegisterMetaType<UpdateName::State>("UpdateName::State");
-    connect(&update_name, SIGNAL(stateChanged(UpdateName::State)), this, SLOT(writeUpdateNameLog(UpdateName::State)));
+    connect(&user_stream, SIGNAL(receivedData(QByteArray)), &update_profile, SLOT(exec(QByteArray)));
+    qRegisterMetaType<Update::State>("Update::State");
+    qRegisterMetaType<UpdateProfile::ProfileType>("UpdateProfile::Profile");
+    connect(&update_profile, SIGNAL(stateChanged(Update::State,UpdateProfile::ProfileType)), this, SLOT(writeUpdateProfileLog(Update::State,UpdateProfile::ProfileType)));
 
     if(settings.isAutoStartUpdateName()) {
         startUpdateName();
@@ -166,51 +167,54 @@ void MainWindow::writeUserStreamLog(UserStream::State state)
     }
 }
 
-void MainWindow::writeUpdateNameLog(UpdateName::State state)
+void MainWindow::writeUpdateProfileLog(Update::State state, UpdateProfile::ProfileType type)
 {
-    switch(state) {
-    case UpdateName::Aborted:
-        writeLog(tr("update_nameが拒否されました。"));
+    QString profile_type_string;
+    const QString updated_profile = update_profile.profileValue();
+    const QString error_string = update_profile.errorString();
+    switch (type) {
+        case UpdateProfile::Name:
+            profile_type_string = tr("name");
+            break;
+            /*
+        case UpdateProfile::Url:
+            profile_string = tr("URL");
+            break;
+        case UpdateProfile::Location:
+            profile_string = tr("Location");
+            break;
+        case UpdateProfile::Description:
+            profile_string = tr("Description");
+            break;
+            */
+    default:
         break;
-    case UpdateName::Executed:
-        writeLog(tr("\"@%1\"によってupdate_nameが実行されました。").arg(update_name.lastExecutedUpdateNameUser()));
-        system_tray->showMessage(tr("update_nameが実行されました"),
-                                 tr("\"@%1\"によってupdate_nameが実行されました。").arg(update_name.lastExecutedUpdateNameUser()));
+    }
+
+    switch (state) {
+    case Update::Aborted:
+        writeLog(tr("udpate_%1が拒否されました。").arg(profile_type_string));
         break;
-    case UpdateName::GetScreenNameFailed:
-        writeLog(tr("screen_nameの取得に失敗しました。: %1").arg(update_name.lastErrorMessage()));
+    case Update::Executed:
+        writeLog(tr("\"@%1\"によってupdate_%2が実行されました。").arg(update_profile.executedUserScreenName(), profile_type_string));
+        system_tray->showMessage(tr("update_%1が実行されました。").arg(profile_type_string),
+                                 tr("update_%1によってupdate_%2が実行されました。").arg(update_profile.executedUserScreenName(), profile_type_string));
         break;
-    case UpdateName::GetScreenNameSuccessed:
-        writeLog(tr("screen_nameを取得しました。"));
+    case Update::UpdateSuccessed:
+        writeLog(tr("%1が\"%2\"に変更されました。").arg(profile_type_string, updated_profile));
+        system_tray->showMessage(tr("%1が変更されました").arg(profile_type_string),
+                                 tr("%1が\"%2\"に変更されました。").arg(profile_type_string, updated_profile));
         break;
-    case UpdateName::NameUpdated:
-        writeLog(tr("nameが\"%1\"に変更されました。").arg(update_name.updatedName()));
-        system_tray->showMessage(tr("nameが変更されました"),
-                                 tr("nameが\"%1\"に変更されました").arg(update_name.updatedName()));
+    case Update::UpdateFailed:
+        writeLog(tr("%1の変更に失敗しました。: %2").arg(profile_type_string, error_string));
+        system_tray->showMessage(tr("%1の変更に失敗しました").arg(profile_type_string),
+                                 error_string, QSystemTrayIcon::Warning);
         break;
-    case UpdateName::PostClosedMessageFailed:
-        writeLog(tr("終了メッセージのツイートに失敗しました。: %1").arg(update_name.lastErrorMessage()));
-        break;
-    case UpdateName::PostClosedMessageSuccessed:
-        writeLog(tr("終了メッセージをツイートしました。"));
-        break;
-    case UpdateName::PostStartupMessageFailed:
-        writeLog(tr("スタートアップメッセージのツイートに失敗しました。: %1").arg(update_name.lastErrorMessage()));
-        break;
-    case UpdateName::PostStartupMessageSuccessed:
-        writeLog(tr("スタートアップメッセージをツイートしました。"));
-        break;
-    case UpdateName::RecieveResultFailed:
-        writeLog(tr("結果のツイートに失敗しました。: %1").arg(update_name.lastErrorMessage()));
-        break;
-    case UpdateName::ResultRecieved:
+    case Update::RecieveResultSuccessed:
         writeLog(tr("結果をツイートしました。"));
         break;
-    case UpdateName::UpdateNameFailed:
-        writeLog(tr("nameの変更に失敗しました。: %1").arg(update_name.lastErrorMessage()));
-        system_tray->showMessage(tr("nameの変更に失敗しました"),
-                                 update_name.lastErrorMessage(),
-                                 QSystemTrayIcon::Warning);
+    case Update::RecieveResultFailed:
+        writeLog(tr("結果のツイートに失敗しました。: %1").arg(error_string));
         break;
     }
 }
@@ -224,7 +228,12 @@ void MainWindow::startUpdateName()
     user_stream.start();
     update_name_thread->start();
     if(settings.isPostStartupMessage()) {
-        update_name.postStartupMessage();
+        try {
+            update_profile.postStartupMessage();
+            writeLog(tr("スタートアップメッセージをツイートしました。"));
+        } catch(const std::runtime_error &e) {
+            writeLog(tr("スタートアップメッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
+        }
     }
 
     ui->updateNameSwitchButton->setText(tr("update_nameストップ"));
@@ -241,7 +250,12 @@ void MainWindow::stopUpdateName()
     user_stream.stop();
     update_name_thread->quit();
     if(settings.isPostClosedMessage()) {
-        update_name.postClosedMessage();
+        try {
+            update_profile.postClosedMessage();
+            writeLog(tr("終了メッセージをツイートしました。"));
+        } catch(const std::runtime_error &e) {
+            writeLog(tr("終了メッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
+        }
     }
 
     ui->updateNameSwitchButton->setText(tr("update_nameスタート"));
