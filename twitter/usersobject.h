@@ -10,6 +10,9 @@ public:
 
     QString name() const;
     QString screen_name() const;
+    QString url() const;
+    QString location() const;
+    QString description() const;
 
 private:
     QJsonObject object;
