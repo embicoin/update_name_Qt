@@ -15,20 +15,21 @@ int main(int argc, char *argv[])
     dir.cd("PlugIns");
     QCoreApplication::addLibraryPath(dir.path());
 #endif
-    QApplication a(argc, argv);
-    QLockFile lockfile(".update_name_Qt_lockfile");
-    Settings settings;
     int result = 0;
 
-    lockfile.tryLock();
-    if(lockfile.error() != QLockFile::NoError) {
-        return 1;
-    }
-
-    a.setQuitOnLastWindowClosed(false);
-    a.setWindowIcon(QIcon(":/icon/update_name_icon.png"));
-
     do {
+        QApplication a(argc, argv);
+        QLockFile lockfile(".update_name_Qt_lockfile");
+        Settings settings;
+
+        lockfile.tryLock();
+        if(lockfile.error() != QLockFile::NoError) {
+            return 1;
+        }
+
+        a.setQuitOnLastWindowClosed(false);
+        a.setWindowIcon(QIcon(":/icon/update_name_icon.png"));
+
         if(settings.consumerKey().isEmpty()
                 || settings.consumerSecret().isEmpty()
                 || settings.accessToken().isEmpty()
@@ -43,8 +44,10 @@ int main(int argc, char *argv[])
         w.show();
 
         result = a.exec();
+
+        lockfile.unlock();
+
     } while(result == 255);
 
-    lockfile.unlock();
     return result;
 }
