@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setFixedSize(sizeHint());
 #endif
 
-
     system_tray = new QSystemTrayIcon(QIcon(":/icon/update_name_icon.png"), this);
     system_tray_menu = new QMenu(this);
     system_tray_action_quit = new QAction(tr("update_name_Qtを終了する(&Q)"), system_tray_menu);
@@ -176,10 +175,10 @@ void MainWindow::writeUpdateProfileLog(Update::State state, UpdateProfile::Profi
         case UpdateProfile::Name:
             profile_type_string = tr("name");
             break;
-            /*
         case UpdateProfile::Url:
-            profile_string = tr("URL");
+            profile_type_string = tr("URL");
             break;
+            /*
         case UpdateProfile::Location:
             profile_string = tr("Location");
             break;

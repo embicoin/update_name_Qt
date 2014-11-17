@@ -12,8 +12,6 @@ public:
     explicit UpdateName(Update *parent = 0);
     QString name();
 
-signals:
-
 public slots:
     void exec(const TweetObject &tweet, const QString &new_name);
 

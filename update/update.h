@@ -25,7 +25,6 @@ public:
     QString errorString();
 
 signals:
-    void executed(const QString &screen_name);
     void updated(const QString &updated_value);
     void error(const QString &error_string);
     void stateChanged(const Update::State);

@@ -4,6 +4,7 @@
 #include "twitter/restclient.h"
 #include "settings.h"
 #include "update/name.h"
+#include "update/url.h"
 
 #include <QObject>
 
@@ -54,6 +55,7 @@ private:
     Settings settings;
 
     UpdateName update_name;
+    UpdateUrl update_url;
 
     QString profile_value;
     QString my_screen_name;

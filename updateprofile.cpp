@@ -20,6 +20,9 @@ UpdateProfile::UpdateProfile(QObject *parent) :
     connect(&update_name, &UpdateName::stateChanged, [&](Update::State state) {
         emit stateChanged(state, Name);
     });
+    connect(&update_url, &UpdateUrl::stateChanged, [&](Update::State state) {
+        emit stateChanged(state, Url);
+    });
     connect(&update_name, &UpdateName::error, [&](const QString error_string) {
         error_message = error_string;
     });
@@ -75,7 +78,7 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
     const QString user_screen_name = tweet.user().screen_name();
     const QRegExp update_name_reg_exp1("^.*@" + my_screen_name + "\\s+update_name\\s+.*");
     const QRegExp update_name_reg_exp2("^\\s*.+\\s*\\(@" + my_screen_name + "\\).*$");
-    //const QRegExp update_url_reg_exp("^.*@" + my_screen_name + "\\s+update_url\\s+.+");
+    const QRegExp update_url_reg_exp("^.*@" + my_screen_name + "\\s+update_url\\s+.+");
     //const QRegExp update_location_reg_exp("^.*@" + my_screen_name + "\\s+update_location\\s+.+");
     //const QRegExp update_description_reg_exp("^.*@" + my_screen_name + "\\s+update_description\\s+.+");
 
@@ -93,12 +96,12 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
         profile_value = text;
         profile_value.remove(QRegExp("\\s*\\(@" + my_screen_name + "\\).*$"));
         update_name.exec(tweet, profile_value);
-    /*} else if(update_url_reg_exp.exactMatch(text)) {
+    } else if(update_url_reg_exp.exactMatch(text)) {
         executed_user = user_screen_name;
-        operand = text;
-        operand.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_url\\s+")));
-        updateUrl(operand);
-    } else if(update_location_reg_exp.exactMatch(text)) {
+        profile_value = text;
+        profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_url\\s+")));
+        update_url.exec(tweet, profile_value);
+    /*} else if(update_location_reg_exp.exactMatch(text)) {
         executed_user = user_screen_name;
         operand = text;
         operand.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_location\\s+")));

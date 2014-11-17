@@ -19,7 +19,7 @@ void UpdateName::exec(const TweetObject &tweet, const QString &new_name)
     const QString status_id = tweet.idStr();
     const QString user_screen_name = tweet.user().screen_name();
 
-    emit executed(user_screen_name);
+    emit stateChanged(Executed);
 
     /*nameは20文字まで*/
     if(new_name.length() > 20) {
@@ -28,13 +28,9 @@ void UpdateName::exec(const TweetObject &tweet, const QString &new_name)
         return;
     }
 
-    qDebug() << "update";
-
     /*nameの更新*/
     try {
         twitter.updateName(new_name);
-        qDebug() << new_name;
-        emit stateChanged(UpdateSuccessed);
     } catch(const std::runtime_error &e) {
         /*更新失敗時の処理*/
         error_message = QString::fromStdString(e.what());
@@ -53,7 +49,7 @@ void UpdateName::exec(const TweetObject &tweet, const QString &new_name)
 
     /*更新後のnameの取得*/
     try {
-        updated_name = twitter.getName();
+        updated_name = twitter.verifyCredentials().name();
     } catch(...) {
         updated_name = new_name;
     }

@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     twitter/restclient.cpp \
     twitter/tweetobject.cpp \
     twitter/usersobject.cpp \
-    twitter/userstream.cpp
+    twitter/userstream.cpp \
+    update/url.cpp
 
 HEADERS  += mainwindow.h \
     authdialog.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     twitter/restclient.h \
     twitter/tweetobject.h \
     twitter/usersobject.h \
-    twitter/userstream.h
+    twitter/userstream.h \
+    update/url.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \
