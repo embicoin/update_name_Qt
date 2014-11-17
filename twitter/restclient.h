@@ -2,6 +2,7 @@
 #define RESTCLIENT_H
 
 #include "settings.h"
+#include "usersobject.h"
 
 #include <QObject>
 #include <QNetworkAccessManager>
@@ -13,6 +14,7 @@ class RestClient : public QObject
 public:
     explicit RestClient(QObject *parent = 0);
 
+    UsersObject verifyCredentials();
     QString getScreenName();
     QString getName();
     void statusUpdate(const QString &text,

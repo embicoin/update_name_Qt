@@ -147,6 +147,15 @@ QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation 
     return NULL;
 }
 
+UsersObject RestClient::verifyCredentials()
+{
+    try {
+        return UsersObject(requestTwitterApi(QNetworkAccessManager::GetOperation, ACCOUNT_VERIFY_CREDENTIALS_URL));
+    }catch (...) {
+        throw;
+    }
+}
+
 QString RestClient::getScreenName()
 {
     QByteArray response;
