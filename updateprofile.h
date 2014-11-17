@@ -1,7 +1,7 @@
 #ifndef UPDATEPROFILE_H
 #define UPDATEPROFILE_H
 
-#include "twitter.h"
+#include "twitter/restclient.h"
 #include "settings.h"
 #include "update/name.h"
 
@@ -50,7 +50,7 @@ public slots:
     void exec(const QByteArray &twitter_status_object_json_data);
     
 private:
-    Twitter twitter;
+    RestClient twitter;
     Settings settings;
 
     UpdateName update_name;

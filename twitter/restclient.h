@@ -1,5 +1,5 @@
-#ifndef TWITTER_H
-#define TWITTER_H
+#ifndef RESTCLIENT_H
+#define RESTCLIENT_H
 
 #include "settings.h"
 
@@ -7,11 +7,11 @@
 #include <QNetworkAccessManager>
 #include <QFile>
 
-class Twitter : public QObject
+class RestClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit Twitter(QObject *parent = 0);
+    explicit RestClient(QObject *parent = 0);
 
     QString getScreenName();
     QString getName();
@@ -42,4 +42,4 @@ private:
 
 };
 
-#endif // TWITTER_H
+#endif // RESTCLIENT_H

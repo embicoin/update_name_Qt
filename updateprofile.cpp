@@ -1,5 +1,5 @@
 #include "updateprofile.h"
-#include "tweetobject.h"
+#include "twitter/tweetobject.h"
 
 #include <QJsonDocument>
 #include <QJsonValue>

@@ -3,7 +3,7 @@
 
 //#include "aboutdialog.h"
 #include "preferencesdialog.h"
-#include "userstream.h"
+#include "twitter/userstream.h"
 #include "updateprofile.h"
 #include "updatenamesender.h"
 

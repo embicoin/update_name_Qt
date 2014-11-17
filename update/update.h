@@ -1,9 +1,9 @@
 #ifndef UPDATE_H
 #define UPDATE_H
 
-#include "twitter.h"
+#include "twitter/restclient.h"
+#include "twitter/tweetobject.h"
 #include "settings.h"
-#include "tweetobject.h"
 
 #include <QObject>
 
@@ -31,7 +31,7 @@ signals:
     void stateChanged(const Update::State);
 
 protected:
-    Twitter twitter;
+    RestClient twitter;
     Settings settings;
     QString error_message;
 

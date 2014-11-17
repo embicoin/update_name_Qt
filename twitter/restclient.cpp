@@ -1,4 +1,4 @@
-#include "twitter.h"
+#include "restclient.h"
 #include "update_name_oauth.h"
 
 #include <QUrlQuery>
@@ -13,17 +13,17 @@
 #include <QJsonValue>
 #include <QJsonArray>
 
-const QString Twitter::ACCOUNT_VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
-const QString Twitter::ACCOUNT_UPDATE_PROFILE_URL     = "https://api.twitter.com/1.1/account/update_profile.json";
-const QString Twitter::STATUSES_UPDATE_URL            = "https://api.twitter.com/1.1/statuses/update.json";
-const QString Twitter::MEDIA_UPLOAD_URL               = "https://upload.twitter.com/1.1/media/upload.json";
+const QString RestClient::ACCOUNT_VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
+const QString RestClient::ACCOUNT_UPDATE_PROFILE_URL     = "https://api.twitter.com/1.1/account/update_profile.json";
+const QString RestClient::STATUSES_UPDATE_URL            = "https://api.twitter.com/1.1/statuses/update.json";
+const QString RestClient::MEDIA_UPLOAD_URL               = "https://upload.twitter.com/1.1/media/upload.json";
 
-Twitter::Twitter(QObject *parent) :
+RestClient::RestClient(QObject *parent) :
     QObject(parent)
 {
 }
 
-QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation method,
+QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation method,
                                       const QString &url,
                                       const QVariantMap &data_params)
 {
@@ -147,7 +147,7 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
     return NULL;
 }
 
-QString Twitter::getScreenName()
+QString RestClient::getScreenName()
 {
     QByteArray response;
     try {
@@ -159,7 +159,7 @@ QString Twitter::getScreenName()
     return QJsonDocument::fromJson(response).object().value("screen_name").toString();
 }
 
-QString Twitter::getName()
+QString RestClient::getName()
 {
     QByteArray response;
     try {
@@ -171,7 +171,7 @@ QString Twitter::getName()
     return QJsonDocument::fromJson(response).object().value("name").toString();
 }
 
-void Twitter::statusUpdate(const QString &text, const QString &in_reply_to_status_id, const QStringList &media_ids)
+void RestClient::statusUpdate(const QString &text, const QString &in_reply_to_status_id, const QStringList &media_ids)
 {
     QVariantMap data_params;
     data_params["status"] = text;
@@ -188,7 +188,7 @@ void Twitter::statusUpdate(const QString &text, const QString &in_reply_to_statu
     }
 }
 
-void Twitter::updateName(const QString &name)
+void RestClient::updateName(const QString &name)
 {
     try {
         updateProfile(name);
@@ -197,7 +197,7 @@ void Twitter::updateName(const QString &name)
     }
 }
 
-void Twitter::updateUrl(const QString &url)
+void RestClient::updateUrl(const QString &url)
 {
     try {
         updateProfile(NULL, url);
@@ -206,7 +206,7 @@ void Twitter::updateUrl(const QString &url)
     }
 }
 
-void Twitter::updateLocation(const QString &location)
+void RestClient::updateLocation(const QString &location)
 {
     try {
         updateProfile(NULL, NULL, location);
@@ -215,7 +215,7 @@ void Twitter::updateLocation(const QString &location)
     }
 }
 
-void Twitter::updateDescroption(const QString &description)
+void RestClient::updateDescroption(const QString &description)
 {
     try {
         updateProfile(NULL, NULL, NULL, description);
@@ -224,7 +224,7 @@ void Twitter::updateDescroption(const QString &description)
     }
 }
 
-void Twitter::updateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
+void RestClient::updateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
 {
     QVariantMap data_params;
     if(!name.isEmpty()) {
@@ -249,7 +249,7 @@ void Twitter::updateProfile(const QString &name, const QString &url, const QStri
     }
 }
 
-QString Twitter::mediaUpload(const QString &media_file_name)
+QString RestClient::mediaUpload(const QString &media_file_name)
 {
     QVariantMap data_params;
     QFile media_file(media_file_name);
