@@ -5,6 +5,8 @@
 #include "settings.h"
 #include "update/name.h"
 #include "update/url.h"
+#include "update/location.h"
+#include "update/description.h"
 
 #include <QObject>
 
@@ -24,14 +26,8 @@ public:
     QString executedUserScreenName();
     QString profileValue();
     QString errorString();
-    //QString url();
-    //QString location();
-    //QString description();
 
     QString updateNameErrorString();
-    //QString updateUrlErrorString();
-    //QString updateLocationErrorString();
-    //QString updateDescriptionErrorString();
 
 signals:
     void stateChanged(const Update::State &state, const UpdateProfile::ProfileType &type);
@@ -56,6 +52,8 @@ private:
 
     UpdateName update_name;
     UpdateUrl update_url;
+    UpdateLocation update_location;
+    UpdateDescription update_description;
 
     QString profile_value;
     QString my_screen_name;

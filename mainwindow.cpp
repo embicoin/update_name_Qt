@@ -178,16 +178,12 @@ void MainWindow::writeUpdateProfileLog(Update::State state, UpdateProfile::Profi
         case UpdateProfile::Url:
             profile_type_string = tr("URL");
             break;
-            /*
         case UpdateProfile::Location:
-            profile_string = tr("Location");
+            profile_type_string = tr("Location");
             break;
         case UpdateProfile::Description:
-            profile_string = tr("Description");
+            profile_type_string = tr("Description");
             break;
-            */
-    default:
-        break;
     }
 
     switch (state) {

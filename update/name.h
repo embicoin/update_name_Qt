@@ -3,11 +3,8 @@
 
 #include "update.h"
 
-#include <QObject>
-
 class UpdateName : public Update
 {
-    Q_OBJECT
 public:
     explicit UpdateName(Update *parent = 0);
     QString name();
