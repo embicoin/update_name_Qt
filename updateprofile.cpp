@@ -103,27 +103,27 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
         return;
     }
 
-    if(update_name_reg_exp1.exactMatch(text)) {
+    if(update_name_reg_exp1.exactMatch(text) && settings.isEnabledUpdateName()) {
         executed_user = user_screen_name;
         profile_value = text;
         profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_name\\s+")));
         update_name.exec(tweet, profile_value);
-    } else if(update_name_reg_exp2.exactMatch(text)) {
+    } else if(update_name_reg_exp2.exactMatch(text) && settings.isEnabledUpdateName()) {
         executed_user = user_screen_name;
         profile_value = text;
         profile_value.remove(QRegExp("\\s*\\(@" + my_screen_name + "\\).*$"));
         update_name.exec(tweet, profile_value);
-    } else if(update_url_reg_exp.exactMatch(text)) {
+    } else if(update_url_reg_exp.exactMatch(text) && settings.isEnabledUpdateUrl()) {
         executed_user = user_screen_name;
         profile_value = text;
         profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_url\\s+")));
         update_url.exec(tweet, profile_value);
-    } else if(update_location_reg_exp.exactMatch(text)) {
+    } else if(update_location_reg_exp.exactMatch(text) && settings.isEnabledUpdateLocation()) {
         executed_user = user_screen_name;
         profile_value = text;
         profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_location\\s+")));
         update_location.exec(tweet, profile_value);
-    } else if(update_description_reg_exp.exactMatch(text)) {
+    } else if(update_description_reg_exp.exactMatch(text) && settings.isEnabledUpdateDescription()) {
         executed_user = user_screen_name;
         profile_value = text;
         profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_description\\s+")));
