@@ -15,8 +15,6 @@ public:
     explicit RestClient(QObject *parent = 0);
 
     UsersObject verifyCredentials();
-    QString getScreenName();
-    QString getName();
     void statusUpdate(const QString &text,
                       const QString &in_reply_to_status_id = NULL,
                       const QStringList &media_ids = QStringList());

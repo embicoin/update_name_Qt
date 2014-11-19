@@ -1,5 +1,6 @@
 #include "restclient.h"
 #include "update_name_oauth.h"
+#include "usersobject.h"
 
 #include <QUrlQuery>
 #include <QUrl>
@@ -154,30 +155,6 @@ UsersObject RestClient::verifyCredentials()
     }catch (...) {
         throw;
     }
-}
-
-QString RestClient::getScreenName()
-{
-    QByteArray response;
-    try {
-        response = requestTwitterApi(QNetworkAccessManager::GetOperation, ACCOUNT_VERIFY_CREDENTIALS_URL);
-    } catch (...) {
-        throw;
-        return NULL;
-    }
-    return QJsonDocument::fromJson(response).object().value("screen_name").toString();
-}
-
-QString RestClient::getName()
-{
-    QByteArray response;
-    try {
-        response = requestTwitterApi(QNetworkAccessManager::GetOperation, ACCOUNT_VERIFY_CREDENTIALS_URL);
-    } catch(...) {
-        throw;
-        return NULL;
-    }
-    return QJsonDocument::fromJson(response).object().value("name").toString();
 }
 
 void RestClient::statusUpdate(const QString &text, const QString &in_reply_to_status_id, const QStringList &media_ids)

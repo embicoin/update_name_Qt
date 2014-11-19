@@ -9,7 +9,7 @@ UpdateProfile::UpdateProfile(QObject *parent) :
     QObject(parent)
 {
     try {
-        my_screen_name = twitter.getScreenName();
+        my_screen_name = twitter.verifyCredentials().screen_name();
         //emit stateChanged(GetScreenNameSuccessed);
     } catch(std::runtime_error &e) {
         error_message = QString::fromStdString(e.what());
