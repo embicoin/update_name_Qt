@@ -57,157 +57,157 @@ Settings::~Settings()
 {
 }
 
-QString Settings::filePath()
+QString Settings::filePath() const
 {
     return s->fileName();
 }
 
-QString Settings::consumerKey()
+QString Settings::consumerKey() const
 {
     return consumer_key;
 }
 
-QString Settings::consumerSecret()
+QString Settings::consumerSecret() const
 {
     return consumer_secret;
 }
 
-QString Settings::accessToken()
+QString Settings::accessToken() const
 {
     return access_token;
 }
 
-QString Settings::accessTokenSecret()
+QString Settings::accessTokenSecret() const
 {
     return access_token_secret;
 }
 
-QString Settings::startupMessage()
+QString Settings::startupMessage() const
 {
     return startup_message;
 }
 
-QString Settings::closedMessage()
+QString Settings::closedMessage() const
 {
     return closed_message;
 }
 
-QString Settings::updateNameSuccessedMessage()
+QString Settings::updateNameSuccessedMessage() const
 {
     return update_name_successed_message;
 }
 
-QString Settings::updateNameFailedMessage()
+QString Settings::updateNameFailedMessage() const
 {
     return update_name_failed_message;
 }
 
-QString Settings::updateUrlSuccessedMessage()
+QString Settings::updateUrlSuccessedMessage() const
 {
     return update_url_successed_message;
 }
 
-QString Settings::updateUrlFailedMessage()
+QString Settings::updateUrlFailedMessage() const
 {
     return update_url_failed_message;
 }
 
-QString Settings::updateLocationSuccessedMessage()
+QString Settings::updateLocationSuccessedMessage() const
 {
     return update_location_successed_message;
 }
 
-QString Settings::updateLocationFailedMessage()
+QString Settings::updateLocationFailedMessage() const
 {
     return update_location_failed_message;
 }
 
-QString Settings::updateDescriptionSuccessedMessage()
+QString Settings::updateDescriptionSuccessedMessage() const
 {
     return update_description_successed_message;
 }
 
-QString Settings::updateDescriptionFailedMessage()
+QString Settings::updateDescriptionFailedMessage() const
 {
     return update_description_failed_message;
 }
 
-bool Settings::isEnabledUpdateName()
+bool Settings::isEnabledUpdateName() const
 {
     return is_enabled_update_name;
 }
 
-bool Settings::isEnabledUpdateUrl()
+bool Settings::isEnabledUpdateUrl() const
 {
     return is_enabled_udpate_url;
 }
 
-bool Settings::isEnabledUpdateLocation()
+bool Settings::isEnabledUpdateLocation() const
 {
     return is_enabled_update_location;
 }
 
-bool Settings::isEnabledUpdateDescription()
+bool Settings::isEnabledUpdateDescription() const
 {
     return is_enabled_update_description;
 }
 
-bool Settings::isPostStartupMessage()
+bool Settings::isPostStartupMessage() const
 {
     return is_post_startup_message;
 }
 
-bool Settings::isPostClosedMessage()
+bool Settings::isPostClosedMessage() const
 {
     return is_post_closed_message;
 }
 
-bool Settings::isPostUpdateNameSuccessedMessage()
+bool Settings::isPostUpdateNameSuccessedMessage() const
 {
     return is_post_update_name_successed_message;
 }
 
-bool Settings::isPostUpdateNameFailedMessage()
+bool Settings::isPostUpdateNameFailedMessage() const
 {
     return is_post_update_name_failed_message;
 }
 
-bool Settings::isPostUpdateUrlSuccessedMessage()
+bool Settings::isPostUpdateUrlSuccessedMessage() const
 {
     return is_post_update_url_successed_message;
 }
 
-bool Settings::isPostUpdateUrlFailedMessage()
+bool Settings::isPostUpdateUrlFailedMessage() const
 {
     return is_post_update_url_failed_message;
 }
 
-bool Settings::isPostUpdateLocationSuccessedMessage()
+bool Settings::isPostUpdateLocationSuccessedMessage() const
 {
     return is_post_update_location_successed_message;
 }
 
-bool Settings::isPostUpdateLocationFailedMessage()
+bool Settings::isPostUpdateLocationFailedMessage() const
 {
     return is_post_update_location_failed_message;
 }
 
-bool Settings::isPostUpdateDescriptionSuccessedMessage()
+bool Settings::isPostUpdateDescriptionSuccessedMessage() const
 {
     return is_post_update_description_successed_message;
 }
 
-bool Settings::isPostUpdateDescriptionFailedMessage()
+bool Settings::isPostUpdateDescriptionFailedMessage() const
 {
     return is_post_update_description_failed_message;
 }
 
-bool Settings::isStayOnSystemTray()
+bool Settings::isStayOnSystemTray() const
 {
     return is_stay_on_system_tray;
 }
 
-bool Settings::isAutoStartUpdateName()
+bool Settings::isAutoStartUpdateName() const
 {
     return is_auto_start_update_name;
 }

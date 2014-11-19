@@ -10,47 +10,47 @@ public:
     explicit Settings();
     ~Settings();
 
-    QString filePath();
+    QString filePath() const;
 
     /*Getter*/
 
-    QString consumerKey();
-    QString consumerSecret();
-    QString accessToken();
-    QString accessTokenSecret();
+    QString consumerKey() const;
+    QString consumerSecret() const;
+    QString accessToken() const;
+    QString accessTokenSecret() const;
 
     /* Message */
-    QString startupMessage();
-    QString closedMessage();
-    QString updateNameSuccessedMessage();
-    QString updateNameFailedMessage();
-    QString updateUrlSuccessedMessage();
-    QString updateUrlFailedMessage();
-    QString updateLocationSuccessedMessage();
-    QString updateLocationFailedMessage();
-    QString updateDescriptionSuccessedMessage();
-    QString updateDescriptionFailedMessage();
+    QString startupMessage() const;
+    QString closedMessage() const;
+    QString updateNameSuccessedMessage() const;
+    QString updateNameFailedMessage() const;
+    QString updateUrlSuccessedMessage() const;
+    QString updateUrlFailedMessage() const;
+    QString updateLocationSuccessedMessage() const;
+    QString updateLocationFailedMessage() const;
+    QString updateDescriptionSuccessedMessage() const;
+    QString updateDescriptionFailedMessage() const;
 
     /* Is Enabled Update Commands */
-    bool isEnabledUpdateName();
-    bool isEnabledUpdateUrl();
-    bool isEnabledUpdateLocation();
-    bool isEnabledUpdateDescription();
+    bool isEnabledUpdateName() const;
+    bool isEnabledUpdateUrl() const;
+    bool isEnabledUpdateLocation() const;
+    bool isEnabledUpdateDescription() const;
 
     /* Is Post Messages */
-    bool isPostStartupMessage();
-    bool isPostClosedMessage();
-    bool isPostUpdateNameSuccessedMessage();
-    bool isPostUpdateNameFailedMessage();
-    bool isPostUpdateUrlSuccessedMessage();
-    bool isPostUpdateUrlFailedMessage();
-    bool isPostUpdateLocationSuccessedMessage();
-    bool isPostUpdateLocationFailedMessage();
-    bool isPostUpdateDescriptionSuccessedMessage();
-    bool isPostUpdateDescriptionFailedMessage();
+    bool isPostStartupMessage() const;
+    bool isPostClosedMessage() const;
+    bool isPostUpdateNameSuccessedMessage() const;
+    bool isPostUpdateNameFailedMessage() const;
+    bool isPostUpdateUrlSuccessedMessage() const;
+    bool isPostUpdateUrlFailedMessage() const;
+    bool isPostUpdateLocationSuccessedMessage() const;
+    bool isPostUpdateLocationFailedMessage() const;
+    bool isPostUpdateDescriptionSuccessedMessage() const;
+    bool isPostUpdateDescriptionFailedMessage() const;
 
-    bool isStayOnSystemTray();
-    bool isAutoStartUpdateName();
+    bool isStayOnSystemTray() const;
+    bool isAutoStartUpdateName() const;
 
     /*Setter*/
 
