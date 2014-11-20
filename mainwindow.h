@@ -3,8 +3,8 @@
 
 //#include "aboutdialog.h"
 #include "preferencesdialog.h"
-#include "userstream.h"
-#include "updatename.h"
+#include "twitter/userstream.h"
+#include "updateprofile.h"
 #include "updatenamesender.h"
 
 #include <QMainWindow>
@@ -31,7 +31,7 @@ private slots:
     void writeLog(const QString &log);
     void writeWelcomeLog();
     void writeUserStreamLog(UserStream::State state);
-    void writeUpdateNameLog(UpdateName::State state);
+    void writeUpdateProfileLog(Update::State state, UpdateProfile::ProfileType type);
     void startUpdateName();
     void stopUpdateName();
 
@@ -45,7 +45,7 @@ private:
     PreferencesDialog preferences_dialog;
     //AboutDialog about_dialog;
     UserStream user_stream;
-    UpdateName update_name;
+    UpdateProfile update_profile;
     QThread *update_name_thread = new QThread;
     UpdateNameSender update_name_sender;
 };

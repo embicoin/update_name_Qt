@@ -1,7 +1,7 @@
 #ifndef UPDATENAMESENDER_H
 #define UPDATENAMESENDER_H
 
-#include "twitter.h"
+#include "twitter/restclient.h"
 
 #include <QDialog>
 
@@ -19,7 +19,7 @@ public:
 
 private:
     Ui::UpdateNameSender *ui;
-    Twitter twitter;
+    RestClient twitter;
 };
 
 #endif // UPDATENAMESENDER_H

@@ -1,5 +1,6 @@
-#include "twitter.h"
+#include "restclient.h"
 #include "update_name_oauth.h"
+#include "usersobject.h"
 
 #include <QUrlQuery>
 #include <QUrl>
@@ -13,16 +14,17 @@
 #include <QJsonValue>
 #include <QJsonArray>
 
-const QString Twitter::ACCOUNT_VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
-const QString Twitter::ACCOUNT_UPDATE_PROFILE_URL     = "https://api.twitter.com/1.1/account/update_profile.json";
-const QString Twitter::STATUSES_UPDATE_URL            = "https://api.twitter.com/1.1/statuses/update.json";
+const QString RestClient::ACCOUNT_VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
+const QString RestClient::ACCOUNT_UPDATE_PROFILE_URL     = "https://api.twitter.com/1.1/account/update_profile.json";
+const QString RestClient::STATUSES_UPDATE_URL            = "https://api.twitter.com/1.1/statuses/update.json";
+const QString RestClient::MEDIA_UPLOAD_URL               = "https://upload.twitter.com/1.1/media/upload.json";
 
-Twitter::Twitter(QObject *parent) :
+RestClient::RestClient(QObject *parent) :
     QObject(parent)
 {
 }
 
-QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation method,
+QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation method,
                                       const QString &url,
                                       const QVariantMap &data_params)
 {
@@ -39,7 +41,7 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
     QUrl request_url(url);
     QNetworkRequest request;
     QNetworkAccessManager manager;
-    QNetworkReply *reply;
+    QNetworkReply *reply = 0;
     QTimer timer;
     QEventLoop loop;
     QNetworkReply::NetworkError error;
@@ -54,7 +56,7 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
         http_method_string = "POST";
         break;
     default:
-        return NULL;
+        throw std::runtime_error("Unknown Http method.");
         break;
     }
 
@@ -97,7 +99,7 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
                    .append(oauth_params.values()[i].toByteArray())
                    .append("\", ");
     }
-    oauth_header.remove(oauth_header.length() - 2, 2);
+    oauth_header.chop(2);
 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", oauth_header);
@@ -115,7 +117,6 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
         reply = manager.post(request, data_query.toString(QUrl::FullyEncoded).toUtf8());
         break;
     default:
-        return NULL;
         break;
     }
 
@@ -146,36 +147,24 @@ QByteArray Twitter::requestTwitterApi(const QNetworkAccessManager::Operation met
     return NULL;
 }
 
-QString Twitter::getScreenName()
+UsersObject RestClient::verifyCredentials()
 {
-    QByteArray response;
     try {
-        response = requestTwitterApi(QNetworkAccessManager::GetOperation, ACCOUNT_VERIFY_CREDENTIALS_URL);
-    } catch (...) {
+        return UsersObject(requestTwitterApi(QNetworkAccessManager::GetOperation, ACCOUNT_VERIFY_CREDENTIALS_URL));
+    }catch (...) {
         throw;
-        return NULL;
     }
-    return QJsonDocument::fromJson(response).object().value("screen_name").toString();
 }
 
-QString Twitter::getName()
-{
-    QByteArray response;
-    try {
-        response = requestTwitterApi(QNetworkAccessManager::GetOperation, ACCOUNT_VERIFY_CREDENTIALS_URL);
-    } catch(...) {
-        throw;
-        return NULL;
-    }
-    return QJsonDocument::fromJson(response).object().value("name").toString();
-}
-
-void Twitter::statusUpdate(const QString &text, const QString &in_reply_to_status_id)
+void RestClient::statusUpdate(const QString &text, const QString &in_reply_to_status_id, const QStringList &media_ids)
 {
     QVariantMap data_params;
     data_params["status"] = text;
     if(!in_reply_to_status_id.isEmpty()) {
         data_params["in_reply_to_status_id"] = in_reply_to_status_id;
+    }
+    if(!media_ids.isEmpty()) {
+        data_params["media_ids"] = media_ids.join(",");
     }
     try {
         requestTwitterApi(QNetworkAccessManager::PostOperation, STATUSES_UPDATE_URL, data_params);
@@ -184,13 +173,82 @@ void Twitter::statusUpdate(const QString &text, const QString &in_reply_to_statu
     }
 }
 
-void Twitter::updateName(const QString &name)
+void RestClient::updateName(const QString &name)
+{
+    try {
+        updateProfile(name);
+    } catch(...) {
+        throw;
+    }
+}
+
+void RestClient::updateUrl(const QString &url)
+{
+    try {
+        updateProfile(NULL, url);
+    } catch(...) {
+        throw;
+    }
+}
+
+void RestClient::updateLocation(const QString &location)
+{
+    try {
+        updateProfile(NULL, NULL, location);
+    } catch(...) {
+        throw;
+    }
+}
+
+void RestClient::updateDescroption(const QString &description)
+{
+    try {
+        updateProfile(NULL, NULL, NULL, description);
+    } catch(...) {
+        throw;
+    }
+}
+
+void RestClient::updateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
 {
     QVariantMap data_params;
-    data_params["name"] = name;
+    if(!name.isEmpty()) {
+        data_params["name"] = name;
+    }
+    if(!url.isEmpty()) {
+        data_params["url"] = url;
+    }
+    if(!location.isEmpty()) {
+        data_params["location"] = location;
+    }
+    if(!description.isEmpty()) {
+        data_params["description"] = description;
+    }
+    if(data_params.isEmpty()) {
+        return;
+    }
     try {
         requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, data_params);
     } catch(...) {
         throw;
+    }
+}
+
+QString RestClient::mediaUpload(const QString &media_file_name)
+{
+    QVariantMap data_params;
+    QFile media_file(media_file_name);
+    if(media_file.open(QFile::ReadOnly)) {
+        data_params["media"] = media_file.readAll().toBase64();
+        media_file.close();
+        try {
+            return QJsonDocument::fromJson(requestTwitterApi(QNetworkAccessManager::PostOperation,
+                                                             MEDIA_UPLOAD_URL,
+                                                             data_params)).object().value("media_id_string").toString();
+        }catch(...) {
+            throw;
+        }
+    } else {
+        throw std::runtime_error(media_file.errorString().toStdString());
     }
 }

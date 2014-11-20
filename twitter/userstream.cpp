@@ -31,18 +31,16 @@ void UserStream::run()
     QNetworkAccessManager manager;
     QByteArray response;
     QByteArray buffer;
-    QNetworkReply *reply = NULL;
+    QNetworkReply *reply = 0;
     QEventLoop loop;
-    QTimer timer;
     bool connected = false;
     int failed_count = 0;
 
     is_stopped = false;
 
-    while(!is_stopped && failed_count <= 5) {
+    while(!is_stopped && failed_count < 5) {
         emit stateChanged(Connecting);
 
-        //oauth_params.clear();
         oauth_params["oauth_consumer_key"]     = settings.consumerKey();
         oauth_params["oauth_token"]            = settings.accessToken();
         oauth_params["oauth_signature_method"] = OAUTH_SIGNATURE_METHOD;
@@ -83,22 +81,19 @@ void UserStream::run()
         connect(reply, SIGNAL(readyRead()), &loop, SLOT(quit()));
         connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
         connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()));
-        connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
         connect(this, SIGNAL(stopping()), &loop, SLOT(quit()));
         connect(this, SIGNAL(stopping()), reply, SLOT(abort()));
-        timer.setSingleShot(true);
 
         buffer.clear();
 
         while(!reply->isFinished() && !is_stopped && reply->error() == QNetworkReply::NoError) {
-            timer.start(60000);
             loop.exec();
 
             if(is_stopped) {
                 emit stateChanged(DisConnected);
                 return;
             } else {
-                if(reply->error() == QNetworkReply::NoError && timer.isActive()) {
+                if(reply->error() == QNetworkReply::NoError) {
                     if(!connected) {
                         emit stateChanged(Running);
                         connected = true;
@@ -106,12 +101,10 @@ void UserStream::run()
                     }
                     response = reply->readAll();
 
-                    //qDebug() << "response" << response;
-
                     if(response.indexOf("\r") > 0) {
                         if(!buffer.isEmpty()) {
-                        response.prepend(QString::fromUtf8(buffer).split("\r").first().toUtf8());
-                        buffer.replace(QString::fromUtf8(buffer).split("\r").first().toUtf8(), "");
+                            response.prepend(QString::fromUtf8(buffer).split("\r").first().toUtf8());
+                            buffer.replace(QString::fromUtf8(buffer).split("\r").first().toUtf8(), "");
                         }
                         emit receivedData(response);
                     } else if(response.indexOf("\r") == -1) {
@@ -119,20 +112,16 @@ void UserStream::run()
                     }
                 } else {
                     emit stateChanged(ConnectionFailed);
-                    //qCritical() << reply->errorString();
                     failed_count++;
-                    break;
                 }
             }
         }
         emit stateChanged(DisConnected);
         connected = false;
 
-        if(failed_count <= 5) {
+        if(failed_count < 5) {
             emit stateChanged(Waiting);
             sleep(5);
-        } else {
-            break;
         }
     }
 

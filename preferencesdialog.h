@@ -4,6 +4,8 @@
 #include "settings.h"
 
 #include <QDialog>
+#include <QShowEvent>
+#include <QCloseEvent>
 
 namespace Ui {
 class PreferencesDialog;
@@ -22,6 +24,8 @@ private slots:
     void saveSettings();
 
 private:
+    void showEvent(QShowEvent *);
+    void closeEvent(QCloseEvent *);
     Ui::PreferencesDialog *ui;
     Settings settings;
 };

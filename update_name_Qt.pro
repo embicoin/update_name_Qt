@@ -20,27 +20,38 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     authdialog.cpp \
     settings.cpp \
-    aboutdialog.cpp \
     preferencesdialog.cpp \
-    userstream.cpp \
-    twitter.cpp \
-    updatename.cpp \
-    updatenamesender.cpp
+    updatenamesender.cpp \
+    updateprofile.cpp \
+    update/name.cpp \
+    update/update.cpp \
+    twitter/restclient.cpp \
+    twitter/tweetobject.cpp \
+    twitter/usersobject.cpp \
+    twitter/userstream.cpp \
+    update/url.cpp \
+    update/location.cpp \
+    update/description.cpp
 
 HEADERS  += mainwindow.h \
     authdialog.h \
     update_name_oauth.h \
     settings.h \
-    aboutdialog.h \
     preferencesdialog.h \
-    userstream.h \
-    twitter.h \
-    updatename.h \
-    updatenamesender.h
+    updatenamesender.h \
+    updateprofile.h \
+    update/name.h \
+    update/update.h \
+    twitter/restclient.h \
+    twitter/tweetobject.h \
+    twitter/usersobject.h \
+    twitter/userstream.h \
+    update/url.h \
+    update/location.h \
+    update/description.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \
-    aboutdialog.ui \
     preferencesdialog.ui \
     updatenamesender.ui
 
@@ -51,4 +62,5 @@ OTHER_FILES += \
     update_name_icon.xcf \
     update_name_Qt_Windows.ico \
     README.md \
-    LICENSE
+    LICENSE \
+    WindowsApplicationIcon.rc

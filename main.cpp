@@ -3,26 +3,33 @@
 #include "settings.h"
 #include <QApplication>
 #include <QLockFile>
-#include <QStandardPaths>
+#include <QDir>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    QLockFile lockfile(QStandardPaths::writableLocation(QStandardPaths::CacheLocation).append("/.~lockfile"));
-    Settings settings;
-
+#ifdef Q_OS_MAC
+    QDir dir(argv[0]);
+    dir.cdUp();
+    dir.cdUp();
+    dir.cd("PlugIns");
+    QCoreApplication::addLibraryPath(dir.path());
+#endif
     int result = 0;
 
-    if(lockfile.isLocked()) {
-        return 1;
-    } else {
-        lockfile.lock();
-    }
-
-    a.setQuitOnLastWindowClosed(false);
-    a.setWindowIcon(QIcon(":/icon/update_name_icon.png"));
-
     do {
+        QApplication a(argc, argv);
+        QLockFile lockfile(".update_name_Qt_lockfile");
+        Settings settings;
+
+        lockfile.tryLock();
+        if(lockfile.error() != QLockFile::NoError) {
+            return 1;
+        }
+
+        a.setQuitOnLastWindowClosed(false);
+        a.setWindowIcon(QIcon(":/icon/update_name_icon.png"));
+
         if(settings.consumerKey().isEmpty()
                 || settings.consumerSecret().isEmpty()
                 || settings.accessToken().isEmpty()
@@ -37,8 +44,10 @@ int main(int argc, char *argv[])
         w.show();
 
         result = a.exec();
+
+        lockfile.unlock();
+
     } while(result == 255);
 
-    lockfile.unlock();
     return result;
 }
