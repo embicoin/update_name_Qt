@@ -12,12 +12,18 @@ const QString Settings::DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE       = QObject::
 const QString Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE = QObject::tr(".@%u Descriptionを変更しました。");
 const QString Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE    = QObject::tr(".@%u Descriptionの変更に失敗しました。\n%e");
 
+
+
 QSettings* Settings::s = new QSettings(QSettings::IniFormat, QSettings::UserScope, Settings::SETTINGS_FILE_NAME);
+
+
 
 QString Settings::consumer_key        = Settings::s->value("ConsumerKey").toString();
 QString Settings::consumer_secret     = Settings::s->value("ConsumerSecret").toString();
 QString Settings::access_token        = Settings::s->value("AccessToken").toString();
 QString Settings::access_token_secret = Settings::s->value("AccessTokenSecret").toString();
+
+
 
 QString Settings::startup_message                      = Settings::s->value("StartupMessage",Settings::DEFAULT_STARTUP_MESSAGE).toString();
 QString Settings::closed_message                       = Settings::s->value("ClosedMessage", Settings::DEFAULT_CLOSED_MESSAGE).toString();
@@ -30,10 +36,14 @@ QString Settings::update_location_failed_message       = Settings::s->value("Upd
 QString Settings::update_description_successed_message = Settings::s->value("UpdateDescriptionSuccessedMessage", Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE).toString();
 QString Settings::update_description_failed_message    = Settings::s->value("UpdateDescriptionFailedMessage", Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE).toString();
 
+
+
 bool Settings::is_enabled_update_name        = Settings::s->value("IsEnabledUpdateName", true).toBool();
 bool Settings::is_enabled_udpate_url         = Settings::s->value("IsEnabledUpdateUrl", false).toBool();
 bool Settings::is_enabled_update_location    = Settings::s->value("IsEnabledUpdateLocation", false).toBool();
-bool Settings::is_enabled_update_description = Settings::s->value("IsEnabledUpdateDescroption", false).toBool();
+bool Settings::is_enabled_update_description = Settings::s->value("IsEnabledUpdateDescription", false).toBool();
+
+
 
 bool Settings::is_post_startup_message                      = Settings::s->value("IsPostStartupMessage", true).toBool();
 bool Settings::is_post_closed_message                       = Settings::s->value("IsPostClosedMessage", true).toBool();
@@ -311,7 +321,7 @@ void Settings::setUpdateLocationFailedMessage(const QString &message)
     if(message.isEmpty()) {
         update_location_failed_message = DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE;
     } else {
-        update_location_successed_message = message;
+        update_location_failed_message = message;
     }
     s->setValue("UpdateLocationFailedMessage", update_location_failed_message);
 }
@@ -357,7 +367,7 @@ void Settings::setUpdateLocationEnabled(const bool &enable)
 void Settings::setUpdateDescriptionEnabled(const bool &enable)
 {
     is_enabled_update_description = enable;
-    s->value("IsEnabledUpdateDescription", enable);
+    s->setValue("IsEnabledUpdateDescription", enable);
 }
 
 void Settings::setIsPostStartupMessage(const bool &on)
