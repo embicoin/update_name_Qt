@@ -41,7 +41,7 @@ QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation 
     QUrl request_url(url);
     QNetworkRequest request;
     QNetworkAccessManager manager;
-    QNetworkReply *reply;
+    QNetworkReply *reply = 0;
     QTimer timer;
     QEventLoop loop;
     QNetworkReply::NetworkError error;
@@ -56,7 +56,7 @@ QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation 
         http_method_string = "POST";
         break;
     default:
-        return NULL;
+        throw std::runtime_error("Unknown Http method.");
         break;
     }
 
@@ -99,7 +99,7 @@ QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation 
                    .append(oauth_params.values()[i].toByteArray())
                    .append("\", ");
     }
-    oauth_header.remove(oauth_header.length() - 2, 2);
+    oauth_header.chop(2);
 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", oauth_header);
@@ -117,7 +117,6 @@ QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation 
         reply = manager.post(request, data_query.toString(QUrl::FullyEncoded).toUtf8());
         break;
     default:
-        return NULL;
         break;
     }
 
