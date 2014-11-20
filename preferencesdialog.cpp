@@ -86,13 +86,21 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
             break;
         }
     });
-
-    loadSettings();
 }
 
 PreferencesDialog::~PreferencesDialog()
 {
     delete ui;
+}
+
+void PreferencesDialog::showEvent(QShowEvent *)
+{
+    loadSettings();
+}
+
+void PreferencesDialog::closeEvent(QCloseEvent *)
+{
+    saveSettings();
 }
 
 void PreferencesDialog::loadSettings()
@@ -166,7 +174,7 @@ void PreferencesDialog::saveSettings()
 
     //update_url
     settings.setIsPostUpdateUrlSuccessedMessage(ui->postUpdateUrlSuccessedMessageCheck->isChecked());
-    settings.setUpdateUrlSuccessedMessage(ui->updateNameSuccessedMessageText->toPlainText());
+    settings.setUpdateUrlSuccessedMessage(ui->updateUrlSuccessedMessageText->toPlainText());
     settings.setIsPostUpdateUrlFailedMessage(ui->postUpdateUrlFailedMessageCheck->isChecked());
     settings.setUpdateUrlFailedMessage(ui->updateUrlFailedMessageText->toPlainText());
 
