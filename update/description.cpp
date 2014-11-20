@@ -46,6 +46,6 @@ void UpdateDescription::exec(const TweetObject &tweet, const QString &new_descri
     if(settings.isPostUpdateDescriptionSuccessedMessage()) {
         recieveResult(settings.updateDescriptionSuccessedMessage()
                       .replace("%u", tweet.user().screen_name())
-                      .replace("%n", updated_description), tweet.idStr());
+                      .replace("%d", updated_description), tweet.idStr());
     }
 }
