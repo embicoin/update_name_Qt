@@ -19,7 +19,7 @@ public:
 
 private:
     Ui::UpdateNameSender *ui;
-    RestClient twitter;
+    RestClient m_twitter;
 };
 
 #endif // UPDATENAMESENDER_H

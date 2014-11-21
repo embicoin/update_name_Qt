@@ -47,21 +47,18 @@ public slots:
     void exec(const QByteArray &twitter_status_object_json_data);
     
 private:
-    RestClient twitter;
-    Settings settings;
+    RestClient m_twitter;
+    Settings m_settings;
 
-    UpdateName update_name;
-    UpdateUrl update_url;
-    UpdateLocation update_location;
-    UpdateDescription update_description;
+    UpdateName m_updatename;
+    UpdateUrl m_updateurl;
+    UpdateLocation m_updatelocation;
+    UpdateDescription m_udpatedescription;
 
-    QString profile_value;
-    QString my_screen_name;
-    QString error_message;
-    QString executed_user;
-    QString udpate_tweet_id;
-    QString updated_name;
-
+    QString m_profilevalue;
+    QString m_myscreenname;
+    QString m_errormessage;
+    QString m_executeduser;
 };
 
 #endif // UPDATEPROFILE_H

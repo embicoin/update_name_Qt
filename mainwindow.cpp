@@ -12,38 +12,33 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
 #ifdef Q_OS_WIN
+    //Windows 10だとsizeHint()が機能しない
     setFixedSize(size());
 #else
     setFixedSize(sizeHint());
 #endif
 
-    system_tray = new QSystemTrayIcon(QIcon(":/icon/update_name_icon.png"), this);
-    system_tray_menu = new QMenu(this);
-    system_tray_action_quit = new QAction(tr("update_name_Qtを終了する(&Q)"), system_tray_menu);
-    system_tray_action_show_window = new QAction(tr("メインウィンドウを表示(&S)"), system_tray_menu);
-    system_tray_menu->addActions(QList<QAction *>() << system_tray_action_show_window << system_tray_action_quit);
-    system_tray->setContextMenu(system_tray_menu);
-    system_tray->show();
+    //システムトレイのセットアップ
+    m_systemTray                 = new QSystemTrayIcon(QIcon(":/icon/update_name_icon.png"), this);
+    m_systemTrayMenu             = new QMenu(this);
+    m_systemTrayActionQuit       = new QAction(tr("update_name_Qtを終了する(&Q)"), m_systemTrayMenu);
+    m_systemTrayActionShowWindow = new QAction(tr("メインウィンドウを表示(&S)"), m_systemTrayMenu);
 
-    update_profile.moveToThread(update_name_thread);
+    m_systemTrayMenu->addActions(QList<QAction *>()
+                                  << m_systemTrayActionShowWindow
+                                  << m_systemTrayActionQuit);
+    m_systemTray->setContextMenu(m_systemTrayMenu);
+    m_systemTray->show();
 
-    //about_dialog.setParent(this, Qt::Dialog | Qt::FramelessWindowHint);
+    //updateコマンドの処理を別スレッドに移動
+    m_updateProfile.moveToThread(m_updateNameThread);
+
+    //ウェルカムメッセージの表示
     QMetaObject::invokeMethod(this, "writeWelcomeLog", Qt::QueuedConnection);
     ui->statusBar->showMessage(tr("update_name_Qtへようこそ"));
 
-    connect(ui->actionQuit, &QAction::triggered, [&]() {
-        showNormal();
-        activateWindow();
-        raise();
-        setFocus();
-        if(QMessageBox::question(this,
-                              tr("確認"),
-                              tr("update_name_qtを終了します。\n"
-                                 "よろしいですか？"),
-                              QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
-            QApplication::quit();
-        }
-    });
+    //connect
+    connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(quitUpdateNameQt()));
     connect(ui->actionAbout, &QAction::triggered, [&]() {
         QMessageBox::about(this, tr("update_name_Qtについて"),
                            tr("<h1><b>update_name_Qt</b></h1><br />"
@@ -53,21 +48,20 @@ MainWindow::MainWindow(QWidget *parent) :
                               "Twitter -&gt; </span><a href=\"https://twitter.com/owata_programer\"><span style=\"text-decoration: underline; color:#0000ff;\">"
                               "@owata_programer</span></a></p><p>ウェブサイト -&gt; <a href=\"https://sites.google.com/site/owataprogramersite/\"><span style=\"text-decoration: underline; color:#0000ff;\">https://sites.google.com/site/owataprogramersite/</span></a>"));
     });
-    connect(ui->actionPreferences, SIGNAL(triggered()), &preferences_dialog, SLOT(exec()));
-    connect(system_tray_action_quit, SIGNAL(triggered()), ui->actionQuit, SIGNAL(triggered()));
-    connect(system_tray_action_show_window, &QAction::triggered, [&]() {
+    connect(ui->actionPreferences, SIGNAL(triggered()), &m_preferencesDialog, SLOT(exec()));
+    connect(m_systemTrayActionQuit, SIGNAL(triggered()), this, SLOT(quitUpdateNameQt()));
+    connect(m_systemTrayActionShowWindow, &QAction::triggered, [&]() {
         showNormal();
         activateWindow();
         raise();
         setFocus();
     });
-    connect(system_tray, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason reason) {
-        if(reason == QSystemTrayIcon::DoubleClick) {
-            system_tray_action_show_window->trigger();
-        }
+    connect(m_systemTray, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason reason) {
+        if(reason == QSystemTrayIcon::DoubleClick)
+            m_systemTrayActionShowWindow->trigger();
     });
     connect(ui->updateNameSwitchButton, &QPushButton::clicked, [&]() {
-        static bool started = settings.isAutoStartUpdateName();
+        static bool started = m_settings.isAutoStartUpdateName();
         if(started) {
             stopUpdateName();
         } else {
@@ -75,62 +69,36 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         started = !started;
     });
-    connect(ui->actionSaveLog, &QAction::triggered, [&]() {
-        QFileDialog dialog(this,
-                           tr("ログの保存"),
-                           QDir::homePath());
-        QFile logfile;
-        dialog.selectFile("update_name_log.txt");
-        dialog.setAcceptMode(QFileDialog::AcceptSave);
-        if(dialog.exec() != QFileDialog::Accepted) {
-            return;
-        }
-
-        logfile.setFileName(dialog.selectedFiles().first());
-        if(logfile.open(QFile::WriteOnly)) {
-            if(logfile.write(ui->logConsole->toPlainText().toUtf8())) {
-                logfile.close();
-                QMessageBox::information(this,
-                                  tr("保存しました"),
-                                  tr("ログの保存が完了しました。"),
-                                  QMessageBox::Ok);
-                return;
-            }
-        }
-        QMessageBox::critical(this,
-                              tr("エラー"),
-                              tr("ログの保存に失敗しました。\n%1").arg(logfile.errorString()),
-                              QMessageBox::Ok);
-    });
-    connect(ui->actionUpdateNameSender, SIGNAL(triggered()), &update_name_sender, SLOT(exec()));
+    connect(ui->actionSaveLog, SIGNAL(triggered()), this, SLOT(saveLog()));
+    connect(ui->actionUpdateNameSender, SIGNAL(triggered()), &m_updateNameSender, SLOT(exec()));
     connect(ui->actionAboutQt, &QAction::triggered, [&]() {
         QMessageBox::aboutQt(this, tr("Qtについて"));
     });
     connect(ui->actionSwitchUpdateName, SIGNAL(triggered()), ui->updateNameSwitchButton, SIGNAL(clicked()));
 
     qRegisterMetaType<UserStream::State>("UserStream::State");
-    connect(&user_stream, SIGNAL(stateChanged(UserStream::State)), this, SLOT(writeUserStreamLog(UserStream::State)));
-    connect(&user_stream, SIGNAL(receivedData(QByteArray)), &update_profile, SLOT(exec(QByteArray)));
+    connect(&m_userStream, SIGNAL(stateChanged(UserStream::State)), this, SLOT(writeUserStreamLog(UserStream::State)));
+    connect(&m_userStream, SIGNAL(receivedData(QByteArray)), &m_updateProfile, SLOT(exec(QByteArray)));
     qRegisterMetaType<Update::State>("Update::State");
     qRegisterMetaType<UpdateProfile::ProfileType>("UpdateProfile::ProfileType");
-    connect(&update_profile, SIGNAL(stateChanged(Update::State,UpdateProfile::ProfileType)), this, SLOT(writeUpdateProfileLog(Update::State,UpdateProfile::ProfileType)));
+    connect(&m_updateProfile, SIGNAL(stateChanged(Update::State,UpdateProfile::ProfileType)),
+            this, SLOT(writeUpdateProfileLog(Update::State,UpdateProfile::ProfileType)));
 
-    if(settings.isAutoStartUpdateName()) {
+    if(m_settings.isAutoStartUpdateName())
         startUpdateName();
-    }
 }
 
 MainWindow::~MainWindow()
 {
     stopUpdateName();
-    system_tray->deleteLater();
-    system_tray_menu->deleteLater();
-    system_tray_action_quit->deleteLater();
-    system_tray_action_show_window->deleteLater();
-    update_name_thread->deleteLater();
+    m_systemTray->deleteLater();
+    m_systemTrayMenu->deleteLater();
+    m_systemTrayActionQuit->deleteLater();
+    m_systemTrayActionShowWindow->deleteLater();
+    m_updateNameThread->deleteLater();
     delete ui;
-    if(user_stream.isRunning()) {
-        user_stream.wait();
+    if(m_userStream.isRunning()) {
+        m_userStream.wait();
     }
 }
 
@@ -168,63 +136,63 @@ void MainWindow::writeUserStreamLog(UserStream::State state)
 
 void MainWindow::writeUpdateProfileLog(Update::State state, UpdateProfile::ProfileType type)
 {
-    QString profile_type_string;
-    const QString updated_profile = update_profile.profileValue();
-    const QString error_string = update_profile.errorString();
+    QString profileTypeString;
+    const QString updatedProfile = m_updateProfile.profileValue();
+    const QString errorString = m_updateProfile.errorString();
     switch (type) {
         case UpdateProfile::Name:
-            profile_type_string = tr("name");
+            profileTypeString = tr("name");
             break;
         case UpdateProfile::Url:
-            profile_type_string = tr("url");
+            profileTypeString = tr("url");
             break;
         case UpdateProfile::Location:
-            profile_type_string = tr("location");
+            profileTypeString = tr("location");
             break;
         case UpdateProfile::Description:
-            profile_type_string = tr("description");
+            profileTypeString = tr("description");
             break;
     }
 
     switch (state) {
     case Update::Aborted:
-        writeLog(tr("udpate_%1が拒否されました。").arg(profile_type_string));
+        writeLog(tr("udpate_%1が拒否されました。").arg(profileTypeString));
         break;
     case Update::Executed:
-        writeLog(tr("\"@%1\"によってupdate_%2が実行されました。").arg(update_profile.executedUserScreenName(), profile_type_string));
-        system_tray->showMessage(tr("update_%1が実行されました。").arg(profile_type_string),
-                                 tr("update_%1によってupdate_%2が実行されました。").arg(update_profile.executedUserScreenName(), profile_type_string));
+        writeLog(tr("\"@%1\"によってupdate_%2が実行されました。").arg(m_updateProfile.executedUserScreenName(), profileTypeString));
+        m_systemTray->showMessage(tr("update_%1が実行されました。").arg(profileTypeString),
+                                 tr("update_%1によってupdate_%2が実行されました。").arg(m_updateProfile.executedUserScreenName(), profileTypeString));
         break;
     case Update::UpdateSuccessed:
-        writeLog(tr("%1が\"%2\"に変更されました。").arg(profile_type_string, updated_profile));
-        system_tray->showMessage(tr("%1が変更されました").arg(profile_type_string),
-                                 tr("%1が\"%2\"に変更されました。").arg(profile_type_string, updated_profile));
+        writeLog(tr("%1が\"%2\"に変更されました。").arg(profileTypeString, updatedProfile));
+        m_systemTray->showMessage(tr("%1が変更されました").arg(profileTypeString),
+                                 tr("%1が\"%2\"に変更されました。").arg(profileTypeString, updatedProfile));
         break;
     case Update::UpdateFailed:
-        writeLog(tr("%1の変更に失敗しました。: %2").arg(profile_type_string, error_string));
-        system_tray->showMessage(tr("%1の変更に失敗しました").arg(profile_type_string),
-                                 error_string, QSystemTrayIcon::Warning);
+        writeLog(tr("%1の変更に失敗しました。: %2").arg(profileTypeString, errorString));
+        m_systemTray->showMessage(tr("%1の変更に失敗しました").arg(profileTypeString),
+                                 errorString, QSystemTrayIcon::Warning);
         break;
     case Update::RecieveResultSuccessed:
         writeLog(tr("結果をツイートしました。"));
         break;
     case Update::RecieveResultFailed:
-        writeLog(tr("結果のツイートに失敗しました。: %1").arg(error_string));
+        writeLog(tr("結果のツイートに失敗しました。: %1").arg(errorString));
         break;
     }
 }
 
 void MainWindow::startUpdateName()
 {
-    if(user_stream.isRunning()) {
+    if(m_userStream.isRunning()) {
         return;
     }
 
-    user_stream.start();
-    update_name_thread->start();
-    if(settings.isPostStartupMessage()) {
+    m_userStream.start();
+    m_updateNameThread->start();
+    if(m_settings.isPostStartupMessage()) {
         try {
-            update_profile.postStartupMessage();
+            m_updateProfile.postStartupMessage();
             writeLog(tr("スタートアップメッセージをツイートしました。"));
         } catch(const std::runtime_error &e) {
             writeLog(tr("スタートアップメッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
@@ -238,15 +206,15 @@ void MainWindow::startUpdateName()
 
 void MainWindow::stopUpdateName()
 {
-    if(user_stream.isFinished()) {
+    if(m_userStream.isFinished()) {
         return;
     }
 
-    user_stream.stop();
-    update_name_thread->quit();
-    if(settings.isPostClosedMessage()) {
+    m_userStream.stop();
+    m_updateNameThread->quit();
+    if(m_settings.isPostClosedMessage()) {
         try {
-            update_profile.postClosedMessage();
+            m_updateProfile.postClosedMessage();
             writeLog(tr("終了メッセージをツイートしました。"));
         } catch(const std::runtime_error &e) {
             writeLog(tr("終了メッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
@@ -260,11 +228,57 @@ void MainWindow::stopUpdateName()
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    if(settings.isStayOnSystemTray()) {
-        system_tray->showMessage(tr("update_name_Qtは動作してます"),
+    if(m_settings.isStayOnSystemTray()) {
+        m_systemTray->showMessage(tr("update_name_Qtは動作してます"),
                                  tr("update_name_Qtは動作中です。\n"
                                     "終了させるにはアイコンを右クリックして、「update_name_Qtを終了する」をクリックしてください。"));
     } else {
         QApplication::quit();
     }
+}
+
+void MainWindow::quitUpdateNameQt()
+{
+    //メインウィンドウを表示
+    showNormal();
+    activateWindow();
+    raise();
+    setFocus();
+
+    //質問ダイアログの表示
+    if(QMessageBox::question(this,
+                          tr("確認"),
+                          tr("update_name_qtを終了します。\n"
+                             "よろしいですか？"),
+                          QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+        QApplication::quit();
+    }
+}
+
+void MainWindow::saveLog()
+{
+    QFileDialog dialog(this, tr("ログの保存"), QDir::homePath());
+    QFile logfile;
+
+    dialog.selectFile("update_name_log.txt");
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    if(dialog.exec() != QFileDialog::Accepted) {
+        return;
+    }
+
+    logfile.setFileName(dialog.selectedFiles().first());
+    if(logfile.open(QFile::WriteOnly)) {
+        if(logfile.write(ui->logConsole->toPlainText().toUtf8())) {
+            logfile.close();
+            QMessageBox::information(this,
+                              tr("保存しました"),
+                              tr("ログの保存が完了しました。"),
+                              QMessageBox::Ok);
+            return;
+        }
+    }
+    QMessageBox::critical(this,
+                          tr("エラー"),
+                          tr("ログの保存に失敗しました。\n%1").arg(logfile.errorString()),
+                          QMessageBox::Ok);
 }

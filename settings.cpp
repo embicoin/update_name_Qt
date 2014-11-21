@@ -1,63 +1,60 @@
 #include "settings.h"
 
-const QString Settings::SETTINGS_FILE_NAME                           = "update_name_qt";
-const QString Settings::DEFAULT_STARTUP_MESSAGE                      = QObject::tr("update_nameが起動されました。");
-const QString Settings::DEFAULT_CLOSED_MESSAGE                       = QObject::tr("update_nameを終了しました。");
-const QString Settings::DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE        = QObject::tr(".@%u nameを\"%n\"に変更しました。");
-const QString Settings::DEFAULT_UPDATE_NAME_FAILED_MESSAGE           = QObject::tr(".@%u update_nameに失敗しました。\n%e");
-const QString Settings::DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE         = QObject::tr(".@%u URLを\"%l\"に変更しました。");
-const QString Settings::DEFAULT_UPDATE_URL_FAILED_MESSAGE            = QObject::tr(".@%u URLの変更に失敗しました。\n%e");
-const QString Settings::DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE    = QObject::tr(".@%u Locationを\"%l\"に変更しました。");
-const QString Settings::DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE       = QObject::tr(".@%u Locationの変更に失敗しました。\n%e");
+const QString Settings::SETTINGS_FILE_NAME = "update_name_qt";
+const QString Settings::DEFAULT_STARTUP_MESSAGE = QObject::tr("update_nameが起動されました。");
+const QString Settings::DEFAULT_CLOSED_MESSAGE = QObject::tr("update_nameを終了しました。");
+const QString Settings::DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE = QObject::tr(".@%u nameを\"%n\"に変更しました。");
+const QString Settings::DEFAULT_UPDATE_NAME_FAILED_MESSAGE = QObject::tr(".@%u update_nameに失敗しました。\n%e");
+const QString Settings::DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE = QObject::tr(".@%u URLを\"%l\"に変更しました。");
+const QString Settings::DEFAULT_UPDATE_URL_FAILED_MESSAGE = QObject::tr(".@%u URLの変更に失敗しました。\n%e");
+const QString Settings::DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE = QObject::tr(".@%u Locationを\"%l\"に変更しました。");
+const QString Settings::DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE = QObject::tr(".@%u Locationの変更に失敗しました。\n%e");
 const QString Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE = QObject::tr(".@%u Descriptionを変更しました。");
-const QString Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE    = QObject::tr(".@%u Descriptionの変更に失敗しました。\n%e");
-
-
+const QString Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE = QObject::tr(".@%u Descriptionの変更に失敗しました。\n%e");
 
 QSettings* Settings::s = new QSettings(QSettings::IniFormat, QSettings::UserScope, Settings::SETTINGS_FILE_NAME);
 
+QString Settings::m_consumerKey = Settings::s->value("ConsumerKey").toString();
+QString Settings::m_consumerSecret = Settings::s->value("ConsumerSecret").toString();
+QString Settings::m_accessToken = Settings::s->value("AccessToken").toString();
+QString Settings::m_accessToken_secret = Settings::s->value("AccessTokenSecret").toString();
 
+QString Settings::m_startupMessage = Settings::s->value("StartupMessage",Settings::DEFAULT_STARTUP_MESSAGE).toString();
+QString Settings::m_closedMessage = Settings::s->value("ClosedMessage", Settings::DEFAULT_CLOSED_MESSAGE).toString();
+QString Settings::m_updateNameSuccessedMessage = Settings::s->value("UpdateNameSuccessedMessage",
+                                                                    Settings::DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE).toString();
+QString Settings::m_updateNameFailedMessage = Settings::s->value("UpdateNameFailedMessage",
+                                                                 Settings::DEFAULT_UPDATE_NAME_FAILED_MESSAGE).toString();
+QString Settings::m_updateUrlSuccessedMessage = Settings::s->value("UpdateUrlSuccessedMessage",
+                                                                   Settings::DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE).toString();
+QString Settings::m_updateUrlFailedMessage = Settings::s->value("UpdateUrlFailedMessage",
+                                                                Settings::DEFAULT_UPDATE_URL_FAILED_MESSAGE).toString();
+QString Settings::m_updateLocationSuccessedMessage = Settings::s->value("UpdateLocationSuccessedMessage",
+                                                                        Settings::DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE).toString();
+QString Settings::m_updateLocationFailedMessage = Settings::s->value("UpdateLocationFailedMessage",
+                                                                     Settings::DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE).toString();
+QString Settings::m_updateDescriptionSuccessedMessage = Settings::s->value("UpdateDescriptionSuccessedMessage",
+                                                                           Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE).toString();
+QString Settings::m_updateDescriptionFailedMessage = Settings::s->value("UpdateDescriptionFailedMessage",
+                                                                        Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE).toString();
+bool Settings::m_isEnabledUpdateName = Settings::s->value("IsEnabledUpdateName", true).toBool();
+bool Settings::m_isEnabledUdpateUrl = Settings::s->value("IsEnabledUpdateUrl", false).toBool();
+bool Settings::m_isEnabledUpdateLocation = Settings::s->value("IsEnabledUpdateLocation", false).toBool();
+bool Settings::m_isEnabledUpdateDescription = Settings::s->value("IsEnabledUpdateDescription", false).toBool();
 
-QString Settings::consumer_key        = Settings::s->value("ConsumerKey").toString();
-QString Settings::consumer_secret     = Settings::s->value("ConsumerSecret").toString();
-QString Settings::access_token        = Settings::s->value("AccessToken").toString();
-QString Settings::access_token_secret = Settings::s->value("AccessTokenSecret").toString();
+bool Settings::m_isPostStartupMessage = Settings::s->value("IsPostStartupMessage", true).toBool();
+bool Settings::m_isPostClosedMessage = Settings::s->value("IsPostClosedMessage", true).toBool();
+bool Settings::m_isPostUpdateNameSuccessedMessage = Settings::s->value("isPostUpdateNameSuccessedMessage", true).toBool();
+bool Settings::m_isPostUpdateNameFailedMessage = Settings::s->value("IsPostUpdateNameFailedMessage", true).toBool();
+bool Settings::m_isPostUpdateUrlSuccessedMessage = Settings::s->value("IsPostUpdateUrlSuccessedMessage", true).toBool();
+bool Settings::m_isPostUpdateUrlFailedMessage = Settings::s->value("IsPostUpdateUrlFailedMessage", true).toBool();
+bool Settings::m_isPostUpdateLocationSuccessedMessage = Settings::s->value("IsPostUpdateLocationSuccessedMessage", true).toBool();
+bool Settings::m_isPostUpdateLocationFailedMessage = Settings::s->value("IsPostUpdateLocationFailedMessage", true).toBool();
+bool Settings::m_isPostUpdateDescriptionSuccessedMessage = Settings::s->value("IsPostUpdateDescriptionSuccessedMessage", true).toBool();
+bool Settings::m_isPostUpdateDescriptionFailedMessage = Settings::s->value("IsUpdateDescriptionFailedMessage", true).toBool();
 
-
-
-QString Settings::startup_message                      = Settings::s->value("StartupMessage",Settings::DEFAULT_STARTUP_MESSAGE).toString();
-QString Settings::closed_message                       = Settings::s->value("ClosedMessage", Settings::DEFAULT_CLOSED_MESSAGE).toString();
-QString Settings::update_name_successed_message        = Settings::s->value("UpdateNameSuccessedMessage", Settings::DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE).toString();
-QString Settings::update_name_failed_message           = Settings::s->value("UpdateNameFailedMessage", Settings::DEFAULT_UPDATE_NAME_FAILED_MESSAGE).toString();
-QString Settings::update_url_successed_message         = Settings::s->value("UpdateUrlSuccessedMessage", Settings::DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE).toString();
-QString Settings::update_url_failed_message            = Settings::s->value("UpdateUrlFailedMessage", Settings::DEFAULT_UPDATE_URL_FAILED_MESSAGE).toString();
-QString Settings::update_location_successed_message    = Settings::s->value("UpdateLocationSuccessedMessage", Settings::DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE).toString();
-QString Settings::update_location_failed_message       = Settings::s->value("UpdateLocationFailedMessage", Settings::DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE).toString();
-QString Settings::update_description_successed_message = Settings::s->value("UpdateDescriptionSuccessedMessage", Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE).toString();
-QString Settings::update_description_failed_message    = Settings::s->value("UpdateDescriptionFailedMessage", Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE).toString();
-
-
-
-bool Settings::is_enabled_update_name        = Settings::s->value("IsEnabledUpdateName", true).toBool();
-bool Settings::is_enabled_udpate_url         = Settings::s->value("IsEnabledUpdateUrl", false).toBool();
-bool Settings::is_enabled_update_location    = Settings::s->value("IsEnabledUpdateLocation", false).toBool();
-bool Settings::is_enabled_update_description = Settings::s->value("IsEnabledUpdateDescription", false).toBool();
-
-
-
-bool Settings::is_post_startup_message                      = Settings::s->value("IsPostStartupMessage", true).toBool();
-bool Settings::is_post_closed_message                       = Settings::s->value("IsPostClosedMessage", true).toBool();
-bool Settings::is_post_update_name_successed_message        = Settings::s->value("isPostUpdateNameSuccessedMessage", true).toBool();
-bool Settings::is_post_update_name_failed_message           = Settings::s->value("IsPostUpdateNameFailedMessage", true).toBool();
-bool Settings::is_post_update_url_successed_message         = Settings::s->value("IsPostUpdateUrlSuccessedMessage", true).toBool();
-bool Settings::is_post_update_url_failed_message            = Settings::s->value("IsPostUpdateUrlFailedMessage", true).toBool();
-bool Settings::is_post_update_location_successed_message    = Settings::s->value("IsPostUpdateLocationSuccessedMessage", true).toBool();
-bool Settings::is_post_update_location_failed_message       = Settings::s->value("IsPostUpdateLocationFailedMessage", true).toBool();
-bool Settings::is_post_update_description_successed_message = Settings::s->value("IsPostUpdateDescriptionSuccessedMessage", true).toBool();
-bool Settings::is_post_update_description_failed_message    = Settings::s->value("IsUpdateDescriptionFailedMessage", true).toBool();
-
-bool Settings::is_stay_on_system_tray                = Settings::s->value("IsStayOnSystemTray", false).toBool();
-bool Settings::is_auto_start_update_name             = Settings::s->value("IsAutoStartUpdateName", false).toBool();
+bool Settings::m_isStayOnSystemTray = Settings::s->value("IsStayOnSystemTray", false).toBool();
+bool Settings::m_isAutoStartUpdateName = Settings::s->value("IsAutoStartUpdateName", false).toBool();
 
 Settings::Settings()
 {
@@ -74,370 +71,370 @@ QString Settings::filePath() const
 
 QString Settings::consumerKey() const
 {
-    return consumer_key;
+    return m_consumerKey;
 }
 
 QString Settings::consumerSecret() const
 {
-    return consumer_secret;
+    return m_consumerSecret;
 }
 
 QString Settings::accessToken() const
 {
-    return access_token;
+    return m_accessToken;
 }
 
 QString Settings::accessTokenSecret() const
 {
-    return access_token_secret;
+    return m_accessToken_secret;
 }
 
 QString Settings::startupMessage() const
 {
-    return startup_message;
+    return m_startupMessage;
 }
 
 QString Settings::closedMessage() const
 {
-    return closed_message;
+    return m_closedMessage;
 }
 
 QString Settings::updateNameSuccessedMessage() const
 {
-    return update_name_successed_message;
+    return m_updateNameSuccessedMessage;
 }
 
 QString Settings::updateNameFailedMessage() const
 {
-    return update_name_failed_message;
+    return m_updateNameFailedMessage;
 }
 
 QString Settings::updateUrlSuccessedMessage() const
 {
-    return update_url_successed_message;
+    return m_updateUrlSuccessedMessage;
 }
 
 QString Settings::updateUrlFailedMessage() const
 {
-    return update_url_failed_message;
+    return m_updateUrlFailedMessage;
 }
 
 QString Settings::updateLocationSuccessedMessage() const
 {
-    return update_location_successed_message;
+    return m_updateLocationSuccessedMessage;
 }
 
 QString Settings::updateLocationFailedMessage() const
 {
-    return update_location_failed_message;
+    return m_updateLocationFailedMessage;
 }
 
 QString Settings::updateDescriptionSuccessedMessage() const
 {
-    return update_description_successed_message;
+    return m_updateDescriptionSuccessedMessage;
 }
 
 QString Settings::updateDescriptionFailedMessage() const
 {
-    return update_description_failed_message;
+    return m_updateDescriptionFailedMessage;
 }
 
 bool Settings::isEnabledUpdateName() const
 {
-    return is_enabled_update_name;
+    return m_isEnabledUpdateName;
 }
 
 bool Settings::isEnabledUpdateUrl() const
 {
-    return is_enabled_udpate_url;
+    return m_isEnabledUdpateUrl;
 }
 
 bool Settings::isEnabledUpdateLocation() const
 {
-    return is_enabled_update_location;
+    return m_isEnabledUpdateLocation;
 }
 
 bool Settings::isEnabledUpdateDescription() const
 {
-    return is_enabled_update_description;
+    return m_isEnabledUpdateDescription;
 }
 
 bool Settings::isPostStartupMessage() const
 {
-    return is_post_startup_message;
+    return m_isPostStartupMessage;
 }
 
 bool Settings::isPostClosedMessage() const
 {
-    return is_post_closed_message;
+    return m_isPostClosedMessage;
 }
 
 bool Settings::isPostUpdateNameSuccessedMessage() const
 {
-    return is_post_update_name_successed_message;
+    return m_isPostUpdateNameSuccessedMessage;
 }
 
 bool Settings::isPostUpdateNameFailedMessage() const
 {
-    return is_post_update_name_failed_message;
+    return m_isPostUpdateNameFailedMessage;
 }
 
 bool Settings::isPostUpdateUrlSuccessedMessage() const
 {
-    return is_post_update_url_successed_message;
+    return m_isPostUpdateUrlSuccessedMessage;
 }
 
 bool Settings::isPostUpdateUrlFailedMessage() const
 {
-    return is_post_update_url_failed_message;
+    return m_isPostUpdateUrlFailedMessage;
 }
 
 bool Settings::isPostUpdateLocationSuccessedMessage() const
 {
-    return is_post_update_location_successed_message;
+    return m_isPostUpdateLocationSuccessedMessage;
 }
 
 bool Settings::isPostUpdateLocationFailedMessage() const
 {
-    return is_post_update_location_failed_message;
+    return m_isPostUpdateLocationFailedMessage;
 }
 
 bool Settings::isPostUpdateDescriptionSuccessedMessage() const
 {
-    return is_post_update_description_successed_message;
+    return m_isPostUpdateDescriptionSuccessedMessage;
 }
 
 bool Settings::isPostUpdateDescriptionFailedMessage() const
 {
-    return is_post_update_description_failed_message;
+    return m_isPostUpdateDescriptionFailedMessage;
 }
 
 bool Settings::isStayOnSystemTray() const
 {
-    return is_stay_on_system_tray;
+    return m_isStayOnSystemTray;
 }
 
 bool Settings::isAutoStartUpdateName() const
 {
-    return is_auto_start_update_name;
+    return m_isAutoStartUpdateName;
 }
 
 void Settings::setConsumerKey(const QString &ck)
 {
-    consumer_key = ck;
+    m_consumerKey = ck;
     s->setValue("ConsumerKey", ck);
 }
 
 void Settings::setConsumerSecret(const QString &cs)
 {
-    consumer_secret = cs;
+    m_consumerSecret = cs;
     s->setValue("ConsumerSecret", cs);
 }
 
 void Settings::setAccessToken(const QString &at)
 {
-    access_token = at;
+    m_accessToken = at;
     s->setValue("AccessToken", at);
 }
 
 void Settings::setAccessTokenSecret(const QString &ats)
 {
-    access_token_secret = ats;
+    m_accessToken_secret = ats;
     s->setValue("AccessTokenSecret", ats);
 }
 
 void Settings::setStartupMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        startup_message = DEFAULT_STARTUP_MESSAGE;
+        m_startupMessage = DEFAULT_STARTUP_MESSAGE;
     } else {
-        startup_message = message;
+        m_startupMessage = message;
     }
-    s->setValue("StartupMessage", startup_message);
+    s->setValue("StartupMessage", m_startupMessage);
 }
 
 void Settings::setClosedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        closed_message = DEFAULT_CLOSED_MESSAGE;
+        m_closedMessage = DEFAULT_CLOSED_MESSAGE;
     } else {
-        closed_message = message;
+        m_closedMessage = message;
     }
-    s->setValue("ClosedMessage", closed_message);
+    s->setValue("ClosedMessage", m_closedMessage);
 }
 
 void Settings::setUpdateNameSuccessedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_name_successed_message = DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE;
+        m_updateNameSuccessedMessage = DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE;
     } else {
-        update_name_successed_message = message;
+        m_updateNameSuccessedMessage = message;
     }
-    s->setValue("UpdateNameSuccessedMessage", update_name_successed_message);
+    s->setValue("UpdateNameSuccessedMessage", m_updateNameSuccessedMessage);
 }
 
 void Settings::setUpdateNameFailedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_name_failed_message = DEFAULT_UPDATE_NAME_FAILED_MESSAGE;
+        m_updateNameFailedMessage = DEFAULT_UPDATE_NAME_FAILED_MESSAGE;
     } else {
-        update_name_failed_message = message;
+        m_updateNameFailedMessage = message;
     }
-    s->setValue("UpdateNameFailedMessage", update_name_failed_message);
+    s->setValue("UpdateNameFailedMessage", m_updateNameFailedMessage);
 }
 
 void Settings::setUpdateUrlSuccessedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_url_successed_message = DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE;
+        m_updateUrlSuccessedMessage = DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE;
     } else {
-        update_url_successed_message = message;
+        m_updateUrlSuccessedMessage = message;
     }
-    s->setValue("UpdateUrlSuccessedMessage", update_url_successed_message);
+    s->setValue("UpdateUrlSuccessedMessage", m_updateUrlSuccessedMessage);
 }
 
 void Settings::setUpdateUrlFailedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_url_failed_message = DEFAULT_UPDATE_URL_FAILED_MESSAGE;
+        m_updateUrlFailedMessage = DEFAULT_UPDATE_URL_FAILED_MESSAGE;
     } else {
-        update_url_failed_message = message;
+        m_updateUrlFailedMessage = message;
     }
-    s->setValue("UpdateUrlFailedMessage", update_url_failed_message);
+    s->setValue("UpdateUrlFailedMessage", m_updateUrlFailedMessage);
 }
 
 void Settings::setUpdateLocationSuccessedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_location_successed_message = DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE;
+        m_updateLocationSuccessedMessage = DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE;
     } else {
-        update_location_successed_message = message;
+        m_updateLocationSuccessedMessage = message;
     }
-    s->setValue("UpdateLocationSuccessedMessage", update_location_successed_message);
+    s->setValue("UpdateLocationSuccessedMessage", m_updateLocationSuccessedMessage);
 }
 
 void Settings::setUpdateLocationFailedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_location_failed_message = DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE;
+        m_updateLocationFailedMessage = DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE;
     } else {
-        update_location_failed_message = message;
+        m_updateLocationFailedMessage = message;
     }
-    s->setValue("UpdateLocationFailedMessage", update_location_failed_message);
+    s->setValue("UpdateLocationFailedMessage", m_updateLocationFailedMessage);
 }
 
 void Settings::setUpdateDescriptionSuccessedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_description_successed_message = DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE;
+        m_updateDescriptionSuccessedMessage = DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE;
     } else {
-        update_description_successed_message = message;
+        m_updateDescriptionSuccessedMessage = message;
     }
-    s->setValue("UpdateDescriptionSuccessedMessage", update_description_successed_message);
+    s->setValue("UpdateDescriptionSuccessedMessage", m_updateDescriptionSuccessedMessage);
 }
 
 void Settings::setUpdateDescriptionFailedMessage(const QString &message)
 {
     if(message.isEmpty()) {
-        update_description_failed_message = DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE;
+        m_updateDescriptionFailedMessage = DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE;
     } else {
-        update_description_failed_message = message;
+        m_updateDescriptionFailedMessage = message;
     }
-    s->setValue("UpdateDescriptionFailedMessage", update_description_failed_message);
+    s->setValue("UpdateDescriptionFailedMessage", m_updateDescriptionFailedMessage);
 }
 
 void Settings::setUpdateNameEnabled(const bool &enable)
 {
-    is_enabled_update_name = enable;
+    m_isEnabledUpdateName = enable;
     s->setValue("IsEnabledUpdateName", enable);
 }
 
 void Settings::setUpdateUrlEnabled(const bool &enable)
 {
-    is_enabled_udpate_url = enable;
+    m_isEnabledUdpateUrl = enable;
     s->setValue("IsEnabledUpdateUrl", enable);
 }
 
 void Settings::setUpdateLocationEnabled(const bool &enable)
 {
-    is_enabled_update_location = enable;
+    m_isEnabledUpdateLocation = enable;
     s->setValue("IsEnabledUpdateLocation", enable);
 }
 
 void Settings::setUpdateDescriptionEnabled(const bool &enable)
 {
-    is_enabled_update_description = enable;
+    m_isEnabledUpdateDescription = enable;
     s->setValue("IsEnabledUpdateDescription", enable);
 }
 
 void Settings::setIsPostStartupMessage(const bool &on)
 {
-    is_post_startup_message = on;
+    m_isPostStartupMessage = on;
     s->setValue("IsPostStartupMessage", on);
 }
 
 void Settings::setIsPostClosedMessage(const bool &on)
 {
-    is_post_closed_message = on;
+    m_isPostClosedMessage = on;
     s->setValue("IsPostClosedMessage", on);
 }
 
 void Settings::setIsPostUpdateNameSuccessedMessage(const bool &on)
 {
-    is_post_update_name_successed_message = on;
+    m_isPostUpdateNameSuccessedMessage = on;
     s->setValue("IsPostUpdateNameSuccessedMessage", on);
 }
 
 void Settings::setIsPostUpdateNameFailedMessage(const bool &on)
 {
-    is_post_update_name_failed_message = on;
+    m_isPostUpdateNameFailedMessage = on;
     s->setValue("IsPostUpdateNameFailedMessage", on);
 }
 
 void Settings::setIsPostUpdateUrlSuccessedMessage(const bool &on)
 {
-    is_post_update_url_successed_message = on;
+    m_isPostUpdateUrlSuccessedMessage = on;
     s->setValue("IsPostUpdateUrlSuccessedMessage", on);
 }
 
 void Settings::setIsPostUpdateUrlFailedMessage(const bool &on)
 {
-    is_post_update_url_failed_message = on;
+    m_isPostUpdateUrlFailedMessage = on;
     s->setValue("IsPostUpdateUrlFailedMessage", on);
 }
 
 void Settings::setIsPostUpdateLocationSuccessedMessage(const bool &on)
 {
-    is_post_update_location_successed_message = on;
+    m_isPostUpdateLocationSuccessedMessage = on;
     s->setValue("IsPostUpdateLocationSuccessedMessage", on);
 }
 
 void Settings::setIsPostUpdateLocationFailedMessage(const bool &on)
 {
-    is_post_update_location_failed_message = on;
+    m_isPostUpdateLocationFailedMessage = on;
     s->setValue("IsPostUpdateLocationFailedMessage", on);
 }
 
 void Settings::setIsPostUpdateDescriptionSuccessedMessage(const bool &on)
 {
-    is_post_update_description_successed_message = on;
+    m_isPostUpdateDescriptionSuccessedMessage = on;
     s->setValue("IsPostUpdateDescriptionSuccessedMessage", on);
 }
 
 void Settings::setIsPostUpdateDescriptionFailedMessage(const bool &on)
 {
-    is_post_update_description_failed_message = on;
+    m_isPostUpdateDescriptionFailedMessage = on;
     s->setValue("IsPostUpdateDescriptionFailedMessage", on);
 }
 
 void Settings::setIsStayOnSystemTray(const bool &on)
 {
-    is_stay_on_system_tray = on;
+    m_isStayOnSystemTray = on;
     s->setValue("IsStayOnSystemTray", on);
 }
 
 void Settings::setIsAutoStartUpdateName(const bool &on)
 {
-    is_auto_start_update_name = on;
+    m_isAutoStartUpdateName = on;
     s->setValue("IsAutoStartUpdateName", on);
 }

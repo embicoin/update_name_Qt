@@ -7,45 +7,45 @@ UpdateLocation::UpdateLocation(Update *parent) :
 
 QString UpdateLocation::location()
 {
-    return updated_location;
+    return m_updatedLocation;
 }
 
-void UpdateLocation::exec(const TweetObject &tweet, const QString &new_location)
+void UpdateLocation::exec(const TweetObject &tweet, const QString &newLocation)
 {
-    if(new_location.isEmpty()) {
+    if(newLocation.isEmpty()) {
         return;
     }
 
     emit stateChanged(Executed);
 
     try {
-        twitter.updateLocation(new_location);
+        m_twitter.updateLocation(newLocation);
     } catch(const std::runtime_error &e) {
-        error_message = e.what();
-        emit error(error_message);
+        m_errorMessage = e.what();
+        emit error(m_errorMessage);
         emit stateChanged(UpdateFailed);
 
-        if(settings.isPostUpdateLocationFailedMessage()) {
-            recieveResult(settings.updateLocationFailedMessage()
+        if(m_settings.isPostUpdateLocationFailedMessage()) {
+            recieveResult(m_settings.updateLocationFailedMessage()
                           .replace("%u", tweet.user().screen_name())
-                          .replace("%l", new_location)
-                          .replace("%e", error_message), tweet.idStr());
+                          .replace("%l", newLocation)
+                          .replace("%e", m_errorMessage), tweet.idStr());
         }
         return;
     }
 
     try {
-        updated_location = twitter.verifyCredentials().location();
+        m_updatedLocation = m_twitter.verifyCredentials().location();
     } catch(...) {
-        updated_location = new_location;
+        m_updatedLocation = newLocation;
     }
 
     emit stateChanged(UpdateSuccessed);
-    emit updated(updated_location);
+    emit updated(m_updatedLocation);
 
-    if(settings.isPostUpdateLocationSuccessedMessage()) {
-        recieveResult(settings.updateLocationSuccessedMessage()
+    if(m_settings.isPostUpdateLocationSuccessedMessage()) {
+        recieveResult(m_settings.updateLocationSuccessedMessage()
                       .replace("%u", tweet.user().screen_name())
-                      .replace("%l", updated_location), tweet.idStr());
+                      .replace("%l", m_updatedLocation), tweet.idStr());
     }
 }

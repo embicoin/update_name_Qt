@@ -9,71 +9,71 @@ UpdateProfile::UpdateProfile(QObject *parent) :
     QObject(parent)
 {
     try {
-        my_screen_name = twitter.verifyCredentials().screen_name();
+        m_myscreenname = m_twitter.verifyCredentials().screen_name();
         //emit stateChanged(GetScreenNameSuccessed);
     } catch(std::runtime_error &e) {
-        error_message = QString::fromStdString(e.what());
+        m_errormessage = QString::fromStdString(e.what());
         //emit stateChanged(GetScreenNameFailed);
     }
 
     qRegisterMetaType<Update::State>("Update::State");
     //update_name
-    connect(&update_name, &UpdateName::stateChanged, [&](Update::State state) {
+    connect(&m_updatename, &UpdateName::stateChanged, [&](Update::State state) {
         emit stateChanged(state, Name);
     });
-    connect(&update_name, &UpdateName::error, [&](const QString &error_string) {
-        error_message = error_string;
+    connect(&m_updatename, &UpdateName::error, [&](const QString &error_string) {
+        m_errormessage = error_string;
     });
 
     //update_url
-    connect(&update_url, &UpdateUrl::stateChanged, [&](Update::State state) {
+    connect(&m_updateurl, &UpdateUrl::stateChanged, [&](Update::State state) {
         emit stateChanged(state, Url);
     });
-    connect(&update_url, &UpdateUrl::error, [&](const QString &error_string) {
-        error_message = error_string;
+    connect(&m_updateurl, &UpdateUrl::error, [&](const QString &error_string) {
+        m_errormessage = error_string;
     });
 
     //update_location
-    connect(&update_location, &UpdateLocation::stateChanged, [&](Update::State state) {
+    connect(&m_updatelocation, &UpdateLocation::stateChanged, [&](Update::State state) {
         emit stateChanged(state, Location);
     });
-    connect(&update_location, &UpdateLocation::error, [&](const QString &error_string) {
-        error_message = error_string;
+    connect(&m_updatelocation, &UpdateLocation::error, [&](const QString &error_string) {
+        m_errormessage = error_string;
     });
 
     //update_description
-    connect(&update_description, &UpdateDescription::stateChanged, [&](Update::State state) {
+    connect(&m_udpatedescription, &UpdateDescription::stateChanged, [&](Update::State state) {
         emit stateChanged(state, Description);
     });
-    connect(&update_description, &UpdateDescription::error, [&](const QString &error_string) {
-        error_message = error_string;
+    connect(&m_udpatedescription, &UpdateDescription::error, [&](const QString &error_string) {
+        m_errormessage = error_string;
     });
 }
 
 QString UpdateProfile::updateNameErrorString()
 {
-    return update_name.errorString();
+    return m_updatename.errorString();
 }
 
 QString UpdateProfile::executedUserScreenName()
 {
-    return executed_user;
+    return m_executeduser;
 }
 
 QString UpdateProfile::profileValue()
 {
-    return profile_value;
+    return m_profilevalue;
 }
 
 QString UpdateProfile::errorString()
 {
-    return error_message;
+    return m_errormessage;
 }
 
 void UpdateProfile::postStartupMessage()
 {
     try {
-        twitter.statusUpdate(settings.startupMessage());
+        m_twitter.statusUpdate(m_settings.startupMessage());
     } catch(...) {
         throw;
     }
@@ -82,7 +82,7 @@ void UpdateProfile::postStartupMessage()
 void UpdateProfile::postClosedMessage()
 {
     try {
-        twitter.statusUpdate(settings.closedMessage());
+        m_twitter.statusUpdate(m_settings.closedMessage());
     } catch(...) {
         throw;
     }
@@ -93,40 +93,40 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
     const TweetObject tweet(twitter_status_object_json_data);
     const QString text = tweet.text();
     const QString user_screen_name = tweet.user().screen_name();
-    const QRegExp update_name_reg_exp1("^.*@" + my_screen_name + "\\s+update_name\\s+.*");
-    const QRegExp update_name_reg_exp2("^\\s*.+\\s*\\(@" + my_screen_name + "\\).*$");
-    const QRegExp update_url_reg_exp("^.*@" + my_screen_name + "\\s+update_url\\s+.+");
-    const QRegExp update_location_reg_exp("^.*@" + my_screen_name + "\\s+update_location\\s+.+");
-    const QRegExp update_description_reg_exp("^.*@" + my_screen_name + "\\s+update_description\\s+.+");
+    const QRegExp update_name_reg_exp1("^.*@" + m_myscreenname + "\\s+m_updatename\\s+.*");
+    const QRegExp update_name_reg_exp2("^\\s*.+\\s*\\(@" + m_myscreenname + "\\).*$");
+    const QRegExp update_url_reg_exp("^.*@" + m_myscreenname + "\\s+m_updateurl\\s+.+");
+    const QRegExp update_location_reg_exp("^.*@" + m_myscreenname + "\\s+m_updatelocation\\s+.+");
+    const QRegExp update_description_reg_exp("^.*@" + m_myscreenname + "\\s+m_udpatedescription\\s+.+");
 
     if(text.isEmpty() || text.startsWith("RT")) {
         return;
     }
 
-    if(update_name_reg_exp1.exactMatch(text) && settings.isEnabledUpdateName()) {
-        executed_user = user_screen_name;
-        profile_value = text;
-        profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_name\\s+")));
-        update_name.exec(tweet, profile_value);
-    } else if(update_name_reg_exp2.exactMatch(text) && settings.isEnabledUpdateName()) {
-        executed_user = user_screen_name;
-        profile_value = text;
-        profile_value.remove(QRegExp("\\s*\\(@" + my_screen_name + "\\).*$"));
-        update_name.exec(tweet, profile_value);
-    } else if(update_url_reg_exp.exactMatch(text) && settings.isEnabledUpdateUrl()) {
-        executed_user = user_screen_name;
-        profile_value = text;
-        profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_url\\s+")));
-        update_url.exec(tweet, profile_value);
-    } else if(update_location_reg_exp.exactMatch(text) && settings.isEnabledUpdateLocation()) {
-        executed_user = user_screen_name;
-        profile_value = text;
-        profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_location\\s+")));
-        update_location.exec(tweet, profile_value);
-    } else if(update_description_reg_exp.exactMatch(text) && settings.isEnabledUpdateDescription()) {
-        executed_user = user_screen_name;
-        profile_value = text;
-        profile_value.remove(QRegExp("^.*@" + my_screen_name + ("\\s+update_description\\s+")));
-        update_description.exec(tweet, profile_value);
+    if(update_name_reg_exp1.exactMatch(text) && m_settings.isEnabledUpdateName()) {
+        m_executeduser = user_screen_name;
+        m_profilevalue = text;
+        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+m_updatename\\s+")));
+        m_updatename.exec(tweet, m_profilevalue);
+    } else if(update_name_reg_exp2.exactMatch(text) && m_settings.isEnabledUpdateName()) {
+        m_executeduser = user_screen_name;
+        m_profilevalue = text;
+        m_profilevalue.remove(QRegExp("\\s*\\(@" + m_myscreenname + "\\).*$"));
+        m_updatename.exec(tweet, m_profilevalue);
+    } else if(update_url_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateUrl()) {
+        m_executeduser = user_screen_name;
+        m_profilevalue = text;
+        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+m_updateurl\\s+")));
+        m_updateurl.exec(tweet, m_profilevalue);
+    } else if(update_location_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateLocation()) {
+        m_executeduser = user_screen_name;
+        m_profilevalue = text;
+        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+m_updatelocation\\s+")));
+        m_updatelocation.exec(tweet, m_profilevalue);
+    } else if(update_description_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateDescription()) {
+        m_executeduser = user_screen_name;
+        m_profilevalue = text;
+        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+m_udpatedescription\\s+")));
+        m_udpatedescription.exec(tweet, m_profilevalue);
     }
 }

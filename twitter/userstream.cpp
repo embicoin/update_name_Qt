@@ -15,18 +15,18 @@ const QString UserStream::USERSTREAM_URL = "https://userstream.twitter.com/1.1/u
 UserStream::UserStream(QObject *parent) :
     QThread(parent)
 {
-    is_stopped = true;
+    m_isStopped = true;
 }
 
 void UserStream::run()
 {
-    const QByteArray signature_key = settings.consumerSecret().toUtf8()
+    const QByteArray signatureKey = m_settings.consumerSecret().toUtf8()
             + "&"
-            + settings.accessTokenSecret().toUtf8();
-    QVariantMap oauth_params;
+            + m_settings.accessTokenSecret().toUtf8();
+    QVariantMap oauthParams;
     QUrlQuery oauth_query;
-    QByteArray oauth_header;
-    QByteArray signature_base_string;
+    QByteArray oauthHeader;
+    QByteArray signatureBaseString;
     QNetworkRequest request;
     QNetworkAccessManager manager;
     QByteArray response;
@@ -34,47 +34,47 @@ void UserStream::run()
     QNetworkReply *reply = 0;
     QEventLoop loop;
     bool connected = false;
-    int failed_count = 0;
+    int failedCount = 0;
 
-    is_stopped = false;
+    m_isStopped = false;
 
-    while(!is_stopped && failed_count < 5) {
+    while(!m_isStopped && failedCount < 5) {
         emit stateChanged(Connecting);
 
-        oauth_params["oauth_consumer_key"]     = settings.consumerKey();
-        oauth_params["oauth_token"]            = settings.accessToken();
-        oauth_params["oauth_signature_method"] = OAUTH_SIGNATURE_METHOD;
-        oauth_params["oauth_timestamp"]        = OAUTH_TIMESTAMP;
-        oauth_params["oauth_nonce"]            = OAUTH_NONCE;
-        oauth_params["oauth_version"]          = OAUTH_VERSION;
+        oauthParams["oauth_consumer_key"]     = m_settings.consumerKey();
+        oauthParams["oauth_token"]            = m_settings.accessToken();
+        oauthParams["oauth_signature_method"] = OAUTH_SIGNATURE_METHOD;
+        oauthParams["oauth_timestamp"]        = OAUTH_TIMESTAMP;
+        oauthParams["oauth_nonce"]            = OAUTH_NONCE;
+        oauthParams["oauth_version"]          = OAUTH_VERSION;
 
         oauth_query.clear();
-        for(int i = 0; i < oauth_params.size(); i++) {
-            oauth_query.addQueryItem(oauth_params.keys()[i], oauth_params.values()[i].toString());
+        for(int i = 0; i < oauthParams.size(); i++) {
+            oauth_query.addQueryItem(oauthParams.keys()[i], oauthParams.values()[i].toString());
         }
 
-        signature_base_string = "GET&"
+        signatureBaseString = "GET&"
                 + USERSTREAM_URL.toUtf8().toPercentEncoding()
                 + "&"
                 + oauth_query.toString().toUtf8().toPercentEncoding();
 
-        oauth_params["oauth_signature"] =
-                QMessageAuthenticationCode::hash(signature_base_string,
-                                                 signature_key,
+        oauthParams["oauth_signature"] =
+                QMessageAuthenticationCode::hash(signatureBaseString,
+                                                 signatureKey,
                                                  QCryptographicHash::Sha1).toBase64().toPercentEncoding();
 
-        oauth_header = "OAuth ";
-        for(int i = 0; i < oauth_params.size(); i++) {
-            oauth_header.append(oauth_params.keys()[i]
+        oauthHeader = "OAuth ";
+        for(int i = 0; i < oauthParams.size(); i++) {
+            oauthHeader.append(oauthParams.keys()[i]
                                + "=\""
-                               + oauth_params.values()[i].toByteArray()
+                               + oauthParams.values()[i].toByteArray()
                                + "\", ");
         }
-        oauth_header.chop(2);
+        oauthHeader.chop(2);
 
         request.setUrl(QUrl(USERSTREAM_URL));
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-        request.setRawHeader("Authorization", oauth_header);
+        request.setRawHeader("Authorization", oauthHeader);
 
         reply = manager.get(request);
 
@@ -86,10 +86,10 @@ void UserStream::run()
 
         buffer.clear();
 
-        while(!reply->isFinished() && !is_stopped && reply->error() == QNetworkReply::NoError) {
+        while(!reply->isFinished() && !m_isStopped && reply->error() == QNetworkReply::NoError) {
             loop.exec();
 
-            if(is_stopped) {
+            if(m_isStopped) {
                 emit stateChanged(DisConnected);
                 return;
             } else {
@@ -97,7 +97,7 @@ void UserStream::run()
                     if(!connected) {
                         emit stateChanged(Running);
                         connected = true;
-                        failed_count = 0;
+                        failedCount = 0;
                     }
                     response = reply->readAll();
 
@@ -112,14 +112,14 @@ void UserStream::run()
                     }
                 } else {
                     emit stateChanged(ConnectionFailed);
-                    failed_count++;
+                    failedCount++;
                 }
             }
         }
         emit stateChanged(DisConnected);
         connected = false;
 
-        if(failed_count < 5) {
+        if(failedCount < 5) {
             emit stateChanged(Waiting);
             sleep(5);
         }
@@ -130,6 +130,6 @@ void UserStream::run()
 
 void UserStream::stop()
 {
-    is_stopped = true;
+    m_isStopped = true;
     emit stopping();
 }

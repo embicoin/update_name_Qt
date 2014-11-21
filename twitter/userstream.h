@@ -32,8 +32,8 @@ protected:
 
 private:
     static const QString USERSTREAM_URL;
-    Settings settings;
-    bool is_stopped;
+    Settings m_settings;
+    bool m_isStopped;
 };
 
 #endif // USERSTREAM_H

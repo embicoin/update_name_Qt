@@ -6,22 +6,22 @@
 
 TweetObject::TweetObject(const QByteArray &json)
 {
-    object = QJsonDocument::fromJson(json).object();
+    m_object = QJsonDocument::fromJson(json).object();
 }
 
 QString TweetObject::idStr() const
 {
-    return object.value("id_str").toString();
+    return m_object.value("id_str").toString();
 }
 
 QString TweetObject::text() const
 {
-    return object.value("text").toString();
+    return m_object.value("text").toString();
 }
 
 UsersObject TweetObject::user() const
 {
     QJsonDocument doc;
-    doc.setObject(object.value("user").toObject());
+    doc.setObject(m_object.value("user").toObject());
     return UsersObject(doc.toJson());
 }

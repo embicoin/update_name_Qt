@@ -38,7 +38,7 @@ private:
     static const QString STATUSES_UPDATE_URL;
     static const QString MEDIA_UPLOAD_URL;
 
-    Settings settings;
+    Settings m_settings;
 
 };
 

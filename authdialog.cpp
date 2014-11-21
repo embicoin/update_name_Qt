@@ -12,7 +12,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 
-const QString AuthDialog::REQUEST_TOKEN_URL       = "https://api.twitter.com/oauth/request_token";
+const QString AuthDialog::REQUEST_TOKEN_URL       = "https://api.twitter.com/oauth/m_requesttoken";
 const QString AuthDialog::AUTHORIZE_URL           = "https://api.twitter.com/oauth/authorize";
 const QString AuthDialog::ACCESS_TOKEN_URL        = "https://api.twitter.com/oauth/access_token";
 const QString AuthDialog::DEFAULT_CONSUMER_KEY    = "1cIrbCiqwd3iRV5EZVHiHnzA0";
@@ -67,19 +67,19 @@ AuthDialog::~AuthDialog()
 
 QString AuthDialog::authorizeUrl()
 {
-    const QByteArray signature_key = DEFAULT_CONSUMER_SECRET.toUtf8() + "&";
+    const QByteArray signatureKey = DEFAULT_CONSUMER_SECRET.toUtf8() + "&";
     QVariantMap params;
-    QByteArray signature_base_string;
+    QByteArray signatureBaseString;
     QUrlQuery query;
     QUrl request_url;
-    QUrlQuery token_query;
+    QUrlQuery tokenQuery;
     QNetworkAccessManager manager;
     QNetworkReply *reply;
     QTimer timer;
     QEventLoop loop;
     QByteArray response;
     QNetworkReply::NetworkError error;
-    QString error_string;
+    QString errorString;
 
     params["oauth_consumer_key"]     = DEFAULT_CONSUMER_KEY;
     params["oauth_nonce"]            = OAUTH_NONCE;
@@ -91,14 +91,14 @@ QString AuthDialog::authorizeUrl()
         query.addQueryItem(params.keys()[i], params.values()[i].toString());
     }
 
-    signature_base_string = "GET&"
+    signatureBaseString = "GET&"
             + REQUEST_TOKEN_URL.toUtf8().toPercentEncoding()
             + "&"
             + query.toString().toUtf8().toPercentEncoding();
 
     query.addQueryItem("oauth_signature",
-                       QMessageAuthenticationCode::hash(signature_base_string,
-                                                        signature_key,
+                       QMessageAuthenticationCode::hash(signatureBaseString,
+                                                        signatureKey,
                                                         QCryptographicHash::Sha1).toBase64().toPercentEncoding());
 
     request_url.setUrl(REQUEST_TOKEN_URL);
@@ -113,64 +113,64 @@ QString AuthDialog::authorizeUrl()
 
     response = reply->readAll();
     error = reply->error();
-    error_string = reply->errorString();
+    errorString = reply->errorString();
     reply->deleteLater();
 
     if(!timer.isActive()) {
         throw std::runtime_error("タイムアウトしました。");
     } else if(error == QNetworkReply::NoError) {
-        token_query.setQuery(response);
-        request_token = token_query.queryItemValue("oauth_token");
-        request_token_secret = token_query.queryItemValue("oauth_token_secret");
+        tokenQuery.setQuery(response);
+        m_requestToken = tokenQuery.queryItemValue("oauth_token");
+        m_requestTokenSecret = tokenQuery.queryItemValue("oauth_token_secret");
     } else {
         if(response.isEmpty()) {
-            throw std::runtime_error(error_string.toStdString());
+            throw std::runtime_error(errorString.toStdString());
         } else {
             throw std::runtime_error(QString::fromUtf8(response).toStdString());
         }
     }
 
-    return AUTHORIZE_URL + "?oauth_token=" + request_token;
+    return AUTHORIZE_URL + "?oauth_token=" + m_requestToken;
 }
 
 void AuthDialog::authorizePin(const QString pin)
 {
-    if(request_token.isEmpty() || request_token_secret.isEmpty()) {
+    if(m_requestToken.isEmpty() || m_requestTokenSecret.isEmpty()) {
         return;
     }
 
-    const QByteArray signature_key = DEFAULT_CONSUMER_SECRET.toUtf8() + "&";
+    const QByteArray signatureKey = DEFAULT_CONSUMER_SECRET.toUtf8() + "&";
     QVariantMap params;
-    QByteArray signature_base_string;
+    QByteArray signatureBaseString;
     QUrlQuery query;
     QUrl request_url;
     QNetworkAccessManager manager;
     QNetworkReply *reply;
     QTimer timer;
     QEventLoop loop;
-    QUrlQuery token_query;
+    QUrlQuery tokenQuery;
     QByteArray response;
     QNetworkReply::NetworkError error;
-    QString error_string;
+    QString errorString;
 
     params["oauth_consumer_key"]     = DEFAULT_CONSUMER_KEY;
     params["oauth_nonce"]            = OAUTH_NONCE;
     params["oauth_signature_method"] = OAUTH_SIGNATURE_METHOD;
     params["oauth_timestamp"]        = OAUTH_TIMESTAMP;
     params["oauth_version"]          = OAUTH_VERSION;
-    params["oauth_token"]            = request_token;
+    params["oauth_token"]            = m_requestToken;
     params["oauth_verifier"]         = pin;
 
     for(int i = 0; i < params.size(); i++) {
         query.addQueryItem(params.keys()[i], params.values()[i].toString());
     }
-    signature_base_string = "GET&"
+    signatureBaseString = "GET&"
             + ACCESS_TOKEN_URL.toUtf8().toPercentEncoding()
             + query.toString(QUrl::FullyEncoded).toUtf8();
 
     query.addQueryItem("oauth_signature",
-                       QMessageAuthenticationCode::hash(signature_base_string,
-                                                        signature_key,
+                       QMessageAuthenticationCode::hash(signatureBaseString,
+                                                        signatureKey,
                                                         QCryptographicHash::Sha1).toBase64().toPercentEncoding());
 
     request_url.setUrl(ACCESS_TOKEN_URL);
@@ -185,20 +185,20 @@ void AuthDialog::authorizePin(const QString pin)
 
     response = reply->readAll();
     error = reply->error();
-    error_string = reply->errorString();
+    errorString = reply->errorString();
     reply->deleteLater();
 
     if(!timer.isActive()) {
         throw std::runtime_error("タイムアウトしました。");
     } else if(error == QNetworkReply::NoError) {
-        token_query.setQuery(response);
-        settings.setConsumerKey(DEFAULT_CONSUMER_KEY);
-        settings.setConsumerSecret(DEFAULT_CONSUMER_SECRET);
-        settings.setAccessToken(token_query.queryItemValue("oauth_token"));
-        settings.setAccessTokenSecret(token_query.queryItemValue("oauth_token_secret"));
+        tokenQuery.setQuery(response);
+        m_settings.setConsumerKey(DEFAULT_CONSUMER_KEY);
+        m_settings.setConsumerSecret(DEFAULT_CONSUMER_SECRET);
+        m_settings.setAccessToken(tokenQuery.queryItemValue("oauth_token"));
+        m_settings.setAccessTokenSecret(tokenQuery.queryItemValue("oauth_token_secret"));
     } else {
         if(response.isEmpty()) {
-            throw std::runtime_error(error_string.toStdString());
+            throw std::runtime_error(errorString.toStdString());
         } else {
             throw std::runtime_error(QString::fromUtf8(response).toStdString());
         }

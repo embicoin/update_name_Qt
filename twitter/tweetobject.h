@@ -16,7 +16,7 @@ public:
     UsersObject user() const;
 
 private:
-    QJsonObject object;
+    QJsonObject m_object;
 };
 
 #endif // TWEETOBJECT_H

@@ -10,10 +10,10 @@ public:
     QString url();
 
 public slots:
-    void exec(const TweetObject &tweet, const QString &new_url);
+    void exec(const TweetObject &tweet, const QString &newUrl);
 
 private:
-    QString updated_url;
+    QString m_updatedUrl;
 };
 
 #endif // URL_H

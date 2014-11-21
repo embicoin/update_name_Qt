@@ -10,10 +10,10 @@ public:
     QString description();
 
 public slots:
-    void exec(const TweetObject &tweet, const QString &new_description);
+    void exec(const TweetObject &tweet, const QString &newDescription);
 
 private:
-    QString updated_description;
+    QString m_updatedDescription;
 };
 
 #endif // DESCRIPTION_H
