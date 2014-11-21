@@ -116,7 +116,7 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
     } else if(update_url_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateUrl()) {
         m_executeduser = user_screen_name;
         m_profilevalue = text;
-        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+updateUrl\\s+")));
+        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_url\\s+")));
         m_updateurl.exec(tweet, m_profilevalue);
     } else if(update_location_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateLocation()) {
         m_executeduser = user_screen_name;
