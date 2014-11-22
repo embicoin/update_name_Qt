@@ -9,7 +9,7 @@ const QString Settings::DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE = QObject::tr(".@%u
 const QString Settings::DEFAULT_UPDATE_URL_FAILED_MESSAGE = QObject::tr(".@%u URLの変更に失敗しました。\n%e");
 const QString Settings::DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE = QObject::tr(".@%u Locationを\"%l\"に変更しました。");
 const QString Settings::DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE = QObject::tr(".@%u Locationの変更に失敗しました。\n%e");
-const QString Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE = QObject::tr(".@%u Descriptionを変更しました。");
+const QString Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE = QObject::tr(".@%u Descriptionを\"%d\"に変更しました。");
 const QString Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE = QObject::tr(".@%u Descriptionの変更に失敗しました。\n%e");
 
 QSettings* Settings::s = new QSettings(QSettings::IniFormat, QSettings::UserScope, Settings::SETTINGS_FILE_NAME);
