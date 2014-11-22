@@ -15,7 +15,7 @@ public:
     QString description() const;
 
 private:
-    QJsonObject object;
+    QJsonObject m_object;
 };
 
 #endif // USERSOBJECT_H

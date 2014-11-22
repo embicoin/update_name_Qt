@@ -10,10 +10,10 @@ public:
     QString name();
 
 public slots:
-    void exec(const TweetObject &tweet, const QString &new_name);
+    void exec(const TweetObject &tweet, const QString &newName);
 
 private:
-    QString updated_name;
+    QString m_updatedName;
 };
 
 #endif // NAME_H

@@ -7,17 +7,17 @@ Update::Update(QObject *parent) :
 
 QString Update::errorString()
 {
-    return error_message;
+    return m_errorMessage;
 }
 
-void Update::recieveResult(const QString &message, const QString &in_reply_to_status_id)
+void Update::recieveResult(const QString &message, const QString &inReplyToStatusId)
 {
     try {
-        twitter.statusUpdate(message, in_reply_to_status_id);
+        m_twitter.statusUpdate(message, inReplyToStatusId);
         emit stateChanged(RecieveResultSuccessed);
     } catch(std::runtime_error &e) {
-        error_message = QString::fromStdString(e.what());
-        emit error(error_message);
+        m_errorMessage = QString::fromStdString(e.what());
+        emit error(m_errorMessage);
         emit stateChanged(RecieveResultFailed);
     }
 }

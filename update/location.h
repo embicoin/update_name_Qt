@@ -10,10 +10,10 @@ public:
     QString location();
 
 public slots:
-    void exec(const TweetObject &tweet, const QString &new_location);
+    void exec(const TweetObject &tweet, const QString &newLocation);
 
 private:
-    QString updated_location;
+    QString m_updatedLocation;
 };
 
 #endif // LOCATION_H

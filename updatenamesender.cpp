@@ -16,7 +16,7 @@ UpdateNameSender::UpdateNameSender(QWidget *parent) :
         ui->sendButton->setEnabled(false);
         ui->resultLine->setText(tr("送信中"));
         try {
-            twitter.statusUpdate(QString("@%1 update_name %2").arg(ui->screenNameLine->text(), ui->nameLine->text()));
+            m_twitter.statusUpdate(QString("@%1 update_name %2").arg(ui->screenNameLine->text(), ui->nameLine->text()));
             ui->resultLine->setText(tr("成功しました"));
         } catch(...) {
             ui->resultLine->setText(tr("失敗しました。"));

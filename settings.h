@@ -106,40 +106,40 @@ private:
 
     static QSettings *s;
 
-    static QString consumer_key;
-    static QString consumer_secret;
-    static QString access_token;
-    static QString access_token_secret;
+    static QString m_consumerKey;
+    static QString m_consumerSecret;
+    static QString m_accessToken;
+    static QString m_accessToken_secret;
 
-    static QString startup_message;
-    static QString closed_message;
-    static QString update_name_successed_message;
-    static QString update_name_failed_message;
-    static QString update_url_successed_message;
-    static QString update_url_failed_message;
-    static QString update_location_successed_message;
-    static QString update_location_failed_message;
-    static QString update_description_successed_message;
-    static QString update_description_failed_message;
+    static QString m_startupMessage;
+    static QString m_closedMessage;
+    static QString m_updateNameSuccessedMessage;
+    static QString m_updateNameFailedMessage;
+    static QString m_updateUrlSuccessedMessage;
+    static QString m_updateUrlFailedMessage;
+    static QString m_updateLocationSuccessedMessage;
+    static QString m_updateLocationFailedMessage;
+    static QString m_updateDescriptionSuccessedMessage;
+    static QString m_updateDescriptionFailedMessage;
 
-    static bool is_enabled_update_name;
-    static bool is_enabled_udpate_url;
-    static bool is_enabled_update_location;
-    static bool is_enabled_update_description;
+    static bool m_isEnabledUpdateName;
+    static bool m_isEnabledUdpateUrl;
+    static bool m_isEnabledUpdateLocation;
+    static bool m_isEnabledUpdateDescription;
 
-    static bool is_post_startup_message;
-    static bool is_post_closed_message;
-    static bool is_post_update_name_successed_message;
-    static bool is_post_update_name_failed_message;
-    static bool is_post_update_url_successed_message;
-    static bool is_post_update_url_failed_message;
-    static bool is_post_update_location_successed_message;
-    static bool is_post_update_location_failed_message;
-    static bool is_post_update_description_successed_message;
-    static bool is_post_update_description_failed_message;
+    static bool m_isPostStartupMessage;
+    static bool m_isPostClosedMessage;
+    static bool m_isPostUpdateNameSuccessedMessage;
+    static bool m_isPostUpdateNameFailedMessage;
+    static bool m_isPostUpdateUrlSuccessedMessage;
+    static bool m_isPostUpdateUrlFailedMessage;
+    static bool m_isPostUpdateLocationSuccessedMessage;
+    static bool m_isPostUpdateLocationFailedMessage;
+    static bool m_isPostUpdateDescriptionSuccessedMessage;
+    static bool m_isPostUpdateDescriptionFailedMessage;
 
-    static bool is_stay_on_system_tray;
-    static bool is_auto_start_update_name;
+    static bool m_isStayOnSystemTray;
+    static bool m_isAutoStartUpdateName;
 };
 
 #endif // SETTINGS_H

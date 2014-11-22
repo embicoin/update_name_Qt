@@ -7,12 +7,12 @@ UpdateUrl::UpdateUrl(Update *parent) :
 
 QString UpdateUrl::url()
 {
-    return updated_url;
+    return m_updatedUrl;
 }
 
-void UpdateUrl::exec(const TweetObject &tweet, const QString &new_url)
+void UpdateUrl::exec(const TweetObject &tweet, const QString &newUrl)
 {
-    if(new_url.isEmpty()) {
+    if(newUrl.isEmpty()) {
         return;
     }
 
@@ -22,33 +22,33 @@ void UpdateUrl::exec(const TweetObject &tweet, const QString &new_url)
     emit stateChanged(Executed);
 
     try {
-        twitter.updateUrl(new_url);
+        m_twitter.updateUrl(newUrl);
     } catch(const std::runtime_error &e) {
-        error_message = QString::fromStdString(e.what());
-        emit error(error_message);
+        m_errorMessage = QString::fromStdString(e.what());
+        emit error(m_errorMessage);
         emit stateChanged(UpdateFailed);
 
-        if(settings.isPostUpdateUrlFailedMessage()) {
-            recieveResult(settings.updateUrlFailedMessage()
+        if(m_settings.isPostUpdateUrlFailedMessage()) {
+            recieveResult(m_settings.updateUrlFailedMessage()
                           .replace("%u", user_screen_name)
-                          .replace("%l", new_url)
-                          .replace("%e", error_message), status_id);
+                          .replace("%l", newUrl)
+                          .replace("%e", m_errorMessage), status_id);
         }
         return;
     }
 
     try {
-        updated_url = twitter.verifyCredentials().url();
+        m_updatedUrl = m_twitter.verifyCredentials().url();
     } catch(...) {
-        updated_url = new_url;
+        m_updatedUrl = newUrl;
     }
 
     emit stateChanged(UpdateSuccessed);
-    emit updated(updated_url);
+    emit updated(m_updatedUrl);
 
-    if(settings.isPostUpdateUrlSuccessedMessage()) {
-        recieveResult(settings.updateUrlSuccessedMessage()
+    if(m_settings.isPostUpdateUrlSuccessedMessage()) {
+        recieveResult(m_settings.updateUrlSuccessedMessage()
                       .replace("%u", user_screen_name)
-                      .replace("%l", updated_url), status_id);
+                      .replace("%l", m_updatedUrl), status_id);
     }
 }

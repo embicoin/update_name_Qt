@@ -28,10 +28,10 @@ private:
     static const QString DEFAULT_CONSUMER_SECRET;
 
     Ui::AuthDialog *ui;
-    Settings settings;
+    Settings m_settings;
 
-    QString request_token;
-    QString request_token_secret;
+    QString m_requestToken;
+    QString m_requestTokenSecret;
 };
 
 #endif // AUTHDIALOG_H

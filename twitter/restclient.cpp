@@ -26,95 +26,95 @@ RestClient::RestClient(QObject *parent) :
 
 QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation method,
                                       const QString &url,
-                                      const QVariantMap &data_params)
+                                      const QVariantMap &dataParams)
 {
-    const QByteArray signature_key = settings.consumerSecret().toUtf8()
+    const QByteArray signatureKey = m_settings.consumerSecret().toUtf8()
             + "&"
-            + settings.accessTokenSecret().toUtf8();
-    QByteArray http_method_string;
-    QVariantMap oauth_params;
-    QVariantMap signature_params;
-    QUrlQuery signature_query;
-    QByteArray signature_base_string;
-    QByteArray oauth_header;
-    QUrlQuery data_query;
-    QUrl request_url(url);
+            + m_settings.accessTokenSecret().toUtf8();
+    QByteArray httpMethodString;
+    QVariantMap oauthParams;
+    QVariantMap signatureParams;
+    QUrlQuery signatureQuery;
+    QByteArray signatureBaseString;
+    QByteArray oauthHeader;
+    QUrlQuery dataQuery;
+    QUrl requestUrl(url);
     QNetworkRequest request;
     QNetworkAccessManager manager;
     QNetworkReply *reply = 0;
     QTimer timer;
     QEventLoop loop;
     QNetworkReply::NetworkError error;
-    QString error_string;
+    QString errorString;
     QByteArray response;
 
     switch (method) {
     case QNetworkAccessManager::GetOperation:
-        http_method_string = "GET";
+        httpMethodString = "GET";
         break;
     case QNetworkAccessManager::PostOperation:
-        http_method_string = "POST";
+        httpMethodString = "POST";
         break;
     default:
         throw std::runtime_error("Unknown Http method.");
         break;
     }
 
-    oauth_params["oauth_consumer_key"]     = settings.consumerKey();
-    oauth_params["oauth_token"]            = settings.accessToken();
-    oauth_params["oauth_signature_method"] = OAUTH_SIGNATURE_METHOD;
-    oauth_params["oauth_timestamp"]        = OAUTH_TIMESTAMP;
-    oauth_params["oauth_nonce"]            = OAUTH_NONCE;
-    oauth_params["oauth_version"]          = OAUTH_VERSION;
+    oauthParams["oauth_consumer_key"]     = m_settings.consumerKey();
+    oauthParams["oauth_token"]            = m_settings.accessToken();
+    oauthParams["oauth_signature_method"] = OAUTH_SIGNATURE_METHOD;
+    oauthParams["oauth_timestamp"]        = OAUTH_TIMESTAMP;
+    oauthParams["oauth_nonce"]            = OAUTH_NONCE;
+    oauthParams["oauth_version"]          = OAUTH_VERSION;
 
-    for(int i = 0; i < oauth_params.size(); i++) {
-        signature_params.insert(oauth_params.keys()[i], oauth_params.values()[i]);
+    for(int i = 0; i < oauthParams.size(); i++) {
+        signatureParams.insert(oauthParams.keys()[i], oauthParams.values()[i]);
     }
 
-    if(!data_params.isEmpty()) {
-        for(int i = 0; i < data_params.size(); i++) {
-            signature_params.insert(data_params.keys()[i], data_params.values()[i].toByteArray().toPercentEncoding());
-            data_query.addQueryItem(data_params.keys()[i], data_params.values()[i].toByteArray().toPercentEncoding());
+    if(!dataParams.isEmpty()) {
+        for(int i = 0; i < dataParams.size(); i++) {
+            signatureParams.insert(dataParams.keys()[i], dataParams.values()[i].toByteArray().toPercentEncoding());
+            dataQuery.addQueryItem(dataParams.keys()[i], dataParams.values()[i].toByteArray().toPercentEncoding());
         }
     }
 
-    for(int i = 0; i < signature_params.size(); i++) {
-        signature_query.addQueryItem(signature_params.keys()[i], signature_params.values()[i].toString());
+    for(int i = 0; i < signatureParams.size(); i++) {
+        signatureQuery.addQueryItem(signatureParams.keys()[i], signatureParams.values()[i].toString());
     }
 
-    signature_base_string = http_method_string
+    signatureBaseString = httpMethodString
             + "&"
             + url.toUtf8().toPercentEncoding()
             + "&"
-            + signature_query.toString(QUrl::FullyEncoded).toUtf8().toPercentEncoding();
+            + signatureQuery.toString(QUrl::FullyEncoded).toUtf8().toPercentEncoding();
 
-    oauth_params["oauth_signature"] = QMessageAuthenticationCode::hash(signature_base_string,
-                                                                      signature_key,
+    oauthParams["oauth_signature"] = QMessageAuthenticationCode::hash(signatureBaseString,
+                                                                      signatureKey,
                                                                       QCryptographicHash::Sha1).toBase64().toPercentEncoding();
 
-    oauth_header.append("OAuth ");
-    for(int i = 0; i < oauth_params.size(); i++) {
-        oauth_header.append(oauth_params.keys()[i])
+    oauthHeader.append("OAuth ");
+    for(int i = 0; i < oauthParams.size(); i++) {
+        oauthHeader.append(oauthParams.keys()[i])
                    .append("=\"")
-                   .append(oauth_params.values()[i].toByteArray())
+                   .append(oauthParams.values()[i].toByteArray())
                    .append("\", ");
     }
-    oauth_header.chop(2);
+    oauthHeader.chop(2);
 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader("Authorization", oauth_header);
+    request.setRawHeader("Authorization", oauthHeader);
 
     switch (method) {
     case QNetworkAccessManager::GetOperation:
-        if(!data_query.isEmpty()) {
-            request_url.setQuery(data_query);
+        if(!dataQuery.isEmpty()) {
+            requestUrl.setQuery(dataQuery);
         }
-        request.setUrl(request_url);
+        request.setUrl(requestUrl);
         reply = manager.get(request);
         break;
     case QNetworkAccessManager::PostOperation:
-        request.setUrl(request_url);
-        reply = manager.post(request, data_query.toString(QUrl::FullyEncoded).toUtf8());
+        request.setUrl(requestUrl);
+        reply = manager.post(request, dataQuery.toString(QUrl::FullyEncoded).toUtf8());
         break;
     default:
         break;
@@ -127,7 +127,7 @@ QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation 
     loop.exec();
 
     error = reply->error();
-    error_string = reply->errorString();
+    errorString = reply->errorString();
     response = reply->readAll();
     reply->deleteLater();
 
@@ -136,7 +136,7 @@ QByteArray RestClient::requestTwitterApi(const QNetworkAccessManager::Operation 
             return response;
         } else {
             if(response.isEmpty()) {
-                throw std::runtime_error(error_string.toStdString());
+                throw std::runtime_error(errorString.toStdString());
             } else {
                 throw std::runtime_error(QJsonDocument::fromJson(response).object().value("errors").toArray().first().toObject().value("message").toString().toStdString());
             }
@@ -158,16 +158,16 @@ UsersObject RestClient::verifyCredentials()
 
 void RestClient::statusUpdate(const QString &text, const QString &in_reply_to_status_id, const QStringList &media_ids)
 {
-    QVariantMap data_params;
-    data_params["status"] = text;
+    QVariantMap dataParams;
+    dataParams["status"] = text;
     if(!in_reply_to_status_id.isEmpty()) {
-        data_params["in_reply_to_status_id"] = in_reply_to_status_id;
+        dataParams["in_reply_to_status_id"] = in_reply_to_status_id;
     }
     if(!media_ids.isEmpty()) {
-        data_params["media_ids"] = media_ids.join(",");
+        dataParams["media_ids"] = media_ids.join(",");
     }
     try {
-        requestTwitterApi(QNetworkAccessManager::PostOperation, STATUSES_UPDATE_URL, data_params);
+        requestTwitterApi(QNetworkAccessManager::PostOperation, STATUSES_UPDATE_URL, dataParams);
     } catch(...) {
         throw;
     }
@@ -211,24 +211,24 @@ void RestClient::updateDescroption(const QString &description)
 
 void RestClient::updateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
 {
-    QVariantMap data_params;
+    QVariantMap dataParams;
     if(!name.isEmpty()) {
-        data_params["name"] = name;
+        dataParams["name"] = name;
     }
     if(!url.isEmpty()) {
-        data_params["url"] = url;
+        dataParams["url"] = url;
     }
     if(!location.isEmpty()) {
-        data_params["location"] = location;
+        dataParams["location"] = location;
     }
     if(!description.isEmpty()) {
-        data_params["description"] = description;
+        dataParams["description"] = description;
     }
-    if(data_params.isEmpty()) {
+    if(dataParams.isEmpty()) {
         return;
     }
     try {
-        requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, data_params);
+        requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, dataParams);
     } catch(...) {
         throw;
     }
@@ -236,15 +236,15 @@ void RestClient::updateProfile(const QString &name, const QString &url, const QS
 
 QString RestClient::mediaUpload(const QString &media_file_name)
 {
-    QVariantMap data_params;
+    QVariantMap dataParams;
     QFile media_file(media_file_name);
     if(media_file.open(QFile::ReadOnly)) {
-        data_params["media"] = media_file.readAll().toBase64();
+        dataParams["media"] = media_file.readAll().toBase64();
         media_file.close();
         try {
             return QJsonDocument::fromJson(requestTwitterApi(QNetworkAccessManager::PostOperation,
                                                              MEDIA_UPLOAD_URL,
-                                                             data_params)).object().value("media_id_string").toString();
+                                                             dataParams)).object().value("media_id_string").toString();
         }catch(...) {
             throw;
         }

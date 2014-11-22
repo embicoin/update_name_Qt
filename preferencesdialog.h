@@ -27,7 +27,7 @@ private:
     void showEvent(QShowEvent *);
     void closeEvent(QCloseEvent *);
     Ui::PreferencesDialog *ui;
-    Settings settings;
+    Settings m_settings;
 };
 
 #endif // PREFERENCESDIALOG_H

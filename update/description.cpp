@@ -7,10 +7,10 @@ UpdateDescription::UpdateDescription(Update *parent) :
 
 QString UpdateDescription::description()
 {
-    return updated_description;
+    return m_updatedDescription;
 }
 
-void UpdateDescription::exec(const TweetObject &tweet, const QString &new_description)
+void UpdateDescription::exec(const TweetObject &tweet, const QString &newDescription)
 {
     if(tweet.text().isEmpty()) {
         return;
@@ -19,33 +19,33 @@ void UpdateDescription::exec(const TweetObject &tweet, const QString &new_descri
     emit stateChanged(Executed);
 
     try {
-        twitter.updateDescroption(new_description);
+        m_twitter.updateDescroption(newDescription);
     } catch(const std::runtime_error &e) {
-        error_message = QString::fromStdString(e.what());
-        emit error(error_message);
+        m_errorMessage = QString::fromStdString(e.what());
+        emit error(m_errorMessage);
         emit stateChanged(UpdateFailed);
 
-        if(settings.isPostUpdateDescriptionFailedMessage()) {
-            recieveResult(settings.updateDescriptionFailedMessage()
+        if(m_settings.isPostUpdateDescriptionFailedMessage()) {
+            recieveResult(m_settings.updateDescriptionFailedMessage()
                           .replace("%u", tweet.user().screen_name())
-                          .replace("%d", new_description)
-                          .replace("%e", error_message));
+                          .replace("%d", newDescription)
+                          .replace("%e", m_errorMessage));
         }
         return;
     }
 
     try {
-        updated_description = twitter.verifyCredentials().description();
+        m_updatedDescription = m_twitter.verifyCredentials().description();
     } catch(...) {
-        updated_description = new_description;
+        m_updatedDescription = newDescription;
     }
 
     emit stateChanged(UpdateSuccessed);
-    emit updated(updated_description);
+    emit updated(m_updatedDescription);
 
-    if(settings.isPostUpdateDescriptionSuccessedMessage()) {
-        recieveResult(settings.updateDescriptionSuccessedMessage()
+    if(m_settings.isPostUpdateDescriptionSuccessedMessage()) {
+        recieveResult(m_settings.updateDescriptionSuccessedMessage()
                       .replace("%u", tweet.user().screen_name())
-                      .replace("%d", updated_description), tweet.idStr());
+                      .replace("%d", m_updatedDescription), tweet.idStr());
     }
 }

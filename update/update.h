@@ -25,17 +25,17 @@ public:
     QString errorString();
 
 signals:
-    void updated(const QString &updated_value);
-    void error(const QString &error_string);
+    void updated(const QString &updatedValue);
+    void error(const QString &errorString);
     void stateChanged(const Update::State);
 
 protected:
-    RestClient twitter;
-    Settings settings;
-    QString error_message;
+    RestClient m_twitter;
+    Settings m_settings;
+    QString m_errorMessage;
 
 protected slots:
-    void recieveResult(const QString &message, const QString &in_reply_to_status_id = NULL);
+    void recieveResult(const QString &message, const QString &inReplyToStatusId = NULL);
 };
 
 #endif // UPDATE_H
