@@ -1,5 +1,5 @@
 #include "restclient.h"
-#include "update_name_oauth.h"
+#include "../update_name_oauth.h"
 #include "usersobject.h"
 
 #include <QUrlQuery>

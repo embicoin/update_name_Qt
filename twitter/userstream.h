@@ -1,7 +1,7 @@
 #ifndef USERSTREAM_H
 #define USERSTREAM_H
 
-#include "settings.h"
+#include "../settings.h"
 
 #include <QThread>
 

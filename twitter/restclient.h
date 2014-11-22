@@ -1,7 +1,7 @@
 #ifndef RESTCLIENT_H
 #define RESTCLIENT_H
 
-#include "settings.h"
+#include "../settings.h"
 #include "usersobject.h"
 
 #include <QObject>
