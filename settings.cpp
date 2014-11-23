@@ -3,7 +3,7 @@
 const QString Settings::SETTINGS_FILE_NAME = "update_name_qt";
 const QString Settings::DEFAULT_STARTUP_MESSAGE = QObject::tr("update_nameが起動されました。");
 const QString Settings::DEFAULT_CLOSED_MESSAGE = QObject::tr("update_nameを終了しました。");
-const QString Settings::DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE = QObject::tr(".@%u nameを\"%n\"に変更しました。");
+const QString Settings::DEFAULT_UPDATE_NAME_SUCCESSED_MESSAGE = QObject::tr(".@%u Nameを\"%n\"に変更しました。");
 const QString Settings::DEFAULT_UPDATE_NAME_FAILED_MESSAGE = QObject::tr(".@%u update_nameに失敗しました。\n%e");
 const QString Settings::DEFAULT_UPDATE_URL_SUCCESSED_MESSAGE = QObject::tr(".@%u URLを\"%l\"に変更しました。");
 const QString Settings::DEFAULT_UPDATE_URL_FAILED_MESSAGE = QObject::tr(".@%u URLの変更に失敗しました。\n%e");
