@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     twitter/userstream.cpp \
     update/url.cpp \
     update/location.cpp \
-    update/description.cpp
+    update/description.cpp \
+#    update/image.cpp
 
 HEADERS  += mainwindow.h \
     authdialog.h \
@@ -48,7 +49,8 @@ HEADERS  += mainwindow.h \
     twitter/userstream.h \
     update/url.h \
     update/location.h \
-    update/description.h
+    update/description.h \
+#    update/image.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \
