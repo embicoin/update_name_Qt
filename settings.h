@@ -30,12 +30,15 @@ public:
     QString updateLocationFailedMessage() const;
     QString updateDescriptionSuccessedMessage() const;
     QString updateDescriptionFailedMessage() const;
+    QString updateImageSuccessedMessage() const;
+    QString updateImageFailedMessage() const;
 
     /* Is Enabled Update Commands */
     bool isEnabledUpdateName() const;
     bool isEnabledUpdateUrl() const;
     bool isEnabledUpdateLocation() const;
     bool isEnabledUpdateDescription() const;
+    bool isEnabledUpdateImage() const;
 
     /* Is Post Messages */
     bool isPostStartupMessage() const;
@@ -48,6 +51,8 @@ public:
     bool isPostUpdateLocationFailedMessage() const;
     bool isPostUpdateDescriptionSuccessedMessage() const;
     bool isPostUpdateDescriptionFailedMessage() const;
+    bool isPostUpdateImageSuccessedMessage() const;
+    bool isPostUpdateImageFailedMessage() const;
 
     bool isStayOnSystemTray() const;
     bool isAutoStartUpdateName() const;
@@ -69,11 +74,14 @@ public:
     void setUpdateLocationFailedMessage(const QString &message);
     void setUpdateDescriptionSuccessedMessage(const QString &message);
     void setUpdateDescriptionFailedMessage(const QString &message);
+    void setUpdateImageSuccessedMessage(const QString &message);
+    void setUpdateImageFailedMessage(const QString &message);
 
     void setUpdateNameEnabled(const bool &enable);
     void setUpdateUrlEnabled(const bool &enable);
     void setUpdateLocationEnabled(const bool &enable);
     void setUpdateDescriptionEnabled(const bool &enable);
+    void setUpdateImageEnabled(const bool &enable);
 
     void setIsPostStartupMessage(const bool &on);
     void setIsPostClosedMessage(const bool &on);
@@ -85,6 +93,8 @@ public:
     void setIsPostUpdateLocationFailedMessage(const bool &on);
     void setIsPostUpdateDescriptionSuccessedMessage(const bool &on);
     void setIsPostUpdateDescriptionFailedMessage(const bool &on);
+    void setIsPostUpdateImageSuccessedMessage(const bool &on);
+    void setIsPostUpdateImageFailedMessage(const bool &on);
 
     void setIsStayOnSystemTray(const bool &on);
     void setIsAutoStartUpdateName(const bool &on);
@@ -103,6 +113,8 @@ private:
     static const QString DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE;
     static const QString DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE;
     static const QString DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE;
+    static const QString DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE;
+    static const QString DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE;
 
     static QSettings *s;
 
@@ -121,11 +133,14 @@ private:
     static QString m_updateLocationFailedMessage;
     static QString m_updateDescriptionSuccessedMessage;
     static QString m_updateDescriptionFailedMessage;
+    static QString m_updateImageSuccessedMessage;
+    static QString m_updateImageFailedMessage;
 
     static bool m_isEnabledUpdateName;
     static bool m_isEnabledUdpateUrl;
     static bool m_isEnabledUpdateLocation;
     static bool m_isEnabledUpdateDescription;
+    static bool m_isEnabledUpdateImage;
 
     static bool m_isPostStartupMessage;
     static bool m_isPostClosedMessage;
@@ -137,6 +152,8 @@ private:
     static bool m_isPostUpdateLocationFailedMessage;
     static bool m_isPostUpdateDescriptionSuccessedMessage;
     static bool m_isPostUpdateDescriptionFailedMessage;
+    static bool m_isPostUpdateImageSuccessedMessage;
+    static bool m_isPostUpdateImageFailedMessage;
 
     static bool m_isStayOnSystemTray;
     static bool m_isAutoStartUpdateName;

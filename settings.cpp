@@ -11,6 +11,8 @@ const QString Settings::DEFAULT_UPDATE_LOCATION_SUCCESSED_MESSAGE = QObject::tr(
 const QString Settings::DEFAULT_UPDATE_LOCATION_FAILED_MESSAGE = QObject::tr(".@%u Locationの変更に失敗しました。\n%e");
 const QString Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE = QObject::tr(".@%u Descriptionを\"%d\"に変更しました。");
 const QString Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE = QObject::tr(".@%u Descriptionの変更に失敗しました。\n%e");
+const QString Settings::DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE = QObject::tr(".@%u プロフィール画像を\"%i\"に変更しました。");
+const QString Settings::DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE = QObject::tr(".@%u プロフィール画像の変更に失敗しました。\n%e");
 
 QSettings* Settings::s = new QSettings(QSettings::IniFormat, QSettings::UserScope, Settings::SETTINGS_FILE_NAME);
 
@@ -37,10 +39,16 @@ QString Settings::m_updateDescriptionSuccessedMessage = Settings::s->value("Upda
                                                                            Settings::DEFAULT_UPDATE_DESCRIPTION_SUCCESSED_MESSAGE).toString();
 QString Settings::m_updateDescriptionFailedMessage = Settings::s->value("UpdateDescriptionFailedMessage",
                                                                         Settings::DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE).toString();
+QString Settings::m_updateImageSuccessedMessage = Settings::s->value("UpdateImageSuccessedMessage",
+                                                                     Settings::DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE).toString();
+QString Settings::m_updateImageFailedMessage = Settings::s->value("UpdateImageFailedMessage",
+                                                                  Settings::DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE).toString();
+
 bool Settings::m_isEnabledUpdateName = Settings::s->value("IsEnabledUpdateName", true).toBool();
 bool Settings::m_isEnabledUdpateUrl = Settings::s->value("IsEnabledUpdateUrl", false).toBool();
 bool Settings::m_isEnabledUpdateLocation = Settings::s->value("IsEnabledUpdateLocation", false).toBool();
 bool Settings::m_isEnabledUpdateDescription = Settings::s->value("IsEnabledUpdateDescription", false).toBool();
+bool Settings::m_isEnabledUpdateImage = Settings::s->value("IsEnabledUpdateImage", false).toBool();
 
 bool Settings::m_isPostStartupMessage = Settings::s->value("IsPostStartupMessage", true).toBool();
 bool Settings::m_isPostClosedMessage = Settings::s->value("IsPostClosedMessage", true).toBool();
@@ -52,6 +60,8 @@ bool Settings::m_isPostUpdateLocationSuccessedMessage = Settings::s->value("IsPo
 bool Settings::m_isPostUpdateLocationFailedMessage = Settings::s->value("IsPostUpdateLocationFailedMessage", true).toBool();
 bool Settings::m_isPostUpdateDescriptionSuccessedMessage = Settings::s->value("IsPostUpdateDescriptionSuccessedMessage", true).toBool();
 bool Settings::m_isPostUpdateDescriptionFailedMessage = Settings::s->value("IsUpdateDescriptionFailedMessage", true).toBool();
+bool Settings::m_isPostUpdateImageSuccessedMessage = Settings::s->value("IsUpdateImageSuccessedMessage", true).toBool();
+bool Settings::m_isPostUpdateImageFailedMessage = Settings::s->value("IsPostUpdateFailedMessage", true).toBool();
 
 bool Settings::m_isStayOnSystemTray = Settings::s->value("IsStayOnSystemTray", false).toBool();
 bool Settings::m_isAutoStartUpdateName = Settings::s->value("IsAutoStartUpdateName", false).toBool();
@@ -139,6 +149,16 @@ QString Settings::updateDescriptionFailedMessage() const
     return m_updateDescriptionFailedMessage;
 }
 
+QString Settings::updateImageSuccessedMessage() const
+{
+    return m_updateImageSuccessedMessage;
+}
+
+QString Settings::updateImageFailedMessage() const
+{
+    return m_updateImageFailedMessage;
+}
+
 bool Settings::isEnabledUpdateName() const
 {
     return m_isEnabledUpdateName;
@@ -157,6 +177,11 @@ bool Settings::isEnabledUpdateLocation() const
 bool Settings::isEnabledUpdateDescription() const
 {
     return m_isEnabledUpdateDescription;
+}
+
+bool Settings::isEnabledUpdateImage() const
+{
+    return m_isEnabledUpdateImage;
 }
 
 bool Settings::isPostStartupMessage() const
@@ -207,6 +232,16 @@ bool Settings::isPostUpdateDescriptionSuccessedMessage() const
 bool Settings::isPostUpdateDescriptionFailedMessage() const
 {
     return m_isPostUpdateDescriptionFailedMessage;
+}
+
+bool Settings::isPostUpdateImageSuccessedMessage() const
+{
+    return m_isPostUpdateImageSuccessedMessage;
+}
+
+bool Settings::isPostUpdateImageFailedMessage() const
+{
+    return m_isPostUpdateImageFailedMessage;
 }
 
 bool Settings::isStayOnSystemTray() const
@@ -343,6 +378,16 @@ void Settings::setUpdateDescriptionFailedMessage(const QString &message)
     s->setValue("UpdateDescriptionFailedMessage", m_updateDescriptionFailedMessage);
 }
 
+void Settings::setUpdateImageSuccessedMessage(const QString &message)
+{
+    s->setValue("UpdateImageSuccessedMessage", message.isEmpty() ? DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE : message);
+}
+
+void Settings::setUpdateImageFailedMessage(const QString &message)
+{
+    s->setValue("UpdateImageFailedMessage", message.isEmpty() ? DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE : message);
+}
+
 void Settings::setUpdateNameEnabled(const bool &enable)
 {
     m_isEnabledUpdateName = enable;
@@ -365,6 +410,12 @@ void Settings::setUpdateDescriptionEnabled(const bool &enable)
 {
     m_isEnabledUpdateDescription = enable;
     s->setValue("IsEnabledUpdateDescription", enable);
+}
+
+void Settings::setUpdateImageEnabled(const bool &enable)
+{
+    m_isEnabledUpdateImage = enable;
+    s->setValue("IsEnabledUpdateImage", enable);
 }
 
 void Settings::setIsPostStartupMessage(const bool &on)
@@ -425,6 +476,18 @@ void Settings::setIsPostUpdateDescriptionFailedMessage(const bool &on)
 {
     m_isPostUpdateDescriptionFailedMessage = on;
     s->setValue("IsPostUpdateDescriptionFailedMessage", on);
+}
+
+void Settings::setIsPostUpdateImageSuccessedMessage(const bool &on)
+{
+    m_isPostUpdateImageSuccessedMessage = on;
+    s->setValue("IsPostUpdateImageSuccessedMessage", on);
+}
+
+void Settings::setIsPostUpdateImageFailedMessage(const bool &on)
+{
+    m_isPostUpdateImageFailedMessage = on;
+    s->setValue("IsPostUpdateImageFailedMessage", on);
 }
 
 void Settings::setIsStayOnSystemTray(const bool &on)
