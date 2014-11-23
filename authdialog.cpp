@@ -12,7 +12,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 
-const QString AuthDialog::REQUEST_TOKEN_URL       = "https://api.twitter.com/oauth/m_requesttoken";
+const QString AuthDialog::REQUEST_TOKEN_URL       = "https://api.twitter.com/oauth/request_token";
 const QString AuthDialog::AUTHORIZE_URL           = "https://api.twitter.com/oauth/authorize";
 const QString AuthDialog::ACCESS_TOKEN_URL        = "https://api.twitter.com/oauth/access_token";
 const QString AuthDialog::DEFAULT_CONSUMER_KEY    = "1cIrbCiqwd3iRV5EZVHiHnzA0";

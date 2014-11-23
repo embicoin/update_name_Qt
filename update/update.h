@@ -1,9 +1,9 @@
 #ifndef UPDATE_H
 #define UPDATE_H
 
-#include "twitter/restclient.h"
-#include "twitter/tweetobject.h"
-#include "settings.h"
+#include "../twitter/restclient.h"
+#include "../twitter/tweetobject.h"
+#include "../settings.h"
 
 #include <QObject>
 

@@ -1,5 +1,5 @@
 #include "userstream.h"
-#include "update_name_oauth.h"
+#include "../update_name_oauth.h"
 
 #include <QUrlQuery>
 #include <QNetworkAccessManager>
