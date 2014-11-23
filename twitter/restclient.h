@@ -26,7 +26,9 @@ public:
                         const QString &url = NULL,
                         const QString &location = NULL,
                         const QString &description = NULL);
-    QString mediaUpload(const QString &media_file_name);
+    void updateProfileImage(const QByteArray &mediaData);
+    QString mediaUpload(const QString &mediaFileName);
+    QString mediaUpload(const QByteArray &mediaData);
 
 private:
     QByteArray requestTwitterApi(const QNetworkAccessManager::Operation method,
@@ -37,7 +39,7 @@ private:
     static const QString ACCOUNT_UPDATE_PROFILE_URL;
     static const QString STATUSES_UPDATE_URL;
     static const QString MEDIA_UPLOAD_URL;
-
+    static const QString ACCOUT_UPDATE_PROFILE_IMAGE_URL;
     Settings m_settings;
 
 };

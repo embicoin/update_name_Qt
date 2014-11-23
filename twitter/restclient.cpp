@@ -14,10 +14,11 @@
 #include <QJsonValue>
 #include <QJsonArray>
 
-const QString RestClient::ACCOUNT_VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1.1/account/verify_credentials.json";
-const QString RestClient::ACCOUNT_UPDATE_PROFILE_URL     = "https://api.twitter.com/1.1/account/update_profile.json";
-const QString RestClient::STATUSES_UPDATE_URL            = "https://api.twitter.com/1.1/statuses/update.json";
-const QString RestClient::MEDIA_UPLOAD_URL               = "https://upload.twitter.com/1.1/media/upload.json";
+const QString RestClient::ACCOUNT_VERIFY_CREDENTIALS_URL  = "https://api.twitter.com/1.1/account/verify_credentials.json";
+const QString RestClient::ACCOUNT_UPDATE_PROFILE_URL      = "https://api.twitter.com/1.1/account/update_profile.json";
+const QString RestClient::STATUSES_UPDATE_URL             = "https://api.twitter.com/1.1/statuses/update.json";
+const QString RestClient::MEDIA_UPLOAD_URL                = "https://upload.twitter.com/1.1/media/upload.json";
+const QString RestClient::ACCOUT_UPDATE_PROFILE_IMAGE_URL = "https://api.twitter.com/1.1/account/update_profile_image.json";
 
 RestClient::RestClient(QObject *parent) :
     QObject(parent)
@@ -234,13 +235,13 @@ void RestClient::updateProfile(const QString &name, const QString &url, const QS
     }
 }
 
-QString RestClient::mediaUpload(const QString &media_file_name)
+QString RestClient::mediaUpload(const QString &mediaFileName)
 {
     QVariantMap dataParams;
-    QFile media_file(media_file_name);
-    if(media_file.open(QFile::ReadOnly)) {
-        dataParams["media"] = media_file.readAll().toBase64();
-        media_file.close();
+    QFile mediaFile(mediaFileName);
+    if(mediaFile.open(QFile::ReadOnly)) {
+        dataParams["media"] = mediaFile.readAll().toBase64();
+        mediaFile.close();
         try {
             return QJsonDocument::fromJson(requestTwitterApi(QNetworkAccessManager::PostOperation,
                                                              MEDIA_UPLOAD_URL,
@@ -249,6 +250,32 @@ QString RestClient::mediaUpload(const QString &media_file_name)
             throw;
         }
     } else {
-        throw std::runtime_error(media_file.errorString().toStdString());
+        throw std::runtime_error(mediaFile.errorString().toStdString());
+    }
+}
+
+QString RestClient::mediaUpload(const QByteArray &mediaData)
+{
+    QVariantMap dataParams;
+    dataParams["media"] = mediaData.toBase64();
+    try {
+        return QJsonDocument::fromJson(requestTwitterApi(QNetworkAccessManager::PostOperation,
+                                                         MEDIA_UPLOAD_URL,
+                                                         dataParams)).object().value("media_id_string").toString();
+    } catch(...) {
+        throw;
+    }
+}
+
+void RestClient::updateProfileImage(const QByteArray &mediaData)
+{
+    QVariantMap dataParams;
+    dataParams["image"] = mediaData.toBase64();
+    try {
+        requestTwitterApi(QNetworkAccessManager::PostOperation,
+                          ACCOUT_UPDATE_PROFILE_IMAGE_URL,
+                          dataParams);
+    } catch(...) {
+        throw;
     }
 }
