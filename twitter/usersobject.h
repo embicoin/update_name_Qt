@@ -2,6 +2,7 @@
 #define USERSOBJECT_H
 
 #include <QJsonObject>
+#include <QUrl>
 
 class UsersObject
 {
@@ -10,9 +11,11 @@ public:
 
     QString name() const;
     QString screen_name() const;
-    QString url() const;
+    QUrl url() const;
     QString location() const;
     QString description() const;
+    QUrl profileImageUrl() const;
+    QUrl profileImageUrlHttps() const;
 
 private:
     QJsonObject m_object;
