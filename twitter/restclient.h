@@ -18,15 +18,15 @@ public:
     void statusUpdate(const QString &text,
                       const QString &in_reply_to_status_id = NULL,
                       const QStringList &media_ids = QStringList());
-    void updateName(const QString &name);
-    void updateUrl(const QString &url);
-    void updateLocation(const QString &location);
-    void updateDescroption(const QString &description);
-    void updateProfile(const QString &name = NULL,
+    UsersObject updateName(const QString &name);
+    UsersObject updateUrl(const QString &url);
+    UsersObject updateLocation(const QString &location);
+    UsersObject updateDescroption(const QString &description);
+    UsersObject updateProfile(const QString &name = NULL,
                         const QString &url = NULL,
                         const QString &location = NULL,
                         const QString &description = NULL);
-    void updateProfileImage(const QByteArray &mediaData);
+    UsersObject updateProfileImage(const QByteArray &mediaData);
     QString mediaUpload(const QString &mediaFileName);
     QString mediaUpload(const QByteArray &mediaData);
 

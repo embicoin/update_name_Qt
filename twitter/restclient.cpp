@@ -174,43 +174,43 @@ void RestClient::statusUpdate(const QString &text, const QString &in_reply_to_st
     }
 }
 
-void RestClient::updateName(const QString &name)
+UsersObject RestClient::updateName(const QString &name)
 {
     try {
-        updateProfile(name);
+        return updateProfile(name);
     } catch(...) {
         throw;
     }
 }
 
-void RestClient::updateUrl(const QString &url)
+UsersObject RestClient::updateUrl(const QString &url)
 {
     try {
-        updateProfile(NULL, url);
+        return updateProfile(NULL, url);
     } catch(...) {
         throw;
     }
 }
 
-void RestClient::updateLocation(const QString &location)
+UsersObject RestClient::updateLocation(const QString &location)
 {
     try {
-        updateProfile(NULL, NULL, location);
+        return updateProfile(NULL, NULL, location);
     } catch(...) {
         throw;
     }
 }
 
-void RestClient::updateDescroption(const QString &description)
+UsersObject RestClient::updateDescroption(const QString &description)
 {
     try {
-        updateProfile(NULL, NULL, NULL, description);
+        return updateProfile(NULL, NULL, NULL, description);
     } catch(...) {
         throw;
     }
 }
 
-void RestClient::updateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
+UsersObject RestClient::updateProfile(const QString &name, const QString &url, const QString &location, const QString &description)
 {
     QVariantMap dataParams;
     if(!name.isEmpty()) {
@@ -226,10 +226,10 @@ void RestClient::updateProfile(const QString &name, const QString &url, const QS
         dataParams["description"] = description;
     }
     if(dataParams.isEmpty()) {
-        return;
+        return UsersObject(NULL);
     }
     try {
-        requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, dataParams);
+        return UsersObject(requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, dataParams));
     } catch(...) {
         throw;
     }
@@ -267,14 +267,14 @@ QString RestClient::mediaUpload(const QByteArray &mediaData)
     }
 }
 
-void RestClient::updateProfileImage(const QByteArray &mediaData)
+UsersObject RestClient::updateProfileImage(const QByteArray &mediaData)
 {
     QVariantMap dataParams;
     dataParams["image"] = mediaData.toBase64();
     try {
-        requestTwitterApi(QNetworkAccessManager::PostOperation,
-                          ACCOUT_UPDATE_PROFILE_IMAGE_URL,
-                          dataParams);
+        return UsersObject(requestTwitterApi(QNetworkAccessManager::PostOperation,
+                                             ACCOUT_UPDATE_PROFILE_IMAGE_URL,
+                                             dataParams));
     } catch(...) {
         throw;
     }
