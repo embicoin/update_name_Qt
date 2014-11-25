@@ -1,17 +1,14 @@
 #include "usersobject.h"
 
 #include <QJsonDocument>
-#include <QDebug>
 
 UsersObject::UsersObject(const QByteArray &json)
 {
-    qDebug() << json;
     m_object = QJsonDocument::fromJson(json).object();
 }
 
 QString UsersObject::name() const
 {
-    qDebug() << m_object.value("name").toString();
     return m_object.value("name").toString();
 }
 

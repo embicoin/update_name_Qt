@@ -106,8 +106,6 @@ void MainWindow::onUserStreamRecievedData(const QByteArray &data)
     UpdateProfile *updateProfile = new UpdateProfile;
     QThread *updateProfileThread = new QThread;
 
-    connect(updateProfile, SIGNAL(stateChanged(Update::State,UpdateProfile::ProfileType)),
-            this, SLOT(writeUpdateProfileLog(Update::State,UpdateProfile::ProfileType)));
     connect(updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(quit()));
     connect(updateProfileThread, SIGNAL(finished()), updateProfile, SLOT(deleteLater()));
     connect(updateProfileThread, SIGNAL(finished()), updateProfileThread, SLOT(deleteLater()));
