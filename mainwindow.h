@@ -6,7 +6,7 @@
 #include "twitter/userstream.h"
 #include "updateprofile.h"
 #include "updatenamesender.h"
-#include "Twitter/restclient.h"
+#include "twitter/restclient.h"
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
