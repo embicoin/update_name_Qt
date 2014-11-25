@@ -13,12 +13,17 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
     setFixedSize(size());
 
+    ui->tab->setCurrentIndex(0);
+
     ui->selectMessageBox->addItems(QStringList()
                                    << tr("開始/終了")
                                    << tr("update_name")
                                    << tr("update_url")
                                    << tr("update_location")
-                                   << tr("update_description"));
+                                   << tr("update_description")
+                                   << tr("update_image"));
+    ui->selectMessageBox->setCurrentIndex(0);
+    ui->messageStack->setCurrentIndex(0);
 
     ui->settingsFilePathLine->setText(m_settings.filePath());
     
@@ -114,6 +119,7 @@ void PreferencesDialog::loadSettings()
     ui->enabledUpdateUrlCheck->setChecked(m_settings.isEnabledUpdateUrl());
     ui->enabledUpdateLocationCheck->setChecked(m_settings.isEnabledUpdateLocation());
     ui->enabledUpdateDescriptionCheck->setChecked(m_settings.isEnabledUpdateDescription());
+    ui->enabledUpdateImageCheck->setChecked(m_settings.isEnabledUpdateImage());
 
     /* メッセージ */
     //開始/終了
@@ -145,6 +151,12 @@ void PreferencesDialog::loadSettings()
     ui->updateDescriptionSuccessedMessageText->setPlainText(m_settings.updateDescriptionSuccessedMessage());
     ui->postUpdateDescriptionFailedMessageCheck->setChecked(m_settings.isPostUpdateDescriptionFailedMessage());
     ui->updateDescriptionFailedMessageText->setPlainText(m_settings.updateDescriptionFailedMessage());
+
+    //update_image
+    ui->postUpdateImageSuccessedMessageCheck->setChecked(m_settings.isPostUpdateImageSuccessedMessage());
+    ui->updateImageSuccessedMessageText->setPlainText(m_settings.updateImageSuccessedMessage());
+    ui->postUpdateImageFailedMessageCheck->setChecked(m_settings.isPostUpdateImageFailedMessage());
+    ui->updateImageFailedMessageText->setPlainText(m_settings.updateImageFailedMessage());
 }
 
 void PreferencesDialog::saveSettings()
@@ -158,6 +170,7 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateUrlEnabled(ui->enabledUpdateUrlCheck->isChecked());
     m_settings.setUpdateLocationEnabled(ui->enabledUpdateLocationCheck->isChecked());
     m_settings.setUpdateDescriptionEnabled(ui->enabledUpdateDescriptionCheck->isChecked());
+    m_settings.setUpdateImageEnabled(ui->enabledUpdateImageCheck->isChecked());
     
     /* メッセージ */
     //開始/終了
@@ -189,4 +202,10 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateDescriptionSuccessedMessage(ui->updateDescriptionSuccessedMessageText->toPlainText());
     m_settings.setIsPostUpdateDescriptionFailedMessage(ui->postUpdateDescriptionFailedMessageCheck->isChecked());
     m_settings.setUpdateDescriptionFailedMessage(ui->updateDescriptionFailedMessageText->toPlainText());
+
+    //update_image
+    m_settings.setIsPostUpdateImageSuccessedMessage(ui->postUpdateImageSuccessedMessageCheck->isChecked());
+    m_settings.setUpdateImageSuccessedMessage(ui->updateImageSuccessedMessageText->toPlainText());
+    m_settings.setIsPostUpdateImageFailedMessage(ui->postUpdateImageFailedMessageCheck->isChecked());
+    m_settings.setUpdateImageFailedMessage(ui->updateImageFailedMessageText->toPlainText());
 }
