@@ -17,9 +17,9 @@ QString UsersObject::screen_name() const
     return m_object.value("screen_name").toString();
 }
 
-QString UsersObject::url() const
+QUrl UsersObject::url() const
 {
-    return m_object.value("url").toString();
+    return QUrl(m_object.value("url").toString());
 }
 
 QString UsersObject::location() const
@@ -30,4 +30,14 @@ QString UsersObject::location() const
 QString UsersObject::description() const
 {
     return m_object.value("description").toString();
+}
+
+QUrl UsersObject::profileImageUrl() const
+{
+    return QUrl(m_object.value("profile_image_url").toString());
+}
+
+QUrl UsersObject::profileImageUrlHttps() const
+{
+    return QUrl(m_object.value("profile_image_url_https").toString());
 }

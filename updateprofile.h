@@ -2,11 +2,12 @@
 #define UPDATEPROFILE_H
 
 #include "twitter/restclient.h"
-#include "settings.h"
 #include "update/name.h"
 #include "update/url.h"
 #include "update/location.h"
 #include "update/description.h"
+#include "update/image.h"
+#include "settings.h"
 
 #include <QObject>
 
@@ -20,7 +21,16 @@ public:
         Name,
         Url,
         Location,
-        Description
+        Description,
+        Image
+    };
+
+    enum State {
+        Aborted,
+        UpdateSuccessed,
+        UpdateFailed,
+        RecieveResultSuccessed,
+        RecieveResultFailed,
     };
 
     QString executedUserScreenName();
@@ -29,11 +39,16 @@ public:
 
     QString updateNameErrorString();
 
-signals:
-    void stateChanged(const Update::State &state, const UpdateProfile::ProfileType &type);
+    static QString profileTypeString(const UpdateProfile::ProfileType&);
 
-    void updateNameStateChanged(const Update::State &state);
-    void nameUpdated(const QString &newName);
+signals:
+    void executed(const ProfileType, const UsersObject &excutedUser);
+    void aborted(const ProfileType);
+    void updated(const ProfileType, const QString &updatedProfileValue);
+    void resultRecieved(const ProfileType);
+    void error(const UpdateProfile::ProfileType, const Update::State, const QString &errorMessage);
+    void updateNameStateChanged(const Update::State);
+    void finished();
 
     /*
     void urlUpdated(const QString &newUrl);
@@ -44,21 +59,28 @@ signals:
 public slots:
     void postStartupMessage();
     void postClosedMessage();
-    void exec(const QByteArray &twitter_status_object_json_data);
+    bool exec(const QByteArray &twitter_status_object_json_data);
     
 private:
     RestClient m_twitter;
     Settings m_settings;
 
-    UpdateName m_updatename;
-    UpdateUrl m_updateurl;
-    UpdateLocation m_updatelocation;
-    UpdateDescription m_udpatedescription;
+    UpdateName m_updateName;
+    UpdateUrl m_updateUrl;
+    UpdateLocation m_updateLocation;
+    UpdateDescription m_updateDescription;
+    UpdateImage m_updateImage;
 
     QString m_profilevalue;
     QString m_myscreenname;
     QString m_errormessage;
     QString m_executeduser;
+
+    QStringList updateCommands = QStringList() << tr("name")
+                                               << tr("url")
+                                               << tr("location")
+                                               << tr("description")
+                                               << tr("image");
 };
 
 #endif // UPDATEPROFILE_H

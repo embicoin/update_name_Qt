@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>487</width>
-    <height>592</height>
+    <width>550</width>
+    <height>642</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,11 +24,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="debugTab">
+    <widget class="QTabWidget" name="tab">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_1">
       <attribute name="title">
        <string>動作</string>
       </attribute>
@@ -102,8 +102,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>445</width>
-            <height>496</height>
+            <width>478</width>
+            <height>527</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -179,6 +179,22 @@
             </widget>
            </item>
            <item>
+            <widget class="QGroupBox" name="groupBox_16">
+             <property name="title">
+              <string>image</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_35">
+              <item>
+               <widget class="QCheckBox" name="enabledUpdateImageCheck">
+                <property name="text">
+                 <string>update_imageを有効にする</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <spacer name="verticalSpacer_4">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -223,7 +239,7 @@
        <item>
         <widget class="QStackedWidget" name="messageStack">
          <property name="currentIndex">
-          <number>3</number>
+          <number>5</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -606,6 +622,83 @@
                <widget class="QPlainTextEdit" name="updateDescriptionFailedMessageText"/>
               </item>
              </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_6">
+          <layout class="QVBoxLayout" name="verticalLayout_23">
+           <item>
+            <widget class="QGroupBox" name="groupBox_14">
+             <property name="title">
+              <string>update_image成功時のメッセージ</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_24">
+              <item>
+               <widget class="QLabel" name="label_26">
+                <property name="text">
+                 <string>update_imageが成功したときにツイートします。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="postUpdateImageSuccessedMessageCheck">
+                <property name="text">
+                 <string>update_image成功時のメッセージを有効にする</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string>%uはupdate_imageを実行したユーザーのscreen_name、
+%iは新しいImageのURLに置き換えられます。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPlainTextEdit" name="updateImageSuccessedMessageText"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_15">
+             <property name="title">
+              <string>update_image失敗時のメッセージ</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_26">
+              <item>
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>update_imageが失敗した時にツイートします。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="postUpdateImageFailedMessageCheck">
+                <property name="text">
+                 <string>update_image失敗時のメッセージを有効にする</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_29">
+                <property name="text">
+                 <string>%uはupdate_imageを実行したユーザーのscreen_name、
+%eはエラーメッセージに置き換えられます。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPlainTextEdit" name="updateImageFailedMessageText"/>
+              </item>
+             </layout>
+             <zorder>groupBox_14</zorder>
+             <zorder>label_28</zorder>
+             <zorder>postUpdateImageFailedMessageCheck</zorder>
+             <zorder>label_29</zorder>
+             <zorder>updateImageFailedMessageText</zorder>
             </widget>
            </item>
           </layout>

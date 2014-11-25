@@ -25,3 +25,10 @@ UsersObject TweetObject::user() const
     doc.setObject(m_object.value("user").toObject());
     return UsersObject(doc.toJson());
 }
+
+EntitiesObject TweetObject::entities() const
+{
+    QJsonDocument doc;
+    doc.setObject(m_object.value("entities").toObject());
+    return EntitiesObject(doc.toJson());
+}

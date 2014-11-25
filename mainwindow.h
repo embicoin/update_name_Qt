@@ -6,6 +6,7 @@
 #include "twitter/userstream.h"
 #include "updateprofile.h"
 #include "updatenamesender.h"
+#include "twitter/restclient.h"
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
@@ -25,10 +26,10 @@ public:
     ~MainWindow();
 
 private slots:
+    void onUserStreamRecievedData(const QByteArray &data);
     void writeLog(const QString &log);
     void writeWelcomeLog();
     void writeUserStreamLog(UserStream::State state);
-    void writeUpdateProfileLog(Update::State state, UpdateProfile::ProfileType type);
     void saveLog();
     void startUpdateName();
     void stopUpdateName();
@@ -45,9 +46,8 @@ private:
     Settings          m_settings;
     PreferencesDialog m_preferencesDialog;
     UserStream        m_userStream;
-    UpdateProfile     m_updateProfile;
-    QThread           *m_updateNameThread = new QThread;
     UpdateNameSender  m_updateNameSender;
+    RestClient        m_twitter;
 };
 
 #endif // MAINWINDOW_H
