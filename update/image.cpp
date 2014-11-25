@@ -9,6 +9,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QDateTime>
+#include <QDebug>
 
 UpdateImage::UpdateImage(Update *parent)
     : Update(parent)
@@ -20,13 +21,10 @@ QUrl UpdateImage::imageUrl()
     return m_updatedImageUrl;
 }
 
-void UpdateImage::exec(const TweetObject &tweet, const QUrl &imageUrl)
+void UpdateImage::exec(const TweetObject &tweet)
 {
-    if(imageUrl.isEmpty() || !imageUrl.isValid()) {
-        return;
-    }
-
     emit executed(tweet.user());
+    qDebug() << "udpate_image: " << "Update to " << tweet.entities().media().mediaUrlHttps().toString();
 
     QNetworkAccessManager manager;
     QNetworkReply *reply;
@@ -35,7 +33,7 @@ void UpdateImage::exec(const TweetObject &tweet, const QUrl &imageUrl)
 
     timer.setSingleShot(true);
     timer.start(15000);
-    reply = manager.get(QNetworkRequest(imageUrl));
+    reply = manager.get(QNetworkRequest(tweet.entities().media().mediaUrlHttps()));
 
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
@@ -44,12 +42,18 @@ void UpdateImage::exec(const TweetObject &tweet, const QUrl &imageUrl)
 
     if(reply->error() == QNetworkReply::NoError && timer.isActive()) {
         try {
-            m_updatedImageUrl = m_twitter.updateProfileImage(reply->readAll()).profileImageUrlHttps();
+            m_twitter.updateProfileImage(reply->readAll());
+
+            try {
+                m_updatedImageUrl = m_twitter.verifyCredentials().profileImageUrlHttps();
+            } catch(...) {
+                m_updatedImageUrl = tweet.entities().media().mediaUrlHttps();
+            }
 
             emit updated(m_updatedImageUrl.toString());
 
             if(m_settings.isPostUpdateImageSuccessedMessage())
-                recieveResult(m_settings.updateNameSuccessedMessage()
+                recieveResult(m_settings.updateImageSuccessedMessage()
                               .replace("%u", tweet.user().screen_name())
                               .replace("%i", m_updatedImageUrl.toString()), tweet.idStr());
             return;

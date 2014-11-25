@@ -12,7 +12,7 @@ public:
     QUrl imageUrl();
 
 public slots:
-    void exec(const TweetObject &tweet, const QUrl &imageUrl);
+    void exec(const TweetObject &tweet);
 
 private:
     QUrl m_updatedImageUrl;
