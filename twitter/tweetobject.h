@@ -2,6 +2,7 @@
 #define TWEETOBJECT_H
 
 #include "usersobject.h"
+#include "entitiesobject.h"
 
 #include <QByteArray>
 #include <QJsonObject>
@@ -14,6 +15,7 @@ public:
     QString idStr() const;
     QString text() const;
     UsersObject user() const;
+    EntitiesObject entities() const;
 
 private:
     QJsonObject m_object;
