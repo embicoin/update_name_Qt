@@ -4,6 +4,7 @@
 
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -30,9 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_systemTray->setContextMenu(m_systemTrayMenu);
     m_systemTray->show();
 
-    //updateコマンドの処理を別スレッドに移動
-    m_updateProfile.moveToThread(m_updateNameThread);
-
     //ウェルカムメッセージの表示
     QMetaObject::invokeMethod(this, "writeWelcomeLog", Qt::QueuedConnection);
     ui->statusBar->showMessage(tr("update_name_Qtへようこそ"));
@@ -57,8 +55,9 @@ MainWindow::MainWindow(QWidget *parent) :
         setFocus();
     });
     connect(m_systemTray, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason reason) {
-        if(reason == QSystemTrayIcon::DoubleClick)
+        if(reason == QSystemTrayIcon::DoubleClick) {
             m_systemTrayActionShowWindow->trigger();
+        }
     });
     connect(ui->updateNameSwitchButton, &QPushButton::clicked, [&]() {
         static bool started = m_settings.isAutoStartUpdateName();
@@ -77,15 +76,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSwitchUpdateName, SIGNAL(triggered()), ui->updateNameSwitchButton, SIGNAL(clicked()));
 
     qRegisterMetaType<UserStream::State>("UserStream::State");
-    connect(&m_userStream, SIGNAL(stateChanged(UserStream::State)), this, SLOT(writeUserStreamLog(UserStream::State)));
-    connect(&m_userStream, SIGNAL(receivedData(QByteArray)), &m_updateProfile, SLOT(exec(QByteArray)));
     qRegisterMetaType<Update::State>("Update::State");
     qRegisterMetaType<UpdateProfile::ProfileType>("UpdateProfile::ProfileType");
-    connect(&m_updateProfile, SIGNAL(stateChanged(Update::State,UpdateProfile::ProfileType)),
-            this, SLOT(writeUpdateProfileLog(Update::State,UpdateProfile::ProfileType)));
+    connect(&m_userStream, SIGNAL(stateChanged(UserStream::State)), this, SLOT(writeUserStreamLog(UserStream::State)));
+    connect(&m_userStream, SIGNAL(receivedData(QByteArray)), this, SLOT(onUserStreamRecievedData(QByteArray)));
 
-    if(m_settings.isAutoStartUpdateName())
+
+
+    if(m_settings.isAutoStartUpdateName()) {
         startUpdateName();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -95,11 +95,63 @@ MainWindow::~MainWindow()
     m_systemTrayMenu->deleteLater();
     m_systemTrayActionQuit->deleteLater();
     m_systemTrayActionShowWindow->deleteLater();
-    m_updateNameThread->deleteLater();
     delete ui;
     if(m_userStream.isRunning()) {
         m_userStream.wait();
     }
+}
+
+void MainWindow::onUserStreamRecievedData(const QByteArray &data)
+{
+    UpdateProfile *updateProfile = new UpdateProfile;
+    QThread *updateProfileThread = new QThread;
+
+    connect(updateProfile, SIGNAL(stateChanged(Update::State,UpdateProfile::ProfileType)),
+            this, SLOT(writeUpdateProfileLog(Update::State,UpdateProfile::ProfileType)));
+    connect(updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(quit()));
+    connect(updateProfileThread, SIGNAL(finished()), updateProfile, SLOT(deleteLater()));
+    connect(updateProfileThread, SIGNAL(finished()), updateProfileThread, SLOT(deleteLater()));
+
+    connect(updateProfile, &UpdateProfile::executed,
+            [&](const UpdateProfile::ProfileType &type, const UsersObject &executedUser) {
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("\"@%1\"によってupdate_%2が実行されました。")
+                                        .arg(executedUser.screen_name(), UpdateProfile::profileTypeString(type))));
+        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("update_%1が実行されました。").arg(UpdateProfile::profileTypeString(type))),
+                                  Q_ARG(QString, tr("\"@%1\"によってupdate_%2が実行されました。")
+                                        .arg(executedUser.screen_name(), UpdateProfile::profileTypeString(type))));
+    });
+    connect(updateProfile, &UpdateProfile::updated,
+            [&](const UpdateProfile::ProfileType &type, const QString &updatedProfileValue) {
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("%1が\"%2\"に変更されました。")
+                                        .arg(UpdateProfile::profileTypeString(type), updatedProfileValue)));
+        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("%1が変更されました。").arg(UpdateProfile::profileTypeString(type))),
+                                  Q_ARG(QString, tr("%1が\"%2\"に変更されました。")
+                                        .arg(UpdateProfile::profileTypeString(type), updatedProfileValue)));
+    });
+    connect(updateProfile, &UpdateProfile::resultRecieved, [&]() {
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, tr("結果をツイートしました。")));
+    });
+    connect(updateProfile, &UpdateProfile::error,
+            [&](const UpdateProfile::ProfileType &type, const Update::State &state, const QString &errorMessage) {
+        QString log;
+        switch(state) {
+        case Update::UpdateProfile:
+            log = tr("%1の変更に失敗しました。: %2").arg(UpdateProfile::profileTypeString(type), errorMessage);
+            break;
+        case Update::ResultRecieve:
+            log = tr("結果のツイートに失敗しました。: %1").arg(errorMessage);
+            break;
+        }
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, log));
+    });
+
+    updateProfile->moveToThread(updateProfileThread);
+    updateProfileThread->start();
+    updateProfile->exec(data);
 }
 
 void MainWindow::writeLog(const QString &log)
@@ -110,7 +162,7 @@ void MainWindow::writeLog(const QString &log)
 void MainWindow::writeWelcomeLog()
 {
     writeLog(tr("update_name_Qtへようこそ。\n"
-                                       "ボタンをクリックするだけでupdate_nameが誰にでも簡単に使えます。\n"));
+                "ボタンをクリックするだけでupdate_nameが誰にでも簡単に使えます。\n"));
 }
 
 void MainWindow::writeUserStreamLog(UserStream::State state)
@@ -134,54 +186,6 @@ void MainWindow::writeUserStreamLog(UserStream::State state)
     }
 }
 
-void MainWindow::writeUpdateProfileLog(Update::State state, UpdateProfile::ProfileType type)
-{
-    QString profileTypeString;
-    const QString updatedProfile = m_updateProfile.profileValue();
-    const QString errorString = m_updateProfile.errorString();
-    switch (type) {
-        case UpdateProfile::Name:
-            profileTypeString = tr("name");
-            break;
-        case UpdateProfile::Url:
-            profileTypeString = tr("url");
-            break;
-        case UpdateProfile::Location:
-            profileTypeString = tr("location");
-            break;
-        case UpdateProfile::Description:
-            profileTypeString = tr("description");
-            break;
-    }
-
-    switch (state) {
-    case Update::Aborted:
-        writeLog(tr("udpate_%1が拒否されました。").arg(profileTypeString));
-        break;
-    case Update::Executed:
-        writeLog(tr("\"@%1\"によってupdate_%2が実行されました。").arg(m_updateProfile.executedUserScreenName(), profileTypeString));
-        m_systemTray->showMessage(tr("update_%1が実行されました。").arg(profileTypeString),
-                                 tr("update_%1によってupdate_%2が実行されました。").arg(m_updateProfile.executedUserScreenName(), profileTypeString));
-        break;
-    case Update::UpdateSuccessed:
-        writeLog(tr("%1が\"%2\"に変更されました。").arg(profileTypeString, updatedProfile));
-        m_systemTray->showMessage(tr("%1が変更されました").arg(profileTypeString),
-                                 tr("%1が\"%2\"に変更されました。").arg(profileTypeString, updatedProfile));
-        break;
-    case Update::UpdateFailed:
-        writeLog(tr("%1の変更に失敗しました。: %2").arg(profileTypeString, errorString));
-        m_systemTray->showMessage(tr("%1の変更に失敗しました").arg(profileTypeString),
-                                 errorString, QSystemTrayIcon::Warning);
-        break;
-    case Update::RecieveResultSuccessed:
-        writeLog(tr("結果をツイートしました。"));
-        break;
-    case Update::RecieveResultFailed:
-        writeLog(tr("結果のツイートに失敗しました。: %1").arg(errorString));
-        break;
-    }
-}
-
 void MainWindow::startUpdateName()
 {
     if(m_userStream.isRunning()) {
@@ -189,10 +193,9 @@ void MainWindow::startUpdateName()
     }
 
     m_userStream.start();
-    m_updateNameThread->start();
     if(m_settings.isPostStartupMessage()) {
         try {
-            m_updateProfile.postStartupMessage();
+            m_twitter.statusUpdate(m_settings.startupMessage());
             writeLog(tr("スタートアップメッセージをツイートしました。"));
         } catch(const std::runtime_error &e) {
             writeLog(tr("スタートアップメッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
@@ -211,10 +214,9 @@ void MainWindow::stopUpdateName()
     }
 
     m_userStream.stop();
-    m_updateNameThread->quit();
     if(m_settings.isPostClosedMessage()) {
         try {
-            m_updateProfile.postClosedMessage();
+            m_twitter.statusUpdate(m_settings.closedMessage());
             writeLog(tr("終了メッセージをツイートしました。"));
         } catch(const std::runtime_error &e) {
             writeLog(tr("終了メッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));

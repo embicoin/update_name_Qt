@@ -32,7 +32,7 @@ SOURCES += main.cpp\
     update/url.cpp \
     update/location.cpp \
     update/description.cpp \
-#    update/image.cpp
+    update/image.cpp
 
 HEADERS  += mainwindow.h \
     authdialog.h \
@@ -50,7 +50,7 @@ HEADERS  += mainwindow.h \
     update/url.h \
     update/location.h \
     update/description.h \
-#    update/image.h
+    update/image.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \

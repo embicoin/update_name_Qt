@@ -16,50 +16,29 @@ void UpdateName::exec(const TweetObject &tweet, const QString &newName)
         return;
     }
 
-    const QString status_id = tweet.idStr();
-    const QString user_screen_name = tweet.user().screen_name();
-
-    emit stateChanged(Executed);
-
-    /*nameは20文字まで*/
-    if(newName.length() > 20) {
-        emit stateChanged(Aborted);
-        recieveResult(tr(".@%1 nameは20文字までです").arg(user_screen_name));
-        return;
-    }
+    emit executed(tweet.user());
 
     /*nameの更新*/
     try {
-        m_twitter.updateName(newName);
+        m_updatedName = m_twitter.updateName(newName).name();
+        emit updated(m_updatedName);
     } catch(const std::runtime_error &e) {
         /*更新失敗時の処理*/
         m_errorMessage = QString::fromStdString(e.what());
-        emit error(m_errorMessage);
-        emit stateChanged(UpdateFailed);
+        emit error(UpdateProfile, m_errorMessage);
 
         /*結果のツイート*/
-        if(m_settings.isPostUpdateNameFailedMessage()) {
+        if(m_settings.isPostUpdateNameFailedMessage())
             recieveResult(m_settings.updateNameFailedMessage()
-                          .replace("%u", user_screen_name)
+                          .replace("%u", tweet.user().screen_name())
                           .replace("%n", newName)
-                          .replace("%e", m_errorMessage), status_id);
-        }
+                          .replace("%e", m_errorMessage), tweet.idStr());
         return;
     }
 
-    /*更新後のnameの取得*/
-    try {
-        m_updatedName = m_twitter.verifyCredentials().name();
-    } catch(...) {
-        m_updatedName = newName;
-    }
-
-    emit stateChanged(UpdateSuccessed);
-    emit updated(m_updatedName);
-
     if(m_settings.isPostUpdateNameSuccessedMessage()) {
         recieveResult(m_settings.updateNameSuccessedMessage()
-                      .replace("%u", user_screen_name)
-                      .replace("%n", m_updatedName), status_id);
+                      .replace("%u", tweet.user().screen_name())
+                      .replace("%n", m_updatedName), tweet.idStr());
     }
 }

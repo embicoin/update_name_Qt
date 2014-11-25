@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonValue>
 #include <QJsonObject>
+#include <QThread>
 
 UpdateProfile::UpdateProfile(QObject *parent) :
     QObject(parent)
@@ -18,41 +19,79 @@ UpdateProfile::UpdateProfile(QObject *parent) :
 
     qRegisterMetaType<Update::State>("Update::State");
     //update_name
-    connect(&m_updatename, &UpdateName::stateChanged, [&](Update::State state) {
-        emit stateChanged(state, Name);
+    connect(&m_updateName, &UpdateName::executed, [&](const UsersObject &user) {
+        emit executed(Name, user);
     });
-    connect(&m_updatename, &UpdateName::error, [&](const QString &error_string) {
-        m_errormessage = error_string;
+    connect(&m_updateName, &UpdateName::updated, [&](const QString &updatedName) {
+        emit updated(Name, updatedName);
+    });
+    connect(&m_updateName, &UpdateName::resultRecieved, [&]() {
+        emit resultRecieved(Name);
+    });
+    connect(&m_updateName, &UpdateName::error, [&](const Update::State &state, const QString &errorMessage) {
+        emit error(Name, state, errorMessage);
     });
 
     //update_url
-    connect(&m_updateurl, &UpdateUrl::stateChanged, [&](Update::State state) {
-        emit stateChanged(state, Url);
+    connect(&m_updateUrl, &UpdateUrl::executed, [&](const UsersObject &user) {
+        emit executed(Url, user);
     });
-    connect(&m_updateurl, &UpdateUrl::error, [&](const QString &error_string) {
-        m_errormessage = error_string;
+    connect(&m_updateUrl, &UpdateUrl::updated, [&](const QString &updatedUrl) {
+        emit updated(Url, updatedUrl);
+    });
+    connect(&m_updateUrl, &UpdateUrl::resultRecieved, [&]() {
+        emit resultRecieved(Url);
+    });
+    connect(&m_updateUrl, &UpdateUrl::error, [&](const Update::State &state, const QString &errorMessage) {
+        emit error(Url, state, errorMessage);
     });
 
     //update_location
-    connect(&m_updatelocation, &UpdateLocation::stateChanged, [&](Update::State state) {
-        emit stateChanged(state, Location);
+    connect(&m_updateLocation, &UpdateLocation::executed, [&](const UsersObject &user) {
+        emit executed(Location, user);
     });
-    connect(&m_updatelocation, &UpdateLocation::error, [&](const QString &error_string) {
-        m_errormessage = error_string;
+    connect(&m_updateLocation, &UpdateLocation::updated, [&](const QString &updatedLocation) {
+        emit updated(Location, updatedLocation);
+    });
+    connect(&m_updateLocation, &UpdateLocation::resultRecieved, [&]() {
+        emit resultRecieved(Location);
+    });
+    connect(&m_updateLocation, &UpdateUrl::error, [&](const Update::State &state, const QString &errorMessage) {
+        emit error(Location, state, errorMessage);
     });
 
     //update_description
-    connect(&m_udpatedescription, &UpdateDescription::stateChanged, [&](Update::State state) {
-        emit stateChanged(state, Description);
+    connect(&m_updateDescription, &UpdateDescription::executed, [&](const UsersObject &user) {
+        emit executed(Description, user);
     });
-    connect(&m_udpatedescription, &UpdateDescription::error, [&](const QString &error_string) {
-        m_errormessage = error_string;
+    connect(&m_updateDescription, &UpdateDescription::updated, [&](const QString &updatedDescription) {
+        emit updated(Description, updatedDescription);
+    });
+    connect(&m_updateDescription, &UpdateDescription::resultRecieved, [&]() {
+        emit resultRecieved(Description);
+    });
+    connect(&m_updateDescription, &UpdateDescription::error, [&](const Update::State &state, const QString &errorMessage) {
+        emit error(Description, state, errorMessage);
+    });
+
+    //update_image
+    connect(&m_updateImage, &UpdateImage::executed, [&](const UsersObject &user) {
+        emit executed(Image, user);
+    });
+    connect(&m_updateImage, &UpdateImage::updated, [&](const QString &updatedImageUrl) {
+        emit updated(Image, updatedImageUrl);
+    });
+    connect(&m_updateImage, &UpdateImage::resultRecieved, [&]() {
+        emit resultRecieved(Image);
+    });
+    connect(&m_updateImage, &UpdateUrl::error, [&](const Update::State &state, const QString &errorMessage) {
+        emit error(Image, state, errorMessage);
     });
 }
 
 QString UpdateProfile::updateNameErrorString()
 {
-    return m_updatename.errorString();
+    return m_updateName.errorString();
 }
 
 QString UpdateProfile::executedUserScreenName()
@@ -68,6 +107,22 @@ QString UpdateProfile::profileValue()
 QString UpdateProfile::errorString()
 {
     return m_errormessage;
+}
+
+QString UpdateProfile::profileTypeString(const UpdateProfile::ProfileType &type)
+{
+    switch(type) {
+    case Name:
+        return tr("name");
+    case Url:
+        return tr("url");
+    case Location:
+        return tr("location");
+    case Description:
+        return tr("description");
+    case Image:
+        return tr("image");
+    }
 }
 
 void UpdateProfile::postStartupMessage()
@@ -88,7 +143,7 @@ void UpdateProfile::postClosedMessage()
     }
 }
 
-void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
+bool UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
 {
     const TweetObject tweet(twitter_status_object_json_data);
     const QString text = tweet.text();
@@ -98,35 +153,42 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
     const QRegExp update_url_reg_exp("^.*@" + m_myscreenname + "\\s+update_url\\s+.+");
     const QRegExp update_location_reg_exp("^.*@" + m_myscreenname + "\\s+update_location\\s+.+");
     const QRegExp update_description_reg_exp("^.*@" + m_myscreenname + "\\s+update_description\\s+.+");
+    bool executedUpdate = true;
 
-    if(text.isEmpty() || text.startsWith("RT")) {
-        return;
-    }
-
-    if(update_name_reg_exp1.exactMatch(text) && m_settings.isEnabledUpdateName()) {
-        m_executeduser = user_screen_name;
-        m_profilevalue = text;
-        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_name\\s+")));
-        m_updatename.exec(tweet, m_profilevalue);
-    } else if(update_name_reg_exp2.exactMatch(text) && m_settings.isEnabledUpdateName()) {
-        m_executeduser = user_screen_name;
-        m_profilevalue = text;
-        m_profilevalue.remove(QRegExp("\\s*\\(@" + m_myscreenname + "\\).*$"));
-        m_updatename.exec(tweet, m_profilevalue);
-    } else if(update_url_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateUrl()) {
-        m_executeduser = user_screen_name;
-        m_profilevalue = text;
-        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_url\\s+")));
-        m_updateurl.exec(tweet, m_profilevalue);
-    } else if(update_location_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateLocation()) {
-        m_executeduser = user_screen_name;
-        m_profilevalue = text;
-        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_location\\s+")));
-        m_updatelocation.exec(tweet, m_profilevalue);
-    } else if(update_description_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateDescription()) {
+    if(!text.isEmpty() && !text.startsWith("RT")) {
+        if(update_name_reg_exp1.exactMatch(text) && m_settings.isEnabledUpdateName()) {
+            m_executeduser = user_screen_name;
+            m_profilevalue = text;
+            m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_name\\s+")));
+            m_updateName.exec(tweet, m_profilevalue);
+        } else if(update_name_reg_exp2.exactMatch(text) && m_settings.isEnabledUpdateName()) {
+            m_executeduser = user_screen_name;
+            m_profilevalue = text;
+            m_profilevalue.remove(QRegExp("\\s*\\(@" + m_myscreenname + "\\).*$"));
+            m_updateName.exec(tweet, m_profilevalue);
+        } else if(update_url_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateUrl()) {
+            m_executeduser = user_screen_name;
+            m_profilevalue = text;
+            m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_url\\s+")));
+            m_updateUrl.exec(tweet, m_profilevalue);
+        } else if(update_location_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateLocation()) {
+            m_executeduser = user_screen_name;
+            m_profilevalue = text;
+            m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_location\\s+")));
+            m_updateLocation.exec(tweet, m_profilevalue);
+        } else if(update_description_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateDescription()) {
         m_executeduser = user_screen_name;
         m_profilevalue = text;
         m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_description\\s+")));
-        m_udpatedescription.exec(tweet, m_profilevalue);
+        m_updateDescription.exec(tweet, m_profilevalue);
+        } else {
+            executedUpdate = false;
+        }
+    } else {
+        executedUpdate = false;
     }
+
+    emit finished();
+
+    return executedUpdate;
 }

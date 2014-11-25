@@ -14,10 +14,9 @@ void Update::recieveResult(const QString &message, const QString &inReplyToStatu
 {
     try {
         m_twitter.statusUpdate(message, inReplyToStatusId);
-        emit stateChanged(RecieveResultSuccessed);
+        emit resultRecieved();
     } catch(std::runtime_error &e) {
         m_errorMessage = QString::fromStdString(e.what());
-        emit error(m_errorMessage);
-        emit stateChanged(RecieveResultFailed);
+        emit error(ResultRecieve, m_errorMessage);
     }
 }

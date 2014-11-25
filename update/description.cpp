@@ -16,14 +16,14 @@ void UpdateDescription::exec(const TweetObject &tweet, const QString &newDescrip
         return;
     }
 
-    emit stateChanged(Executed);
+    emit executed(tweet.user());
 
     try {
-        m_twitter.updateDescroption(newDescription);
+        m_updatedDescription = m_twitter.updateDescroption(newDescription).description();
+        emit updated(m_updatedDescription);
     } catch(const std::runtime_error &e) {
         m_errorMessage = QString::fromStdString(e.what());
-        emit error(m_errorMessage);
-        emit stateChanged(UpdateFailed);
+        emit error(ResultRecieve, m_errorMessage);
 
         if(m_settings.isPostUpdateDescriptionFailedMessage()) {
             recieveResult(m_settings.updateDescriptionFailedMessage()
@@ -33,15 +33,6 @@ void UpdateDescription::exec(const TweetObject &tweet, const QString &newDescrip
         }
         return;
     }
-
-    try {
-        m_updatedDescription = m_twitter.verifyCredentials().description();
-    } catch(...) {
-        m_updatedDescription = newDescription;
-    }
-
-    emit stateChanged(UpdateSuccessed);
-    emit updated(m_updatedDescription);
 
     if(m_settings.isPostUpdateDescriptionSuccessedMessage()) {
         recieveResult(m_settings.updateDescriptionSuccessedMessage()
