@@ -75,6 +75,12 @@ private:
     QString m_myscreenname;
     QString m_errormessage;
     QString m_executeduser;
+
+    QStringList updateCommands = QStringList() << tr("name")
+                                               << tr("url")
+                                               << tr("location")
+                                               << tr("description")
+                                               << tr("image");
 };
 
 #endif // UPDATEPROFILE_H

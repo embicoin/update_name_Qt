@@ -5,6 +5,7 @@
 #include <QJsonValue>
 #include <QJsonObject>
 #include <QThread>
+#include <QDebug>
 
 UpdateProfile::UpdateProfile(QObject *parent) :
     QObject(parent)
@@ -123,6 +124,7 @@ QString UpdateProfile::profileTypeString(const UpdateProfile::ProfileType &type)
     case Image:
         return tr("image");
     }
+    return NULL;
 }
 
 void UpdateProfile::postStartupMessage()
@@ -146,46 +148,51 @@ void UpdateProfile::postClosedMessage()
 bool UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
 {
     const TweetObject tweet(twitter_status_object_json_data);
-    const QString text = tweet.text();
-    const QString user_screen_name = tweet.user().screen_name();
-    const QRegExp update_name_reg_exp1("^.*@" + m_myscreenname + "\\s+update_name\\s+.*");
-    const QRegExp update_name_reg_exp2("^\\s*.+\\s*\\(@" + m_myscreenname + "\\).*$");
-    const QRegExp update_url_reg_exp("^.*@" + m_myscreenname + "\\s+update_url\\s+.+");
-    const QRegExp update_location_reg_exp("^.*@" + m_myscreenname + "\\s+update_location\\s+.+");
-    const QRegExp update_description_reg_exp("^.*@" + m_myscreenname + "\\s+update_description\\s+.+");
-    bool executedUpdate = true;
+    const QRegExp updateNameRegExp("^\\s*.+\\s*\\(@" + m_myscreenname + "\\).*$");
+    bool executedUpdate = false;
+    QString command;
 
-    if(!text.isEmpty() && !text.startsWith("RT")) {
-        if(update_name_reg_exp1.exactMatch(text) && m_settings.isEnabledUpdateName()) {
-            m_executeduser = user_screen_name;
-            m_profilevalue = text;
-            m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_name\\s+")));
-            m_updateName.exec(tweet, m_profilevalue);
-        } else if(update_name_reg_exp2.exactMatch(text) && m_settings.isEnabledUpdateName()) {
-            m_executeduser = user_screen_name;
-            m_profilevalue = text;
+    if(!tweet.text().isEmpty() && !tweet.text().startsWith("RT")) {
+        if(updateNameRegExp.exactMatch(tweet.text()) && m_settings.isEnabledUpdateName()) {
+            qDebug() << "update_name Executed";
+            m_executeduser = tweet.user().screen_name();
+            m_profilevalue = tweet.text();
             m_profilevalue.remove(QRegExp("\\s*\\(@" + m_myscreenname + "\\).*$"));
             m_updateName.exec(tweet, m_profilevalue);
-        } else if(update_url_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateUrl()) {
-            m_executeduser = user_screen_name;
-            m_profilevalue = text;
-            m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_url\\s+")));
-            m_updateUrl.exec(tweet, m_profilevalue);
-        } else if(update_location_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateLocation()) {
-            m_executeduser = user_screen_name;
-            m_profilevalue = text;
-            m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_location\\s+")));
-            m_updateLocation.exec(tweet, m_profilevalue);
-        } else if(update_description_reg_exp.exactMatch(text) && m_settings.isEnabledUpdateDescription()) {
-        m_executeduser = user_screen_name;
-        m_profilevalue = text;
-        m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + ("\\s+update_description\\s+")));
-        m_updateDescription.exec(tweet, m_profilevalue);
+            executedUpdate = true;
         } else {
-            executedUpdate = false;
+            foreach(command, updateCommands) {
+                const QRegExp updateRegExp("^.*@" + m_myscreenname + "\\s+update_" + command + "\\s+.*");
+                if(updateRegExp.exactMatch(tweet.text())) {
+                    m_executeduser = tweet.user().screen_name();
+                    m_profilevalue = tweet.text();
+                    m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + "\\s+update_" + command + "\\s+"));
+                    executedUpdate = true;
+                    break;
+                }
+            }
+            if(executedUpdate) {
+                if(command == "name" && m_settings.isEnabledUpdateName()) {
+                    qDebug() << "update_name Executed";
+                    m_updateName.exec(tweet, m_profilevalue);
+                } else if(command == "url" && m_settings.isEnabledUpdateUrl()) {
+                    qDebug() << "update_url Executed";
+                    m_updateUrl.exec(tweet, m_profilevalue);
+                } else if(command == "location" && m_settings.isEnabledUpdateLocation()) {
+                    qDebug() << "update_location Executed";
+                    m_updateLocation.exec(tweet, m_profilevalue);
+                } else if(command == "description" && m_settings.isEnabledUpdateDescription()) {
+                    qDebug() << "update_description Executed";
+                    m_updateDescription.exec(tweet, m_profilevalue);
+                } else if(command == "image" && m_settings.isEnabledUpdateImage()) {
+                    qDebug() << "update_image Executed";
+                    m_updateImage.exec(tweet);
+                } else {
+                    qWarning() << "Unknown Command: " << command;
+                    executedUpdate = false;
+                }
+            }
         }
-    } else {
-        executedUpdate = false;
     }
 
     emit finished();
