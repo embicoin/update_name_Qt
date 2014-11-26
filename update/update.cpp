@@ -29,7 +29,7 @@ void Update::recieveResult(const QString &message, const QString &inReplyToStatu
         m_errorMessage = QString::fromStdString(e.what());
         emit error(ResultRecieveFailed);
 
-        qCritical() << "[Error] update: Result recieve failed."
+        qCritical() << "[Error] update: Result recieve failed.\n"
                        "        Error message:" << m_errorMessage;
 
     }
