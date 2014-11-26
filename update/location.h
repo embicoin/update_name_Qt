@@ -6,7 +6,7 @@
 class UpdateLocation : public Update
 {
 public:
-    explicit UpdateLocation(Update *parent = 0);
+    explicit UpdateLocation(QObject *parent = 0);
     QString location();
 
 public slots:

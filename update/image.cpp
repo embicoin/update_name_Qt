@@ -11,7 +11,7 @@
 #include <QDateTime>
 #include <QDebug>
 
-UpdateImage::UpdateImage(Update *parent)
+UpdateImage::UpdateImage(QObject *parent)
     : Update(parent)
 {
 }
@@ -23,16 +23,21 @@ QUrl UpdateImage::imageUrl()
 
 void UpdateImage::exec(const TweetObject &tweet)
 {
-    emit executed(tweet.user());
-    qDebug() << "udpate_image: " << "Update to " << tweet.entities().media().mediaUrlHttps().toString();
-
     QNetworkAccessManager manager;
     QNetworkReply *reply;
     QTimer timer;
     QEventLoop loop;
 
+    m_executedUser = tweet.user();
+    emit stateChanged(Executed);
+
+    qDebug() << "[Info] update_image: Update image to " << tweet.entities().media().mediaUrlHttps().toString();
+
     timer.setSingleShot(true);
     timer.start(15000);
+
+    qDebug() << "[Info] update_image: Start download new image.";
+
     reply = manager.get(QNetworkRequest(tweet.entities().media().mediaUrlHttps()));
 
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
@@ -41,16 +46,24 @@ void UpdateImage::exec(const TweetObject &tweet)
     loop.exec();
 
     if(reply->error() == QNetworkReply::NoError && timer.isActive()) {
+
+        qDebug() << "[Info] update_image: Download finished.";
+
         try {
             m_twitter.updateProfileImage(reply->readAll());
 
+            qDebug() << "[Info] update_image: Image updated.";
+            qDebug() << "[Info] update_image: Getting current image.";
+
             try {
                 m_updatedImageUrl = m_twitter.verifyCredentials().profileImageUrlHttps();
+                qDebug() << "[Info] update_image: Current image is" << m_updatedImageUrl;
             } catch(...) {
                 m_updatedImageUrl = tweet.entities().media().mediaUrlHttps();
+                qWarning() << "[Warning] update_image: Getting current image failed.";
             }
 
-            emit updated(m_updatedImageUrl.toString());
+            emit stateChanged(Updated);
 
             if(m_settings.isPostUpdateImageSuccessedMessage())
                 recieveResult(m_settings.updateImageSuccessedMessage()
@@ -59,12 +72,18 @@ void UpdateImage::exec(const TweetObject &tweet)
             return;
         } catch(const std::runtime_error &e) {
             m_errorMessage = QString::fromStdString(e.what());
+
+            qCritical() << "[Error] update_image: Update image failed."
+                           "        Error message:" << m_errorMessage;
         }
     } else {
         m_errorMessage = reply->errorString();
+
+        qCritical() << "[Error] update_image: Download failed."
+                       "        Error message: " << m_errorMessage;
     }
 
-    emit error(UpdateProfile, m_errorMessage);
+    emit error(UpdateFailed);
 
     if(m_settings.isPostUpdateImageFailedMessage()) {
         recieveResult(m_settings.updateImageFailedMessage()

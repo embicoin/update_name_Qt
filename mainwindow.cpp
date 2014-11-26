@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setFixedSize(sizeHint());
 #endif
 
+
     //システムトレイのセットアップ
     m_systemTray                 = new QSystemTrayIcon(QIcon(":/icon/update_name_icon.png"), this);
     m_systemTrayMenu             = new QMenu(this);
@@ -76,12 +77,65 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSwitchUpdateName, SIGNAL(triggered()), ui->updateNameSwitchButton, SIGNAL(clicked()));
 
     qRegisterMetaType<UserStream::State>("UserStream::State");
-    qRegisterMetaType<Update::State>("Update::State");
-    qRegisterMetaType<UpdateProfile::ProfileType>("UpdateProfile::ProfileType");
     connect(&m_userStream, SIGNAL(stateChanged(UserStream::State)), this, SLOT(writeUserStreamLog(UserStream::State)));
-    connect(&m_userStream, SIGNAL(receivedData(QByteArray)), this, SLOT(onUserStreamRecievedData(QByteArray)));
+    connect(&m_userStream, SIGNAL(receivedData(QByteArray)), &m_updateProfile, SLOT(exec(QByteArray)));
 
+    connect(&m_updateProfile, &UpdateProfile::executed, [&](const UpdateProfile::ProfileType &type, const UsersObject &executedUser) {
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("\"@%1\"によってupdate_%2が実行されました。")
+                                        .arg(executedUser.screen_name(), UpdateProfile::profileTypeString(type))));
+        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("update_%1が実行されました。").arg(UpdateProfile::profileTypeString(type))),
+                                  Q_ARG(QString, tr("\"@%1\"によってupdate_%2が実行されました。")
+                                        .arg(executedUser.screen_name(), UpdateProfile::profileTypeString(type))));
+    });
+    connect(&m_updateProfile, &UpdateProfile::updated, [&](const UpdateProfile::ProfileType &type, const QString &updatedProfileValue) {
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("%1が\"%2\"に変更されました。")
+                                        .arg(UpdateProfile::profileTypeString(type), updatedProfileValue)));
+        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("%1が変更されました。").arg(UpdateProfile::profileTypeString(type))),
+                                  Q_ARG(QString, tr("%1が\"%2\"に変更されました。")
+                                        .arg(UpdateProfile::profileTypeString(type), updatedProfileValue)));
+    });
+    connect(&m_updateProfile, &UpdateProfile::resultRecieved, [&]() {
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, tr("結果をツイートしました。")));
+    });
+    connect(&m_updateProfile, &UpdateProfile::updateError,
+            [&](const UpdateProfile::ProfileType &type, const Update::ErrorState &state, const QString &errorMessage) {
+        QString log;
+        switch(state) {
+        case Update::UpdateFailed:
+            log = tr("%1の変更に失敗しました。: %2").arg(UpdateProfile::profileTypeString(type), errorMessage);
+            break;
+        case Update::ResultRecieveFailed:
+            log = tr("結果のツイートに失敗しました。: %1").arg(errorMessage);
+            break;
+        }
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, log));
+    });
+    connect(&m_updateProfile, &UpdateProfile::stateChanged, [&](const UpdateProfile::State &state) {
+        QString log;
+        switch(state) {
+        case UpdateProfile::GetScreenNameFinished:
+            log = tr("screen_nameを取得しました\n"
+                     "あなたのscreen_name: %1").arg(m_updateProfile.screenName());
+            break;
+        }
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, log));
+    });
+    connect(&m_updateProfile, &UpdateProfile::error, [&](const UpdateProfile::ErrorState &state) {
+        QString log;
+        switch(state) {
+        case UpdateProfile::GetScreenNameFailed:
+            log = tr("screen_nameの取得に失敗しました。: %1").arg(m_updateProfile.errorString());
+            break;
+        }
+        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, log));
+    });
 
+    m_updateProfile.moveToThread(m_updateProfileThread);
+    m_updateProfileThread->start();
 
     if(m_settings.isAutoStartUpdateName()) {
         startUpdateName();
@@ -91,6 +145,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     stopUpdateName();
+    m_updateProfileThread->quit();
     m_systemTray->deleteLater();
     m_systemTrayMenu->deleteLater();
     m_systemTrayActionQuit->deleteLater();
@@ -99,57 +154,10 @@ MainWindow::~MainWindow()
     if(m_userStream.isRunning()) {
         m_userStream.wait();
     }
-}
-
-void MainWindow::onUserStreamRecievedData(const QByteArray &data)
-{
-    UpdateProfile *updateProfile = new UpdateProfile;
-    QThread *updateProfileThread = new QThread;
-
-    connect(updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(quit()));
-    connect(updateProfileThread, SIGNAL(finished()), updateProfile, SLOT(deleteLater()));
-    connect(updateProfileThread, SIGNAL(finished()), updateProfileThread, SLOT(deleteLater()));
-
-    connect(updateProfile, &UpdateProfile::executed,
-            [&](const UpdateProfile::ProfileType &type, const UsersObject &executedUser) {
-        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection,
-                                  Q_ARG(QString, tr("\"@%1\"によってupdate_%2が実行されました。")
-                                        .arg(executedUser.screen_name(), UpdateProfile::profileTypeString(type))));
-        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
-                                  Q_ARG(QString, tr("update_%1が実行されました。").arg(UpdateProfile::profileTypeString(type))),
-                                  Q_ARG(QString, tr("\"@%1\"によってupdate_%2が実行されました。")
-                                        .arg(executedUser.screen_name(), UpdateProfile::profileTypeString(type))));
-    });
-    connect(updateProfile, &UpdateProfile::updated,
-            [&](const UpdateProfile::ProfileType &type, const QString &updatedProfileValue) {
-        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection,
-                                  Q_ARG(QString, tr("%1が\"%2\"に変更されました。")
-                                        .arg(UpdateProfile::profileTypeString(type), updatedProfileValue)));
-        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
-                                  Q_ARG(QString, tr("%1が変更されました。").arg(UpdateProfile::profileTypeString(type))),
-                                  Q_ARG(QString, tr("%1が\"%2\"に変更されました。")
-                                        .arg(UpdateProfile::profileTypeString(type), updatedProfileValue)));
-    });
-    connect(updateProfile, &UpdateProfile::resultRecieved, [&]() {
-        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, tr("結果をツイートしました。")));
-    });
-    connect(updateProfile, &UpdateProfile::error,
-            [&](const UpdateProfile::ProfileType &type, const Update::State &state, const QString &errorMessage) {
-        QString log;
-        switch(state) {
-        case Update::UpdateProfile:
-            log = tr("%1の変更に失敗しました。: %2").arg(UpdateProfile::profileTypeString(type), errorMessage);
-            break;
-        case Update::ResultRecieve:
-            log = tr("結果のツイートに失敗しました。: %1").arg(errorMessage);
-            break;
-        }
-        QMetaObject::invokeMethod(this, "writeLog", Qt::QueuedConnection, Q_ARG(QString, log));
-    });
-
-    updateProfile->moveToThread(updateProfileThread);
-    updateProfileThread->start();
-    updateProfile->exec(data);
+    if(m_updateProfileThread->isRunning()) {
+        m_updateProfileThread->wait();
+    }
+    m_updateProfileThread->deleteLater();
 }
 
 void MainWindow::writeLog(const QString &log)

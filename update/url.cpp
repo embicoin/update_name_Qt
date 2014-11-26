@@ -1,6 +1,6 @@
 #include "url.h"
 
-UpdateUrl::UpdateUrl(Update *parent) :
+UpdateUrl::UpdateUrl(QObject *parent) :
     Update(parent)
 {
 }
@@ -12,18 +12,29 @@ QString UpdateUrl::url()
 
 void UpdateUrl::exec(const TweetObject &tweet, const QString &newUrl)
 {
-    if(newUrl.isEmpty()) {
-        return;
-    }
+    m_executedUser = tweet.user();
+    emit stateChanged(Executed);
 
-    emit executed(tweet.user());
+    qDebug() << "[Info] update_url: Update url to" << newUrl;
 
     try {
         m_updatedUrl = m_twitter.updateUrl(newUrl).url().toString();
-        emit updated(m_updatedUrl);
+        emit stateChanged(Updated);
+
+        qDebug() << "[Info] update_url: Url updated."
+                    "       New url:" << m_updatedUrl;
+
+        if(m_settings.isPostUpdateUrlSuccessedMessage()) {
+            recieveResult(m_settings.updateUrlSuccessedMessage()
+                          .replace("%u", tweet.user().screen_name())
+                          .replace("%l", m_updatedUrl), tweet.idStr());
+        }
     } catch(const std::runtime_error &e) {
         m_errorMessage = QString::fromStdString(e.what());
-        emit error(UpdateProfile, m_errorMessage);
+        emit error(UpdateFailed);
+
+        qCritical() << "[Error] update_description: Update url failed."
+                       "        Error message:" << m_errorMessage;
 
         if(m_settings.isPostUpdateUrlFailedMessage())
             recieveResult(m_settings.updateUrlFailedMessage()
@@ -31,11 +42,5 @@ void UpdateUrl::exec(const TweetObject &tweet, const QString &newUrl)
                           .replace("%l", newUrl)
                           .replace("%e", m_errorMessage), tweet.idStr());
         return;
-    }
-
-    if(m_settings.isPostUpdateUrlSuccessedMessage()) {
-        recieveResult(m_settings.updateUrlSuccessedMessage()
-                      .replace("%u", tweet.user().screen_name())
-                      .replace("%l", m_updatedUrl), tweet.idStr());
     }
 }

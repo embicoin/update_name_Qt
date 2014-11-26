@@ -1,6 +1,6 @@
 #include "location.h"
 
-UpdateLocation::UpdateLocation(Update *parent) :
+UpdateLocation::UpdateLocation(QObject *parent) :
     Update(parent)
 {
 }
@@ -12,18 +12,29 @@ QString UpdateLocation::location()
 
 void UpdateLocation::exec(const TweetObject &tweet, const QString &newLocation)
 {
-    if(newLocation.isEmpty()) {
-        return;
-    }
+    m_executedUser = tweet.user();
+    emit stateChanged(Executed);
 
-    emit executed(tweet.user());
+    qDebug() << "[Info] update_location: Update location to" << newLocation;
 
     try {
         m_updatedLocation = m_twitter.updateLocation(newLocation).location();
-        emit updated(m_updatedLocation);
+        emit stateChanged(Updated);
+
+        qDebug() << "[Info] update_location: Location updated."
+                    "       New location:" << m_updatedLocation;
+
+        if(m_settings.isPostUpdateLocationSuccessedMessage()) {
+            recieveResult(m_settings.updateLocationSuccessedMessage()
+                          .replace("%u", tweet.user().screen_name())
+                          .replace("%l", m_updatedLocation), tweet.idStr());
+        }
     } catch(const std::runtime_error &e) {
         m_errorMessage = e.what();
-        emit error(UpdateProfile, m_errorMessage);
+        emit error(UpdateFailed);
+
+        qCritical() << "[Error] update_location: Update location failed."
+                       "        Error message:" << m_errorMessage;
 
         if(m_settings.isPostUpdateLocationFailedMessage())
             recieveResult(m_settings.updateLocationFailedMessage()
@@ -31,11 +42,5 @@ void UpdateLocation::exec(const TweetObject &tweet, const QString &newLocation)
                           .replace("%l", newLocation)
                           .replace("%e", m_errorMessage), tweet.idStr());
         return;
-    }
-
-    if(m_settings.isPostUpdateLocationSuccessedMessage()) {
-        recieveResult(m_settings.updateLocationSuccessedMessage()
-                      .replace("%u", tweet.user().screen_name())
-                      .replace("%l", m_updatedLocation), tweet.idStr());
     }
 }

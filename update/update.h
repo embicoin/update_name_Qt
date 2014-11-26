@@ -14,22 +14,28 @@ public:
     explicit Update(QObject *parent = 0);
 
     enum State {
-        UpdateProfile,
-        ResultRecieve,
+        Executed,
+        Updated,
+        ResultRecieved
     };
 
+    enum ErrorState {
+        UpdateFailed,
+        ResultRecieveFailed,
+    };
+
+    UsersObject executedUser();
     QString errorString();
 
 signals:
-    void executed(const UsersObject &user);
-    void updated(const QString &updatedProfileValie);
-    void resultRecieved();
-    void error(const Update::State&, const QString &errorMessage);
     void stateChanged(const Update::State&);
+    void error(const Update::ErrorState&);
+    void finished();
 
 protected:
     RestClient m_twitter;
     Settings m_settings;
+    UsersObject m_executedUser = UsersObject(NULL);
     QString m_errorMessage;
 
 protected slots:

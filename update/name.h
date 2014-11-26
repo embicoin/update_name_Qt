@@ -6,7 +6,7 @@
 class UpdateName : public Update
 {
 public:
-    explicit UpdateName(Update *parent = 0);
+    explicit UpdateName(QObject *parent = 0);
     QString name();
 
 public slots:

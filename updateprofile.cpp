@@ -7,102 +7,26 @@
 #include <QThread>
 #include <QDebug>
 
+QString UpdateProfile::m_myscreenname;
+const QStringList UpdateProfile::updateCommands = QStringList() << tr("name")
+                                                                << tr("url")
+                                                                << tr("location")
+                                                                << tr("description")
+                                                                << tr("image");
+
 UpdateProfile::UpdateProfile(QObject *parent) :
     QObject(parent)
 {
-    try {
-        m_myscreenname = m_twitter.verifyCredentials().screen_name();
-        //emit stateChanged(GetScreenNameSuccessed);
-    } catch(std::runtime_error &e) {
-        m_errormessage = QString::fromStdString(e.what());
-        //emit stateChanged(GetScreenNameFailed);
-    }
+    qRegisterMetaType<UpdateProfile::ProfileType>("UpdateProfile::ProfileType");
+    qRegisterMetaType<UpdateProfile::State>("UpdateProfile::State");
+    qRegisterMetaType<UpdateProfile::ErrorState>("UpdateProfile::ErrorState");
 
-    qRegisterMetaType<Update::State>("Update::State");
-    //update_name
-    connect(&m_updateName, &UpdateName::executed, [&](const UsersObject &user) {
-        emit executed(Name, user);
-    });
-    connect(&m_updateName, &UpdateName::updated, [&](const QString &updatedName) {
-        emit updated(Name, updatedName);
-    });
-    connect(&m_updateName, &UpdateName::resultRecieved, [&]() {
-        emit resultRecieved(Name);
-    });
-    connect(&m_updateName, &UpdateName::error, [&](const Update::State &state, const QString &errorMessage) {
-        emit error(Name, state, errorMessage);
-    });
-
-    //update_url
-    connect(&m_updateUrl, &UpdateUrl::executed, [&](const UsersObject &user) {
-        emit executed(Url, user);
-    });
-    connect(&m_updateUrl, &UpdateUrl::updated, [&](const QString &updatedUrl) {
-        emit updated(Url, updatedUrl);
-    });
-    connect(&m_updateUrl, &UpdateUrl::resultRecieved, [&]() {
-        emit resultRecieved(Url);
-    });
-    connect(&m_updateUrl, &UpdateUrl::error, [&](const Update::State &state, const QString &errorMessage) {
-        emit error(Url, state, errorMessage);
-    });
-
-    //update_location
-    connect(&m_updateLocation, &UpdateLocation::executed, [&](const UsersObject &user) {
-        emit executed(Location, user);
-    });
-    connect(&m_updateLocation, &UpdateLocation::updated, [&](const QString &updatedLocation) {
-        emit updated(Location, updatedLocation);
-    });
-    connect(&m_updateLocation, &UpdateLocation::resultRecieved, [&]() {
-        emit resultRecieved(Location);
-    });
-    connect(&m_updateLocation, &UpdateUrl::error, [&](const Update::State &state, const QString &errorMessage) {
-        emit error(Location, state, errorMessage);
-    });
-
-    //update_description
-    connect(&m_updateDescription, &UpdateDescription::executed, [&](const UsersObject &user) {
-        emit executed(Description, user);
-    });
-    connect(&m_updateDescription, &UpdateDescription::updated, [&](const QString &updatedDescription) {
-        emit updated(Description, updatedDescription);
-    });
-    connect(&m_updateDescription, &UpdateDescription::resultRecieved, [&]() {
-        emit resultRecieved(Description);
-    });
-    connect(&m_updateDescription, &UpdateDescription::error, [&](const Update::State &state, const QString &errorMessage) {
-        emit error(Description, state, errorMessage);
-    });
-
-    //update_image
-    connect(&m_updateImage, &UpdateImage::executed, [&](const UsersObject &user) {
-        emit executed(Image, user);
-    });
-    connect(&m_updateImage, &UpdateImage::updated, [&](const QString &updatedImageUrl) {
-        emit updated(Image, updatedImageUrl);
-    });
-    connect(&m_updateImage, &UpdateImage::resultRecieved, [&]() {
-        emit resultRecieved(Image);
-    });
-    connect(&m_updateImage, &UpdateUrl::error, [&](const Update::State &state, const QString &errorMessage) {
-        emit error(Image, state, errorMessage);
-    });
+    QMetaObject::invokeMethod(this, "getScreenName", Qt::QueuedConnection);
 }
 
-QString UpdateProfile::updateNameErrorString()
+QString UpdateProfile::screenName()
 {
-    return m_updateName.errorString();
-}
-
-QString UpdateProfile::executedUserScreenName()
-{
-    return m_executeduser;
-}
-
-QString UpdateProfile::profileValue()
-{
-    return m_profilevalue;
+    return m_myscreenname;
 }
 
 QString UpdateProfile::errorString()
@@ -145,57 +69,299 @@ void UpdateProfile::postClosedMessage()
     }
 }
 
-bool UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
+void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
 {
     const TweetObject tweet(twitter_status_object_json_data);
     const QRegExp updateNameRegExp("^\\s*.+\\s*\\(@" + m_myscreenname + "\\).*$");
-    bool executedUpdate = false;
     QString command;
 
+    if(m_myscreenname.isEmpty()) {
+        if(!getScreenName()) {
+            return;
+        }
+    }
+
+    qDebug() << "[Info] UpdateProfile: UpdateProfile executed.";
+
     if(!tweet.text().isEmpty() && !tweet.text().startsWith("RT")) {
-        if(updateNameRegExp.exactMatch(tweet.text()) && m_settings.isEnabledUpdateName()) {
-            qDebug() << "update_name Executed";
-            m_executeduser = tweet.user().screen_name();
-            m_profilevalue = tweet.text();
-            m_profilevalue.remove(QRegExp("\\s*\\(@" + m_myscreenname + "\\).*$"));
-            m_updateName.exec(tweet, m_profilevalue);
-            executedUpdate = true;
+        if(updateNameRegExp.exactMatch(tweet.text())) {
+            if(m_settings.isEnabledUpdateName()) {
+                qDebug() << "[Info] UpdateProfile: update_name executed.";
+                m_executeduser = tweet.user().screen_name();
+                m_profilevalue = tweet.text();
+                m_profilevalue.remove(QRegExp("\\s*\\(@" + m_myscreenname + "\\).*$"));
+
+                UpdateName *updateName = new UpdateName;
+                QThread *updateNameThread = new QThread;
+
+                connect(updateName, &UpdateName::stateChanged, [&](const Update::State &state) {
+                    switch (state) {
+                    case Update::Executed:
+                        emit executed(Name, updateName->executedUser());
+                        break;
+                    case Update::Updated:
+                        emit updated(Name, updateName->name());
+                        break;
+                    case Update::ResultRecieved:
+                        emit resultRecieved(Name);
+                        break;
+                    }
+                });
+                connect(updateName, &UpdateName::error, [&](const Update::ErrorState &state) {
+                    switch(state) {
+                    case Update::UpdateFailed:
+                        emit updateError(Name, state, updateName->errorString());
+                        break;
+                    case Update::ResultRecieveFailed:
+                        emit updateError(Name, state, updateName->errorString());
+                        break;
+                    }
+                });
+                connect(updateName, SIGNAL(finished()), updateNameThread, SLOT(quit()));
+                connect(updateNameThread, SIGNAL(finished()), updateName, SLOT(deleteLater()));
+                connect(updateNameThread, SIGNAL(finished()), updateNameThread, SLOT(deleteLater()));
+
+                updateName->moveToThread(updateNameThread);
+                updateNameThread->start();
+                updateName->exec(tweet, m_profilevalue);
+            } else {
+                qWarning() << "[Warning] UpdateProfile: update_name is disabled.";
+            }
         } else {
+            bool isUpdateCommand = false;
             foreach(command, updateCommands) {
                 const QRegExp updateRegExp("^.*@" + m_myscreenname + "\\s+update_" + command + "\\s+.*");
                 if(updateRegExp.exactMatch(tweet.text())) {
                     m_executeduser = tweet.user().screen_name();
                     m_profilevalue = tweet.text();
                     m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + "\\s+update_" + command + "\\s+"));
-                    executedUpdate = true;
+                    isUpdateCommand = true;
                     break;
                 }
             }
-            if(executedUpdate) {
-                if(command == "name" && m_settings.isEnabledUpdateName()) {
-                    qDebug() << "update_name Executed";
-                    m_updateName.exec(tweet, m_profilevalue);
-                } else if(command == "url" && m_settings.isEnabledUpdateUrl()) {
-                    qDebug() << "update_url Executed";
-                    m_updateUrl.exec(tweet, m_profilevalue);
-                } else if(command == "location" && m_settings.isEnabledUpdateLocation()) {
-                    qDebug() << "update_location Executed";
-                    m_updateLocation.exec(tweet, m_profilevalue);
-                } else if(command == "description" && m_settings.isEnabledUpdateDescription()) {
-                    qDebug() << "update_description Executed";
-                    m_updateDescription.exec(tweet, m_profilevalue);
-                } else if(command == "image" && m_settings.isEnabledUpdateImage()) {
-                    qDebug() << "update_image Executed";
-                    m_updateImage.exec(tweet);
+            if(isUpdateCommand) {
+                if(command == "name") {
+                    if(m_settings.isEnabledUpdateName()) {
+                        qDebug() << "[Info] UpdateProfile: update_name executed.";
+
+                        UpdateName *updateName = new UpdateName;
+                        QThread *updateNameThread = new QThread;
+
+                        connect(updateName, &UpdateName::stateChanged, [&](const Update::State &state) {
+                            switch (state) {
+                            case Update::Executed:
+                                emit executed(Name, updateName->executedUser());
+                                break;
+                            case Update::Updated:
+                                emit updated(Name, updateName->name());
+                                break;
+                            case Update::ResultRecieved:
+                                emit resultRecieved(Name);
+                                break;
+                            }
+                        });
+                        connect(updateName, &UpdateName::error, [&](const Update::ErrorState &state) {
+                            switch(state) {
+                            case Update::UpdateFailed:
+                                emit updateError(Name, state, updateName->errorString());
+                                break;
+                            case Update::ResultRecieveFailed:
+                                emit updateError(Name, state, updateName->errorString());
+                                break;
+                            }
+                        });
+                        connect(updateName, SIGNAL(finished()), updateNameThread, SLOT(quit()));
+                        connect(updateNameThread, SIGNAL(finished()), updateName, SLOT(deleteLater()));
+                        connect(updateNameThread, SIGNAL(finished()), updateNameThread, SLOT(deleteLater()));
+
+                        updateName->moveToThread(updateNameThread);
+                        updateNameThread->start();
+                        updateName->exec(tweet, m_profilevalue);
+                    } else {
+                        qWarning() << "[Warning] UpdateProfile: update_name is disabled.";
+                    }
+                } else if(command == "url") {
+                    if(m_settings.isEnabledUpdateUrl()) {
+                        qDebug() << "[Info] UpdateProfile: update_url executed.";
+
+                        UpdateUrl *updateUrl = new UpdateUrl;
+                        QThread *updateUrlThread = new QThread;
+
+                        connect(updateUrl, &UpdateUrl::stateChanged, [&](const Update::State &state) {
+                            switch (state) {
+                            case Update::Executed:
+                                emit executed(Url, updateUrl->executedUser());
+                                break;
+                            case Update::Updated:
+                                emit updated(Url, updateUrl->url());
+                                break;
+                            case Update::ResultRecieved:
+                                emit resultRecieved(Url);
+                                break;
+                            }
+                        });
+                        connect(updateUrl, &UpdateUrl::error, [&](const Update::ErrorState &state) {
+                            switch(state) {
+                            case Update::UpdateFailed:
+                                emit updateError(Url, state, updateUrl->errorString());
+                                break;
+                            case Update::ResultRecieveFailed:
+                                emit updateError(Url, state, updateUrl->errorString());
+                                break;
+                            }
+                        });
+                        connect(updateUrl, SIGNAL(finished()), updateUrlThread, SLOT(quit()));
+                        connect(updateUrlThread, SIGNAL(finished()), updateUrl, SLOT(deleteLater()));
+                        connect(updateUrlThread, SIGNAL(finished()), updateUrlThread, SLOT(deleteLater()));
+
+                        updateUrl->moveToThread(updateUrlThread);
+                        updateUrlThread->start();
+                        updateUrl->exec(tweet, m_profilevalue);
+                    } else {
+                        qWarning() << "[Warning] UpdateProfile: update_url is disabled.";
+                    }
+                } else if(command == "location") {
+                    if(m_settings.isEnabledUpdateLocation()) {
+                        qDebug() << "[Info] UpdateProfile: update_location executed.";
+
+                        UpdateLocation *updateLocation = new UpdateLocation;
+                        QThread *updateLocationThread = new QThread;
+
+                        connect(updateLocation, &UpdateLocation::stateChanged, [&](const Update::State &state) {
+                            switch (state) {
+                            case Update::Executed:
+                                emit executed(Location, updateLocation->executedUser());
+                                break;
+                            case Update::Updated:
+                                emit updated(Location, updateLocation->location());
+                                break;
+                            case Update::ResultRecieved:
+                                emit resultRecieved(Location);
+                                break;
+                            }
+                        });
+                        connect(updateLocation, &UpdateLocation::error, [&](const Update::ErrorState &state) {
+                            switch(state) {
+                            case Update::UpdateFailed:
+                                emit updateError(Location, state, updateLocation->errorString());
+                                break;
+                            case Update::ResultRecieveFailed:
+                                emit updateError(Location, state, updateLocation->errorString());
+                                break;
+                            }
+                        });
+                        connect(updateLocation, SIGNAL(finished()), updateLocationThread, SLOT(quit()));
+                        connect(updateLocationThread, SIGNAL(finished()), updateLocation, SLOT(deleteLater()));
+                        connect(updateLocationThread, SIGNAL(finished()), updateLocationThread, SLOT(deleteLater()));
+
+                        updateLocation->moveToThread(updateLocationThread);
+                        updateLocationThread->start();
+                        updateLocation->exec(tweet, m_profilevalue);
+                    } else {
+                        qWarning() << "[Warning] UpdateProfile: udpate_location is disabled.";
+                    }
+                } else if(command == "description") {
+                    if(m_settings.isEnabledUpdateDescription()) {
+                        qDebug() << "[Info] UpdateProfile: update_description executed.";
+
+                        UpdateDescription *updateDescription = new UpdateDescription;
+                        QThread *updateDescriptionThread = new QThread;
+
+                        connect(updateDescription, &UpdateDescription::stateChanged, [&](const Update::State &state) {
+                            switch (state) {
+                            case Update::Executed:
+                                emit executed(Description, updateDescription->executedUser());
+                                break;
+                            case Update::Updated:
+                                emit updated(Description, updateDescription->description());
+                                break;
+                            case Update::ResultRecieved:
+                                emit resultRecieved(Description);
+                                break;
+                            }
+                        });
+                        connect(updateDescription, &UpdateDescription::error, [&](const Update::ErrorState &state) {
+                            switch(state) {
+                            case Update::UpdateFailed:
+                                emit updateError(Description, state, updateDescription->errorString());
+                                break;
+                            case Update::ResultRecieveFailed:
+                                emit updateError(Description, state, updateDescription->errorString());
+                                break;
+                            }
+                        });
+                        connect(updateDescription, SIGNAL(finished()), updateDescriptionThread, SLOT(quit()));
+                        connect(updateDescriptionThread, SIGNAL(finished()), updateDescription, SLOT(deleteLater()));
+                        connect(updateDescriptionThread, SIGNAL(finished()), updateDescriptionThread, SLOT(deleteLater()));
+
+                        updateDescription->moveToThread(updateDescriptionThread);
+                        updateDescriptionThread->start();
+                        updateDescription->exec(tweet, m_profilevalue);
+                    } else {
+                        qWarning() << "[Warning] UpdateProfile: udpate_description is disabled.";
+                    }
+                } else if(command == "image") {
+                    if(m_settings.isEnabledUpdateImage()) {
+                        qDebug() << "[Info] UpdateProfile: update_image executed.";
+
+                        UpdateImage *updateImage = new UpdateImage;
+                        QThread *updateImageThread = new QThread;
+
+                        connect(updateImage, &UpdateImage::stateChanged, [&](const Update::State &state) {
+                            switch (state) {
+                            case Update::Executed:
+                                emit executed(Image, updateImage->executedUser());
+                                break;
+                            case Update::Updated:
+                                emit updated(Image, updateImage->imageUrl().toString());
+                                break;
+                            case Update::ResultRecieved:
+                                emit resultRecieved(Image);
+                                break;
+                            }
+                        });
+                        connect(updateImage, &UpdateImage::error, [&](const Update::ErrorState &state) {
+                            switch(state) {
+                            case Update::UpdateFailed:
+                                emit updateError(Image, state, updateImage->errorString());
+                                break;
+                            case Update::ResultRecieveFailed:
+                                emit updateError(Image, state, updateImage->errorString());
+                                break;
+                            }
+                        });
+                        connect(updateImage, SIGNAL(finished()), updateImageThread, SLOT(quit()));
+                        connect(updateImageThread, SIGNAL(finished()), updateImage, SLOT(deleteLater()));
+                        connect(updateImageThread, SIGNAL(finished()), updateImageThread, SLOT(deleteLater()));
+
+                        updateImage->moveToThread(updateImageThread);
+                        updateImageThread->start();
+                        updateImage->exec(tweet);
+                    } else {
+                        qWarning() << "[Warning] UpdateProfile: update_image is disabled.";
+                    }
                 } else {
-                    qWarning() << "Unknown Command: " << command;
-                    executedUpdate = false;
+                    qWarning() << "[Warning] UpdateProfile: Unknown command:" << command;
                 }
             }
         }
     }
-
     emit finished();
+}
 
-    return executedUpdate;
+bool UpdateProfile::getScreenName()
+{
+    try {
+        m_myscreenname = m_twitter.verifyCredentials().screen_name();
+        emit stateChanged(GetScreenNameFinished);
+        qDebug() << "[Info] UpdateProfile: Gettings screen_name Successed.\n"
+                    "                      Your screen_name:" << m_myscreenname;
+        return true;
+    } catch(const std::runtime_error &e) {
+        qCritical() << "[Error] UpdateProfile: Getting screen_name Failed.\n"
+                       "                       Error Message:" << e.what();
+        m_errormessage = QString::fromStdString(e.what());
+        emit error(GetScreenNameFailed);
+        return false;
+    }
 }
