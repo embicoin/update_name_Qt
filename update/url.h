@@ -6,7 +6,7 @@
 class UpdateUrl : public Update
 {
 public:
-    explicit UpdateUrl(Update *parent = 0);
+    explicit UpdateUrl(QObject *parent = 0);
     QString url();
 
 public slots:

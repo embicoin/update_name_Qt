@@ -1,6 +1,6 @@
 #include "description.h"
 
-UpdateDescription::UpdateDescription(Update *parent) :
+UpdateDescription::UpdateDescription(QObject *parent) :
     Update(parent)
 {
 }
@@ -12,18 +12,29 @@ QString UpdateDescription::description()
 
 void UpdateDescription::exec(const TweetObject &tweet, const QString &newDescription)
 {
-    if(tweet.text().isEmpty()) {
-        return;
-    }
+    m_executedUser = tweet.user();
+    emit stateChanged(Executed);
 
-    emit executed(tweet.user());
+    qDebug() << "[Info] update_description: Update description to" << newDescription;
 
     try {
         m_updatedDescription = m_twitter.updateDescroption(newDescription).description();
-        emit updated(m_updatedDescription);
+        emit stateChanged(Updated);
+
+        qDebug() << "[Info] update_description: Description updated."
+                    "       New description:" << m_updatedDescription;
+
+        if(m_settings.isPostUpdateDescriptionSuccessedMessage()) {
+            recieveResult(m_settings.updateDescriptionSuccessedMessage()
+                          .replace("%u", tweet.user().screen_name())
+                          .replace("%d", m_updatedDescription), tweet.idStr());
+        }
     } catch(const std::runtime_error &e) {
         m_errorMessage = QString::fromStdString(e.what());
-        emit error(ResultRecieve, m_errorMessage);
+        emit error(UpdateFailed);
+
+        qCritical() << "[Error] update_description: Update description failed."
+                       "        Error message:" << m_errorMessage;
 
         if(m_settings.isPostUpdateDescriptionFailedMessage()) {
             recieveResult(m_settings.updateDescriptionFailedMessage()
@@ -32,11 +43,5 @@ void UpdateDescription::exec(const TweetObject &tweet, const QString &newDescrip
                           .replace("%e", m_errorMessage));
         }
         return;
-    }
-
-    if(m_settings.isPostUpdateDescriptionSuccessedMessage()) {
-        recieveResult(m_settings.updateDescriptionSuccessedMessage()
-                      .replace("%u", tweet.user().screen_name())
-                      .replace("%d", m_updatedDescription), tweet.idStr());
     }
 }

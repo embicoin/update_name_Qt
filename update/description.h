@@ -6,7 +6,7 @@
 class UpdateDescription : public Update
 {
 public:
-    explicit UpdateDescription(Update *parent = 0);
+    explicit UpdateDescription(QObject *parent = 0);
     QString description();
 
 public slots:

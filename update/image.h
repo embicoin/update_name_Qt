@@ -8,7 +8,7 @@
 class UpdateImage : public Update
 {
 public:
-    explicit UpdateImage(Update *parent = 0);
+    explicit UpdateImage(QObject *parent = 0);
     QUrl imageUrl();
 
 public slots:

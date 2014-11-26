@@ -26,7 +26,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void onUserStreamRecievedData(const QByteArray &data);
     void writeLog(const QString &log);
     void writeWelcomeLog();
     void writeUserStreamLog(UserStream::State state);
@@ -43,6 +42,8 @@ private:
     QMenu             *m_systemTrayMenu;
     QAction           *m_systemTrayActionQuit;
     QAction           *m_systemTrayActionShowWindow;
+    QThread           *m_updateProfileThread = new QThread;
+    UpdateProfile     m_updateProfile;
     Settings          m_settings;
     PreferencesDialog m_preferencesDialog;
     UserStream        m_userStream;

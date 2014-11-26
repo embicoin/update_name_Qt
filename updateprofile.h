@@ -22,44 +22,37 @@ public:
         Url,
         Location,
         Description,
-        Image
+        Image,
     };
-
     enum State {
-        Aborted,
-        UpdateSuccessed,
-        UpdateFailed,
-        RecieveResultSuccessed,
-        RecieveResultFailed,
+        GetScreenNameFinished,
     };
-
-    QString executedUserScreenName();
-    QString profileValue();
-    QString errorString();
-
-    QString updateNameErrorString();
+    enum ErrorState {
+        GetScreenNameFailed,
+    };
 
     static QString profileTypeString(const UpdateProfile::ProfileType&);
 
-signals:
-    void executed(const ProfileType, const UsersObject &excutedUser);
-    void aborted(const ProfileType);
-    void updated(const ProfileType, const QString &updatedProfileValue);
-    void resultRecieved(const ProfileType);
-    void error(const UpdateProfile::ProfileType, const Update::State, const QString &errorMessage);
-    void updateNameStateChanged(const Update::State);
-    void finished();
+    QString screenName();
+    QString errorString();
 
-    /*
-    void urlUpdated(const QString &newUrl);
-    void locationUpdated(const QString &newLocation);
-    void descriptionUpdated(const QString &newDescription);
-    */
+signals:
+    void executed(const UpdateProfile::ProfileType&, const UsersObject &excutedUser);
+    void aborted(const UpdateProfile::ProfileType&);
+    void updated(const UpdateProfile::ProfileType&, const QString &updatedProfileValue);
+    void resultRecieved(const UpdateProfile::ProfileType&);
+    void updateError(const UpdateProfile::ProfileType&, const Update::ErrorState, const QString &errorMessage);
+    void stateChanged(const UpdateProfile::State&);
+    void error(const UpdateProfile::ErrorState&);
+    void finished();
 
 public slots:
     void postStartupMessage();
     void postClosedMessage();
-    bool exec(const QByteArray &twitter_status_object_json_data);
+    void exec(const QByteArray &twitter_status_object_json_data);
+
+private slots:
+    bool getScreenName();
     
 private:
     RestClient m_twitter;
@@ -71,16 +64,12 @@ private:
     UpdateDescription m_updateDescription;
     UpdateImage m_updateImage;
 
+    static QString m_myscreenname;
     QString m_profilevalue;
-    QString m_myscreenname;
     QString m_errormessage;
     QString m_executeduser;
 
-    QStringList updateCommands = QStringList() << tr("name")
-                                               << tr("url")
-                                               << tr("location")
-                                               << tr("description")
-                                               << tr("image");
+    static const QStringList updateCommands;
 };
 
 #endif // UPDATEPROFILE_H
