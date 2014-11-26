@@ -19,7 +19,7 @@ QSettings* Settings::s = new QSettings(QSettings::IniFormat, QSettings::UserScop
 QString Settings::m_consumerKey = Settings::s->value("ConsumerKey").toString();
 QString Settings::m_consumerSecret = Settings::s->value("ConsumerSecret").toString();
 QString Settings::m_accessToken = Settings::s->value("AccessToken").toString();
-QString Settings::m_accessToken_secret = Settings::s->value("AccessTokenSecret").toString();
+QString Settings::m_accessTokenSecret = Settings::s->value("AccessTokenSecret").toString();
 
 QString Settings::m_startupMessage = Settings::s->value("StartupMessage",Settings::DEFAULT_STARTUP_MESSAGE).toString();
 QString Settings::m_closedMessage = Settings::s->value("ClosedMessage", Settings::DEFAULT_CLOSED_MESSAGE).toString();
@@ -96,7 +96,7 @@ QString Settings::accessToken() const
 
 QString Settings::accessTokenSecret() const
 {
-    return m_accessToken_secret;
+    return m_accessTokenSecret;
 }
 
 QString Settings::startupMessage() const
@@ -274,7 +274,7 @@ void Settings::setAccessToken(const QString &at)
 
 void Settings::setAccessTokenSecret(const QString &ats)
 {
-    m_accessToken_secret = ats;
+    m_accessTokenSecret = ats;
     s->setValue("AccessTokenSecret", ats);
 }
 

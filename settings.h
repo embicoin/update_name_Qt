@@ -121,7 +121,7 @@ private:
     static QString m_consumerKey;
     static QString m_consumerSecret;
     static QString m_accessToken;
-    static QString m_accessToken_secret;
+    static QString m_accessTokenSecret;
 
     static QString m_startupMessage;
     static QString m_closedMessage;
