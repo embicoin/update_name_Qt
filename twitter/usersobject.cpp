@@ -7,6 +7,15 @@ UsersObject::UsersObject(const QByteArray &json)
     m_object = QJsonDocument::fromJson(json).object();
 }
 
+UsersObject::UsersObject()
+{
+}
+
+void UsersObject::setJson(const QByteArray &json)
+{
+    m_object = QJsonDocument::fromJson(json).object();
+}
+
 QString UsersObject::name() const
 {
     return m_object.value("name").toString();

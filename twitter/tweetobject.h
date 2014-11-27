@@ -11,6 +11,9 @@ class TweetObject
 {
 public:
     TweetObject(const QByteArray &json);
+    TweetObject();
+
+    void setJson(const QByteArray &json);
 
     QString idStr() const;
     QString text() const;

@@ -8,6 +8,9 @@ class UsersObject
 {
 public:
     UsersObject(const QByteArray &json);
+    UsersObject();
+
+    void setJson(const QByteArray &json);
 
     QString name() const;
     QString screen_name() const;

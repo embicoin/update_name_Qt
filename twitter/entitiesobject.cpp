@@ -8,6 +8,15 @@ EntitiesObject::MediaObject::MediaObject(const QByteArray &json)
     m_object = QJsonDocument::fromJson(json).object();
 }
 
+EntitiesObject::MediaObject::MediaObject()
+{
+}
+
+void EntitiesObject::MediaObject::setJson(const QByteArray &json)
+{
+    m_object = QJsonDocument::fromJson(json).object();
+}
+
 QString EntitiesObject::MediaObject::displayUrl() const
 {
     return m_object.value("display_url").toString();
@@ -34,6 +43,15 @@ QUrl EntitiesObject::MediaObject::mediaUrlHttps() const
 }
 
 EntitiesObject::EntitiesObject(const QByteArray &json)
+{
+    m_object = QJsonDocument::fromJson(json).object();
+}
+
+EntitiesObject::EntitiesObject()
+{
+}
+
+void EntitiesObject::setJson(const QByteArray &json)
 {
     m_object = QJsonDocument::fromJson(json).object();
 }
