@@ -81,8 +81,6 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
         }
     }
 
-    qDebug() << "[Info] UpdateProfile: UpdateProfile executed.";
-
     if(!tweet.text().isEmpty() && !tweet.text().startsWith("RT")) {
         if(updateNameRegExp.exactMatch(tweet.text())) {
             if(m_settings.isEnabledUpdateName()) {

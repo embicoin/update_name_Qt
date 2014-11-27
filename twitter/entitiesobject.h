@@ -11,6 +11,9 @@ public:
     {
     public :
         MediaObject(const QByteArray &json);
+        MediaObject();
+
+        void setJson(const QByteArray &json);
 
         QString displayUrl() const;
         QUrl expandedUrl() const;
@@ -21,6 +24,9 @@ public:
         QJsonObject m_object;
     };
     EntitiesObject(const QByteArray &json);
+    EntitiesObject();
+
+    void setJson(const QByteArray &json);
 
     MediaObject media() const;
 private:

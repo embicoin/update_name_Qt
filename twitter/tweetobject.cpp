@@ -9,6 +9,15 @@ TweetObject::TweetObject(const QByteArray &json)
     m_object = QJsonDocument::fromJson(json).object();
 }
 
+TweetObject::TweetObject()
+{
+}
+
+void TweetObject::setJson(const QByteArray &json)
+{
+    m_object = QJsonDocument::fromJson(json).object();
+}
+
 QString TweetObject::idStr() const
 {
     return m_object.value("id_str").toString();

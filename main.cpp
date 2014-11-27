@@ -9,21 +9,25 @@
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_MAC
+    qDebug() << "Set library path...";
     QDir dir(argv[0]);
     dir.cdUp();
     dir.cdUp();
     dir.cd("PlugIns");
     QCoreApplication::addLibraryPath(dir.path());
+    qDebug() << "Set library path finished\n"
+                "LibraryPath:" << QCoreApplication::libraryPaths();
 #endif
-    int result = 0;
+    int result = 255;
 
-    do {
+    while(result == 255) {
         QApplication a(argc, argv);
         QLockFile lockfile(".update_name_Qt_lockfile");
         Settings settings;
 
         lockfile.tryLock();
         if(lockfile.error() != QLockFile::NoError) {
+            qWarning() << "update_name_Qt is already running!";
             return 1;
         }
 
@@ -35,8 +39,13 @@ int main(int argc, char *argv[])
                 || settings.accessToken().isEmpty()
                 || settings.accessTokenSecret().isEmpty()) {
             AuthDialog d;
-            if(d.exec() != d.Accepted) {
+            switch (d.exec()) {
+            case QDialog::Rejected:
                 return 1;
+            case 255:
+                continue;
+            default:
+                break;
             }
         }
 
@@ -47,7 +56,7 @@ int main(int argc, char *argv[])
 
         lockfile.unlock();
 
-    } while(result == 255);
+    }
 
     return result;
 }

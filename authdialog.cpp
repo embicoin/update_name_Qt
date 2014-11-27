@@ -11,6 +11,7 @@
 #include <QMessageAuthenticationCode>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QDebug>
 
 const QString AuthDialog::REQUEST_TOKEN_URL       = "https://api.twitter.com/oauth/request_token";
 const QString AuthDialog::AUTHORIZE_URL           = "https://api.twitter.com/oauth/authorize";
@@ -26,14 +27,30 @@ AuthDialog::AuthDialog(QWidget *parent) :
 
     setFixedSize(sizeHint());
 
-    try {
-        ui->urlLine->setText(this->authorizeUrl());
-    } catch(std::runtime_error &e) {
-        QMessageBox::critical(this,
-                              tr("エラー"),
-                              tr("認証ページのURLの取得に失敗しました。\n%1").arg(e.what()),
-                              QMessageBox::Ok);
-        QMetaObject::invokeMethod(this, "reject", Qt::QueuedConnection);
+    bool setFinished = false;
+
+    while(!setFinished) {
+        try {
+            qDebug() << "[Info] AuthDialog: Setting authorize page url.";
+            ui->urlLine->setText(authorizeUrl());
+            setFinished = true;
+            qDebug() << "[Info] AuthDialog: Set url finished.";
+        } catch(std::runtime_error &e) {
+            qCritical() << "[Error] AuthDialog: Setting authorize page url failed."
+                           "        Error message:" << e.what();
+            switch(QMessageBox::critical(this,
+                                  tr("エラー"),
+                                  tr("認証ページのURLの取得に失敗しました。\n%1").arg(e.what()),
+                                  QMessageBox::Ok, QMessageBox::Retry)) {
+            case QMessageBox::Retry:
+                setFinished = false;
+                break;
+            case QMessageBox::Ok:
+            default:
+                setFinished = true;
+                reject();
+            }
+        }
     }
 
     connect(ui->openUrlButton, &QPushButton::clicked, [&]() {
@@ -47,15 +64,24 @@ AuthDialog::AuthDialog(QWidget *parent) :
     });
     connect(ui->buttonBox, &QDialogButtonBox::accepted, [&]() {
         try {
-            this->authorizePin(ui->pinCodeLine->text());
-            this->accept();
+            authorizePin(ui->pinCodeLine->text());
+            qDebug() << "[Info] AuthDialog: Authorize finished.";
+            accept();
         } catch(std::runtime_error &e) {
-            QMessageBox::critical(this,
-                                  tr("エラー"),
-                                  tr("認証に失敗しました。\n%1").arg(e.what()),
-                                  QMessageBox::Ok);
-            this->reject();
-            return;
+            qCritical() << "[Error] AuthDialog: Authorize failed.\n"
+                           "        Error message:" << e.what();
+            switch(QMessageBox::critical(this,
+                                         tr("エラー"),
+                                         tr("認証に失敗しました。\n%1").arg(e.what()),
+                                         QMessageBox::Ok, QMessageBox::Retry)) {
+            case QMessageBox::Retry:
+                done(255);
+                break;
+            case QMessageBox::Ok:
+            default:
+                reject();
+                break;
+            }
         }
     });
 }
@@ -81,6 +107,11 @@ QString AuthDialog::authorizeUrl()
     QNetworkReply::NetworkError error;
     QString errorString;
 
+    qDebug() << "[Info] AuthDialog: Clear request token.";
+
+    m_requestToken.clear();
+    m_requestTokenSecret.clear();
+
     params["oauth_consumer_key"]     = DEFAULT_CONSUMER_KEY;
     params["oauth_nonce"]            = OAUTH_NONCE;
     params["oauth_signature_method"] = OAUTH_SIGNATURE_METHOD;
@@ -100,6 +131,8 @@ QString AuthDialog::authorizeUrl()
                        QMessageAuthenticationCode::hash(signatureBaseString,
                                                         signatureKey,
                                                         QCryptographicHash::Sha1).toBase64().toPercentEncoding());
+
+    qDebug() << "[Info] AuthDialog: Request to twitter api.";
 
     request_url.setUrl(REQUEST_TOKEN_URL);
     request_url.setQuery(query);
@@ -172,6 +205,8 @@ void AuthDialog::authorizePin(const QString pin)
                        QMessageAuthenticationCode::hash(signatureBaseString,
                                                         signatureKey,
                                                         QCryptographicHash::Sha1).toBase64().toPercentEncoding());
+
+    qDebug() << "[Info] AuthDialog: Request to twitter api.";
 
     request_url.setUrl(ACCESS_TOKEN_URL);
     request_url.setQuery(query);
