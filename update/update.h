@@ -35,7 +35,7 @@ signals:
 protected:
     RestClient m_twitter;
     Settings m_settings;
-    UsersObject m_executedUser = UsersObject(NULL);
+    UsersObject m_executedUser;
     QString m_errorMessage;
 
 protected slots:
