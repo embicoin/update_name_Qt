@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QDebug>
+#include <memory>
 
 const QString AuthDialog::REQUEST_TOKEN_URL       = "https://api.twitter.com/oauth/request_token";
 const QString AuthDialog::AUTHORIZE_URL           = "https://api.twitter.com/oauth/authorize";
@@ -36,7 +37,7 @@ AuthDialog::AuthDialog(QWidget *parent) :
             setFinished = true;
             qDebug() << "[Info] AuthDialog: Set url finished.";
         } catch(std::runtime_error &e) {
-            qCritical() << "[Error] AuthDialog: Setting authorize page url failed."
+            qCritical() << "[Error] AuthDialog: Setting authorize page url failed.\n"
                            "        Error message:" << e.what();
             switch(QMessageBox::critical(this,
                                   tr("エラー"),
@@ -48,7 +49,6 @@ AuthDialog::AuthDialog(QWidget *parent) :
             case QMessageBox::Ok:
             default:
                 setFinished = true;
-                reject();
             }
         }
     }
@@ -66,7 +66,6 @@ AuthDialog::AuthDialog(QWidget *parent) :
         try {
             authorizePin(ui->pinCodeLine->text());
             qDebug() << "[Info] AuthDialog: Authorize finished.";
-            accept();
         } catch(std::runtime_error &e) {
             qCritical() << "[Error] AuthDialog: Authorize failed.\n"
                            "        Error message:" << e.what();
@@ -75,11 +74,11 @@ AuthDialog::AuthDialog(QWidget *parent) :
                                          tr("認証に失敗しました。\n%1").arg(e.what()),
                                          QMessageBox::Ok, QMessageBox::Retry)) {
             case QMessageBox::Retry:
-                done(255);
+                QMetaObject::invokeMethod(this, "done", Q_ARG(int, 255));
                 break;
             case QMessageBox::Ok:
             default:
-                reject();
+                QMetaObject::invokeMethod(this, "reject");
                 break;
             }
         }
@@ -100,12 +99,10 @@ QString AuthDialog::authorizeUrl()
     QUrl request_url;
     QUrlQuery tokenQuery;
     QNetworkAccessManager manager;
-    QNetworkReply *reply;
+    std::unique_ptr<QNetworkReply> reply;
     QTimer timer;
     QEventLoop loop;
     QByteArray response;
-    QNetworkReply::NetworkError error;
-    QString errorString;
 
     qDebug() << "[Info] AuthDialog: Clear request token.";
 
@@ -136,28 +133,25 @@ QString AuthDialog::authorizeUrl()
 
     request_url.setUrl(REQUEST_TOKEN_URL);
     request_url.setQuery(query);
-    reply = manager.get(QNetworkRequest(request_url));
+    reply.reset(manager.get(QNetworkRequest(request_url)));
 
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    connect(reply.get(), SIGNAL(finished()), &loop, SLOT(quit()));
     timer.start(15000);
     loop.exec();
 
     response = reply->readAll();
-    error = reply->error();
-    errorString = reply->errorString();
-    reply->deleteLater();
 
     if(!timer.isActive()) {
         throw std::runtime_error("タイムアウトしました。");
-    } else if(error == QNetworkReply::NoError) {
+    } else if(reply->error() == QNetworkReply::NoError) {
         tokenQuery.setQuery(response);
         m_requestToken = tokenQuery.queryItemValue("oauth_token");
         m_requestTokenSecret = tokenQuery.queryItemValue("oauth_token_secret");
     } else {
         if(response.isEmpty()) {
-            throw std::runtime_error(errorString.toStdString());
+            throw std::runtime_error(reply->readAll().toStdString());
         } else {
             throw std::runtime_error(QString::fromUtf8(response).toStdString());
         }
@@ -168,23 +162,17 @@ QString AuthDialog::authorizeUrl()
 
 void AuthDialog::authorizePin(const QString pin)
 {
-    if(m_requestToken.isEmpty() || m_requestTokenSecret.isEmpty()) {
-        return;
-    }
-
     const QByteArray signatureKey = DEFAULT_CONSUMER_SECRET.toUtf8() + "&";
     QVariantMap params;
     QByteArray signatureBaseString;
     QUrlQuery query;
     QUrl request_url;
     QNetworkAccessManager manager;
-    QNetworkReply *reply;
+    std::unique_ptr<QNetworkReply> reply;
     QTimer timer;
     QEventLoop loop;
     QUrlQuery tokenQuery;
     QByteArray response;
-    QNetworkReply::NetworkError error;
-    QString errorString;
 
     params["oauth_consumer_key"]     = DEFAULT_CONSUMER_KEY;
     params["oauth_nonce"]            = OAUTH_NONCE;
@@ -210,30 +198,28 @@ void AuthDialog::authorizePin(const QString pin)
 
     request_url.setUrl(ACCESS_TOKEN_URL);
     request_url.setQuery(query);
-    reply = manager.get(QNetworkRequest(request_url));
+    reply.reset(manager.get(QNetworkRequest(request_url)));
 
     timer.setSingleShot(true);
     connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    connect(reply.get(), SIGNAL(finished()), &loop, SLOT(quit()));
     timer.start(15000);
     loop.exec();
 
     response = reply->readAll();
-    error = reply->error();
-    errorString = reply->errorString();
-    reply->deleteLater();
 
     if(!timer.isActive()) {
         throw std::runtime_error("タイムアウトしました。");
-    } else if(error == QNetworkReply::NoError) {
+    } else if(reply->error() == QNetworkReply::NoError) {
         tokenQuery.setQuery(response);
+        qDebug() << response;
         m_settings.setConsumerKey(DEFAULT_CONSUMER_KEY);
         m_settings.setConsumerSecret(DEFAULT_CONSUMER_SECRET);
         m_settings.setAccessToken(tokenQuery.queryItemValue("oauth_token"));
         m_settings.setAccessTokenSecret(tokenQuery.queryItemValue("oauth_token_secret"));
     } else {
         if(response.isEmpty()) {
-            throw std::runtime_error(errorString.toStdString());
+            throw std::runtime_error(reply->errorString().toStdString());
         } else {
             throw std::runtime_error(QString::fromUtf8(response).toStdString());
         }
