@@ -12,10 +12,14 @@ QString UpdateName::name()
     return m_updatedName;
 }
 
-void UpdateName::exec(const TweetObject &tweet, const QString &newName)
+void UpdateName::exec(const TweetObject &tweet, QString newName)
 {
     m_executedUser = tweet.user();
     emit stateChanged(Executed);
+
+    if(!m_settings.updateNameFormat().isEmpty()) {
+        newName = m_settings.updateNameFormat().replace("%n", newName);
+    }
 
     qDebug() << "[Info] update_name: Update name to" << newName;
 
