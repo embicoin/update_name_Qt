@@ -77,7 +77,11 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
 
     if(m_myscreenname.isEmpty()) {
         if(!getScreenName()) {
-            return;
+            if(m_settings.screenName().isEmpty()) {
+                return;
+            } else {
+                m_myscreenname = m_settings.screenName();
+            }
         }
     }
 
@@ -351,15 +355,25 @@ bool UpdateProfile::getScreenName()
 {
     try {
         m_myscreenname = m_twitter.verifyCredentials().screen_name();
+        m_settings.setScreenName(m_myscreenname);
         emit stateChanged(GetScreenNameFinished);
         qDebug() << "[Info] UpdateProfile: Gettings screen_name Successed.\n"
                     "                      Your screen_name:" << m_myscreenname;
         return true;
-    } catch(const std::runtime_error &e) {
-        qCritical() << "[Error] UpdateProfile: Getting screen_name Failed.\n"
-                       "                       Error Message:" << e.what();
-        m_errormessage = QString::fromStdString(e.what());
-        emit error(GetScreenNameFailed);
-        return false;
+    } catch(std::runtime_error&) {
+        try {
+            m_myscreenname = m_twitter.usersLookup(NULL, m_settings.userId()).screen_name();
+            m_settings.setScreenName(m_myscreenname);
+            emit stateChanged(GetScreenNameFinished);
+            qDebug() << "[Info] UpdateProfile: Gettings screen_name Successed.\n"
+                        "                      Your screen_name:" << m_myscreenname;
+            return true;
+        } catch(const std::runtime_error &e) {
+            qCritical() << "[Error] UpdateProfile: Getting screen_name Failed.\n"
+                           "                       Error Message:" << e.what();
+            m_errormessage = QString::fromStdString(e.what());
+            emit error(GetScreenNameFailed);
+            return false;
+        }
     }
 }

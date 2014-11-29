@@ -175,7 +175,7 @@ void MainWindow::writeUserStreamLog(UserStream::State state)
 {
     switch(state) {
     case UserStream::ConnectionFailed:
-        writeLog(tr("UserStreamへの接続に失敗しました。"));
+        writeLog(tr("UserStreamへの接続に失敗しました。: %1").arg(m_userStream.errorString()));
         break;
     case UserStream::Connecting:
         writeLog(tr("UserStreamに接続しています..."));
@@ -187,7 +187,7 @@ void MainWindow::writeUserStreamLog(UserStream::State state)
         writeLog(tr("UserStreamから切断されました。"));
         break;
     case UserStream::Waiting:
-        writeLog(tr("待機しています..."));
+        writeLog(tr("再接続まで%1秒待機しています...").arg(QString::number(m_userStream.waitTime())));
         break;
     }
 }

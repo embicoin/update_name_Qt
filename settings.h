@@ -18,6 +18,8 @@ public:
     QString consumerSecret() const;
     QString accessToken() const;
     QString accessTokenSecret() const;
+    QString userId() const;
+    QString screenName() const;
 
     /* Message */
     QString startupMessage() const;
@@ -32,6 +34,8 @@ public:
     QString updateDescriptionFailedMessage() const;
     QString updateImageSuccessedMessage() const;
     QString updateImageFailedMessage() const;
+
+    QString updateNameFormat() const;
 
     /* Is Enabled Update Commands */
     bool isEnabledUpdateName() const;
@@ -63,6 +67,8 @@ public:
     void setConsumerSecret(const QString &cs);
     void setAccessToken(const QString &at);
     void setAccessTokenSecret(const QString &ats);
+    void setUserId(const QString &userId);
+    void setScreenName(const QString &screenName);
 
     void setStartupMessage(const QString &message);
     void setClosedMessage(const QString &message);
@@ -76,6 +82,8 @@ public:
     void setUpdateDescriptionFailedMessage(const QString &message);
     void setUpdateImageSuccessedMessage(const QString &message);
     void setUpdateImageFailedMessage(const QString &message);
+
+    void setUpdateNameFormat(const QString &format);
 
     void setUpdateNameEnabled(const bool &enable);
     void setUpdateUrlEnabled(const bool &enable);
@@ -122,6 +130,8 @@ private:
     static QString m_consumerSecret;
     static QString m_accessToken;
     static QString m_accessTokenSecret;
+    static QString m_userId;
+    static QString m_screenName;
 
     static QString m_startupMessage;
     static QString m_closedMessage;
@@ -135,6 +145,8 @@ private:
     static QString m_updateDescriptionFailedMessage;
     static QString m_updateImageSuccessedMessage;
     static QString m_updateImageFailedMessage;
+
+    static QString m_updateNameFormat;
 
     static bool m_isEnabledUpdateName;
     static bool m_isEnabledUdpateUrl;

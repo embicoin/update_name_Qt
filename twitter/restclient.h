@@ -27,6 +27,7 @@ public:
                         const QString &location = NULL,
                         const QString &description = NULL);
     UsersObject updateProfileImage(const QByteArray &mediaData);
+    UsersObject usersLookup(const QString &screenName = NULL, const QString &userId = NULL);
     QString mediaUpload(const QString &mediaFileName);
     QString mediaUpload(const QByteArray &mediaData);
 
@@ -40,6 +41,7 @@ private:
     static const QString STATUSES_UPDATE_URL;
     static const QString MEDIA_UPLOAD_URL;
     static const QString ACCOUT_UPDATE_PROFILE_IMAGE_URL;
+    static const QString USERS_LOOKUP_URL;
     Settings m_settings;
 
 };

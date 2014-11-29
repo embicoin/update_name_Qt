@@ -19,6 +19,7 @@ const QString RestClient::ACCOUNT_UPDATE_PROFILE_URL      = "https://api.twitter
 const QString RestClient::STATUSES_UPDATE_URL             = "https://api.twitter.com/1.1/statuses/update.json";
 const QString RestClient::MEDIA_UPLOAD_URL                = "https://upload.twitter.com/1.1/media/upload.json";
 const QString RestClient::ACCOUT_UPDATE_PROFILE_IMAGE_URL = "https://api.twitter.com/1.1/account/update_profile_image.json";
+const QString RestClient::USERS_LOOKUP_URL                = "https://api.twitter.com/1.1/users/lookup.json";
 
 RestClient::RestClient(QObject *parent) :
     QObject(parent)
@@ -230,6 +231,25 @@ UsersObject RestClient::updateProfile(const QString &name, const QString &url, c
     }
     try {
         return UsersObject(requestTwitterApi(QNetworkAccessManager::PostOperation, ACCOUNT_UPDATE_PROFILE_URL, dataParams));
+    } catch(...) {
+        throw;
+    }
+}
+
+UsersObject RestClient::usersLookup(const QString &screenName, const QString &userId)
+{
+    QVariantMap dataParams;
+    if(!screenName.isEmpty()) {
+        dataParams["screen_name"] = screenName;
+    }
+    if(!userId.isEmpty()) {
+        dataParams["user_id"] = userId;
+    }
+    if(dataParams.isEmpty()) {
+        return UsersObject(NULL);
+    }
+    try {
+        return UsersObject(requestTwitterApi(QNetworkAccessManager::GetOperation, USERS_LOOKUP_URL, dataParams));
     } catch(...) {
         throw;
     }

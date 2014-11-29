@@ -20,6 +20,8 @@ QString Settings::m_consumerKey = Settings::s->value("ConsumerKey").toString();
 QString Settings::m_consumerSecret = Settings::s->value("ConsumerSecret").toString();
 QString Settings::m_accessToken = Settings::s->value("AccessToken").toString();
 QString Settings::m_accessTokenSecret = Settings::s->value("AccessTokenSecret").toString();
+QString Settings::m_userId = Settings::s->value("UserId").toString();
+QString Settings::m_screenName = Settings::s->value("ScreenName").toString();
 
 QString Settings::m_startupMessage = Settings::s->value("StartupMessage",Settings::DEFAULT_STARTUP_MESSAGE).toString();
 QString Settings::m_closedMessage = Settings::s->value("ClosedMessage", Settings::DEFAULT_CLOSED_MESSAGE).toString();
@@ -43,6 +45,8 @@ QString Settings::m_updateImageSuccessedMessage = Settings::s->value("UpdateImag
                                                                      Settings::DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE).toString();
 QString Settings::m_updateImageFailedMessage = Settings::s->value("UpdateImageFailedMessage",
                                                                   Settings::DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE).toString();
+
+QString Settings::m_updateNameFormat = Settings::s->value("UpdateNameFormat").toString();
 
 bool Settings::m_isEnabledUpdateName = Settings::s->value("IsEnabledUpdateName", true).toBool();
 bool Settings::m_isEnabledUdpateUrl = Settings::s->value("IsEnabledUpdateUrl", false).toBool();
@@ -97,6 +101,16 @@ QString Settings::accessToken() const
 QString Settings::accessTokenSecret() const
 {
     return m_accessTokenSecret;
+}
+
+QString Settings::userId() const
+{
+    return m_userId;
+}
+
+QString Settings::screenName() const
+{
+    return m_screenName;
 }
 
 QString Settings::startupMessage() const
@@ -157,6 +171,11 @@ QString Settings::updateImageSuccessedMessage() const
 QString Settings::updateImageFailedMessage() const
 {
     return m_updateImageFailedMessage;
+}
+
+QString Settings::updateNameFormat() const
+{
+    return m_updateNameFormat;
 }
 
 bool Settings::isEnabledUpdateName() const
@@ -278,6 +297,18 @@ void Settings::setAccessTokenSecret(const QString &ats)
     s->setValue("AccessTokenSecret", ats);
 }
 
+void Settings::setUserId(const QString &userId)
+{
+    m_userId = userId;
+    s->setValue("UserId", userId);
+}
+
+void Settings::setScreenName(const QString &screenName)
+{
+    m_screenName = screenName;
+    s->setValue("ScreenName", screenName);
+}
+
 void Settings::setStartupMessage(const QString &message)
 {
     if(message.isEmpty()) {
@@ -376,6 +407,12 @@ void Settings::setUpdateDescriptionFailedMessage(const QString &message)
         m_updateDescriptionFailedMessage = message;
     }
     s->setValue("UpdateDescriptionFailedMessage", m_updateDescriptionFailedMessage);
+}
+
+void Settings::setUpdateNameFormat(const QString &format)
+{
+    m_updateNameFormat = format;
+    s->setValue("UpdateNameFormat", format);
 }
 
 void Settings::setUpdateImageSuccessedMessage(const QString &message)
