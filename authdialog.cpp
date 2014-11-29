@@ -212,11 +212,12 @@ void AuthDialog::authorizePin(const QString pin)
         throw std::runtime_error("タイムアウトしました。");
     } else if(reply->error() == QNetworkReply::NoError) {
         tokenQuery.setQuery(response);
-        qDebug() << response;
         m_settings.setConsumerKey(DEFAULT_CONSUMER_KEY);
         m_settings.setConsumerSecret(DEFAULT_CONSUMER_SECRET);
         m_settings.setAccessToken(tokenQuery.queryItemValue("oauth_token"));
         m_settings.setAccessTokenSecret(tokenQuery.queryItemValue("oauth_token_secret"));
+        m_settings.setUserId(tokenQuery.queryItemValue("user_id"));
+        m_settings.setScreenName(tokenQuery.queryItemValue("screen_name"));
     } else {
         if(response.isEmpty()) {
             throw std::runtime_error(reply->errorString().toStdString());
