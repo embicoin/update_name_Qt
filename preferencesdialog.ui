@@ -26,7 +26,7 @@
    <item>
     <widget class="QTabWidget" name="tab">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -110,7 +110,7 @@
            <item>
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>有効にするコマンドを選ぶことができます。</string>
+              <string>コマンドの設定ができます。</string>
              </property>
             </widget>
            </item>
@@ -125,6 +125,26 @@
                 <property name="text">
                  <string>update_nameを有効にする</string>
                 </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox_23">
+                <property name="title">
+                 <string>update_nameのフォーマット</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_36">
+                 <item>
+                  <widget class="QLabel" name="label_30">
+                   <property name="text">
+                    <string>%nに新しい名前が入ります。
+空欄にすると、新しい名前がそのまま適用されます。</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="updateNameFormatLine"/>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
@@ -694,11 +714,6 @@
                <widget class="QPlainTextEdit" name="updateImageFailedMessageText"/>
               </item>
              </layout>
-             <zorder>groupBox_14</zorder>
-             <zorder>label_28</zorder>
-             <zorder>postUpdateImageFailedMessageCheck</zorder>
-             <zorder>label_29</zorder>
-             <zorder>updateImageFailedMessageText</zorder>
             </widget>
            </item>
           </layout>

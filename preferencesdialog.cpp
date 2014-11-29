@@ -116,6 +116,7 @@ void PreferencesDialog::loadSettings()
 
     /* コマンド */
     ui->enabledUpdateNameCheck->setChecked(m_settings.isEnabledUpdateName());
+    ui->updateNameFormatLine->setText(m_settings.updateNameFormat());
     ui->enabledUpdateUrlCheck->setChecked(m_settings.isEnabledUpdateUrl());
     ui->enabledUpdateLocationCheck->setChecked(m_settings.isEnabledUpdateLocation());
     ui->enabledUpdateDescriptionCheck->setChecked(m_settings.isEnabledUpdateDescription());
@@ -167,6 +168,7 @@ void PreferencesDialog::saveSettings()
 
     /* コマンド */
     m_settings.setUpdateNameEnabled(ui->enabledUpdateNameCheck->isChecked());
+    m_settings.setUpdateNameFormat(ui->updateNameFormatLine->text());
     m_settings.setUpdateUrlEnabled(ui->enabledUpdateUrlCheck->isChecked());
     m_settings.setUpdateLocationEnabled(ui->enabledUpdateLocationCheck->isChecked());
     m_settings.setUpdateDescriptionEnabled(ui->enabledUpdateDescriptionCheck->isChecked());
