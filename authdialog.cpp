@@ -151,7 +151,7 @@ QString AuthDialog::authorizeUrl()
         m_requestTokenSecret = tokenQuery.queryItemValue("oauth_token_secret");
     } else {
         if(response.isEmpty()) {
-            throw std::runtime_error(reply->readAll().toStdString());
+            throw std::runtime_error(QString::fromUtf8(reply->readAll()).toStdString());
         } else {
             throw std::runtime_error(QString::fromUtf8(response).toStdString());
         }
