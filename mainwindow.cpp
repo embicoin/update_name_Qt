@@ -137,9 +137,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_updateProfile.moveToThread(m_updateProfileThread);
     m_updateProfileThread->start();
 
-    if(m_settings.isAutoStartUpdateName()) {
+    if (m_settings.isAutoStartUpdateName())
         startUpdateName();
-    }
 }
 
 MainWindow::~MainWindow()
@@ -151,12 +150,10 @@ MainWindow::~MainWindow()
     m_systemTrayActionQuit->deleteLater();
     m_systemTrayActionShowWindow->deleteLater();
     delete ui;
-    if(m_userStream.isRunning()) {
+    if (m_userStream.isRunning())
         m_userStream.wait();
-    }
-    if(m_updateProfileThread->isRunning()) {
+    if (m_updateProfileThread->isRunning())
         m_updateProfileThread->wait();
-    }
     m_updateProfileThread->deleteLater();
 }
 
@@ -215,16 +212,15 @@ void MainWindow::startUpdateName()
 
 void MainWindow::stopUpdateName()
 {
-    if(m_userStream.isFinished()) {
+    if (m_userStream.isFinished())
         return;
-    }
 
     m_userStream.stop();
-    if(m_settings.isPostClosedMessage()) {
+    if (m_settings.isPostClosedMessage()) {
         try {
             m_twitter.statusUpdate(m_settings.closedMessage());
             writeLog(tr("終了メッセージをツイートしました。"));
-        } catch(const std::runtime_error &e) {
+        } catch (const std::runtime_error &e) {
             writeLog(tr("終了メッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
         }
     }
@@ -270,13 +266,12 @@ void MainWindow::saveLog()
 
     dialog.selectFile("update_name_log.txt");
     dialog.setAcceptMode(QFileDialog::AcceptSave);
-    if(dialog.exec() != QFileDialog::Accepted) {
+    if (dialog.exec() != QFileDialog::Accepted)
         return;
-    }
 
     logfile.setFileName(dialog.selectedFiles().first());
-    if(logfile.open(QFile::WriteOnly)) {
-        if(logfile.write(ui->logConsole->toPlainText().toUtf8())) {
+    if (logfile.open(QFile::WriteOnly)) {
+        if (logfile.write(ui->logConsole->toPlainText().toUtf8())) {
             logfile.close();
             QMessageBox::information(this,
                               tr("保存しました"),
