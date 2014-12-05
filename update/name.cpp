@@ -27,7 +27,7 @@ void UpdateName::exec(const TweetObject &tweet, QString newName)
         m_updatedName = m_twitter.updateName(newName).name();
         emit stateChanged(Updated);
 
-        qDebug() << "[info] update_name: Name updated."
+        qDebug() << "[info] update_name: Name updated.\n"
                     "       New name:"<< m_updatedName;
 
         if(m_settings.isPostUpdateNameSuccessedMessage()) {
@@ -39,7 +39,7 @@ void UpdateName::exec(const TweetObject &tweet, QString newName)
         m_errorMessage = QString::fromStdString(e.what());
         emit error(UpdateFailed);
 
-        qCritical() << "[Error] update_name: Update name failed."
+        qCritical() << "[Error] update_name: Update name failed.\n"
                        "        Error message:"<< m_errorMessage;
 
         if(m_settings.isPostUpdateNameFailedMessage())

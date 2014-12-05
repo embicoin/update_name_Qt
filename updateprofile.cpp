@@ -358,7 +358,7 @@ bool UpdateProfile::getScreenName()
         m_settings.setScreenName(m_myscreenname);
         emit stateChanged(GetScreenNameFinished);
         qDebug() << "[Info] UpdateProfile: Gettings screen_name Successed.\n"
-                    "                      Your screen_name:" << m_myscreenname;
+                    "       Your screen_name:" << m_myscreenname;
         return true;
     } catch(std::runtime_error&) {
         try {
@@ -366,11 +366,11 @@ bool UpdateProfile::getScreenName()
             m_settings.setScreenName(m_myscreenname);
             emit stateChanged(GetScreenNameFinished);
             qDebug() << "[Info] UpdateProfile: Gettings screen_name Successed.\n"
-                        "                      Your screen_name:" << m_myscreenname;
+                        "       Your screen_name:" << m_myscreenname;
             return true;
         } catch(const std::runtime_error &e) {
             qCritical() << "[Error] UpdateProfile: Getting screen_name Failed.\n"
-                           "                       Error Message:" << e.what();
+                           "        Error Message:" << e.what();
             m_errormessage = QString::fromStdString(e.what());
             emit error(GetScreenNameFailed);
             return false;
