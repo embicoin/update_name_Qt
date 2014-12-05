@@ -179,9 +179,13 @@ void MainWindow::writeUserStreamLog(UserStream::State state)
         break;
     case UserStream::Running:
         writeLog(tr("UserStreamに接続しました。"));
+        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("接続しました")), Q_ARG(QString, tr("UserStreamに接続しました。")));
         break;
     case UserStream::DisConnected:
         writeLog(tr("UserStreamから切断されました。"));
+        QMetaObject::invokeMethod(m_systemTray, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, tr("切断されました")), Q_ARG(QString, tr("UserStreamから切断されました。")));
         break;
     case UserStream::Waiting:
         writeLog(tr("再接続まで%1秒待機しています...").arg(QString::number(m_userStream.waitTime())));
