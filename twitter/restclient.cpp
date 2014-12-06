@@ -14,12 +14,13 @@
 #include <QJsonValue>
 #include <QJsonArray>
 
-const QString RestClient::ACCOUNT_VERIFY_CREDENTIALS_URL  = "https://api.twitter.com/1.1/account/verify_credentials.json";
-const QString RestClient::ACCOUNT_UPDATE_PROFILE_URL      = "https://api.twitter.com/1.1/account/update_profile.json";
-const QString RestClient::STATUSES_UPDATE_URL             = "https://api.twitter.com/1.1/statuses/update.json";
-const QString RestClient::MEDIA_UPLOAD_URL                = "https://upload.twitter.com/1.1/media/upload.json";
-const QString RestClient::ACCOUT_UPDATE_PROFILE_IMAGE_URL = "https://api.twitter.com/1.1/account/update_profile_image.json";
-const QString RestClient::USERS_LOOKUP_URL                = "https://api.twitter.com/1.1/users/lookup.json";
+const QString RestClient::ACCOUNT_VERIFY_CREDENTIALS_URL              = "https://api.twitter.com/1.1/account/verify_credentials.json";
+const QString RestClient::ACCOUNT_UPDATE_PROFILE_URL                  = "https://api.twitter.com/1.1/account/update_profile.json";
+const QString RestClient::STATUSES_UPDATE_URL                         = "https://api.twitter.com/1.1/statuses/update.json";
+const QString RestClient::MEDIA_UPLOAD_URL                            = "https://upload.twitter.com/1.1/media/upload.json";
+const QString RestClient::ACCOUT_UPDATE_PROFILE_IMAGE_URL             = "https://api.twitter.com/1.1/account/update_profile_image.json";
+const QString RestClient::USERS_LOOKUP_URL                            = "https://api.twitter.com/1.1/users/lookup.json";
+const QString RestClient::ACCOUNT_UPDATE_PROFILE_BACKGROUND_IMAGE_URL = "https://api.twitter.com/1.1/account/update_profile_background_image.json";
 
 RestClient::RestClient(QObject *parent) :
     QObject(parent)
@@ -288,6 +289,19 @@ QString RestClient::mediaUpload(const QByteArray &mediaData)
 }
 
 UsersObject RestClient::updateProfileImage(const QByteArray &mediaData)
+{
+    QVariantMap dataParams;
+    dataParams["image"] = mediaData.toBase64();
+    try {
+        return UsersObject(requestTwitterApi(QNetworkAccessManager::PostOperation,
+                                             ACCOUT_UPDATE_PROFILE_IMAGE_URL,
+                                             dataParams));
+    } catch(...) {
+        throw;
+    }
+}
+
+UsersObject RestClient::updateProfileBackground(const QByteArray &mediaData)
 {
     QVariantMap dataParams;
     dataParams["image"] = mediaData.toBase64();
