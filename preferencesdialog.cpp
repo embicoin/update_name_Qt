@@ -21,7 +21,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
                                    << tr("update_url")
                                    << tr("update_location")
                                    << tr("update_description")
-                                   << tr("update_image"));
+                                   << tr("update_image")
+                                   << tr("update_background_image"));
     ui->selectMessageBox->setCurrentIndex(0);
     ui->messageStack->setCurrentIndex(0);
 
@@ -121,6 +122,7 @@ void PreferencesDialog::loadSettings()
     ui->enabledUpdateLocationCheck->setChecked(m_settings.isEnabledUpdateLocation());
     ui->enabledUpdateDescriptionCheck->setChecked(m_settings.isEnabledUpdateDescription());
     ui->enabledUpdateImageCheck->setChecked(m_settings.isEnabledUpdateImage());
+    ui->enabledUpdateBackgroundImageCheck->setChecked(m_settings.isEnabledUpdateBackgroundImage());
 
     /* メッセージ */
     //開始/終了
@@ -158,6 +160,12 @@ void PreferencesDialog::loadSettings()
     ui->updateImageSuccessedMessageText->setPlainText(m_settings.updateImageSuccessedMessage());
     ui->postUpdateImageFailedMessageCheck->setChecked(m_settings.isPostUpdateImageFailedMessage());
     ui->updateImageFailedMessageText->setPlainText(m_settings.updateImageFailedMessage());
+
+    //update_background_image
+    ui->postUpdateBackgroundImageSuccessedMessageCheck->setChecked(m_settings.isPostUpdateBackgroundSuccessedMessage());
+    ui->updateBackgroundImageSuccessedMessageText->setPlainText(m_settings.updateImageSuccessedMessage());
+    ui->postUpdateBackgroundImageFailedMessageCheck->setChecked(m_settings.isPostUpdateBackgroundFailedMessage());
+    ui->updateBackgroundImageFailedMessageText->setPlainText(m_settings.updateImageFailedMessage());
 }
 
 void PreferencesDialog::saveSettings()
@@ -173,6 +181,7 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateLocationEnabled(ui->enabledUpdateLocationCheck->isChecked());
     m_settings.setUpdateDescriptionEnabled(ui->enabledUpdateDescriptionCheck->isChecked());
     m_settings.setUpdateImageEnabled(ui->enabledUpdateImageCheck->isChecked());
+    m_settings.setUpdateBackgroundImageEnabled(ui->enabledUpdateBackgroundImageCheck->isChecked());
     
     /* メッセージ */
     //開始/終了
@@ -210,4 +219,10 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateImageSuccessedMessage(ui->updateImageSuccessedMessageText->toPlainText());
     m_settings.setIsPostUpdateImageFailedMessage(ui->postUpdateImageFailedMessageCheck->isChecked());
     m_settings.setUpdateImageFailedMessage(ui->updateImageFailedMessageText->toPlainText());
+
+    //update_background_image
+    m_settings.setIsPostUpdateBackgroundImageSuccessedMessage(ui->postUpdateBackgroundImageSuccessedMessageCheck->isChecked());
+    m_settings.setUpdateBackgroundImageSuccessedMessage(ui->updateBackgroundImageSuccessedMessageText->toPlainText());
+    m_settings.setIsPostUpdateBackgroundImageFailedMessage(ui->postUpdateBackgroundImageFailedMessageCheck->isChecked());
+    m_settings.setUpdateBackgroundImageFailedMessage(ui->updateBackgroundImageFailedMessageText->toPlainText());
 }

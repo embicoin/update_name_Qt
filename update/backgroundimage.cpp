@@ -30,6 +30,7 @@ void UpdateBackgroundImage::exec(const TweetObject &tweet)
     QTimer timer;
     QEventLoop loop;
 
+    m_executedUser = tweet.user();
     emit stateChanged(Executed);
 
     qDebug() << "[Info] update_background_image: Update image to" << tweet.entities().media().mediaUrlHttps().toString();
@@ -51,13 +52,13 @@ void UpdateBackgroundImage::exec(const TweetObject &tweet)
         qDebug() << "[Info] update_background_image: Download finished.";
 
         try {
-            m_twitter.updateProfileImage(reply->readAll());
+            m_twitter.updateProfileBackground(reply->readAll());
 
             qDebug() << "[Info] update_background_image: Image updated.";
             qDebug() << "[Info] update_background_image: Getting current image.";
 
             try {
-                m_updatedBackgroundImageUrl = m_twitter.verifyCredentials().profileImageUrlHttps();
+                m_updatedBackgroundImageUrl = m_twitter.verifyCredentials().profileBackgroundImageUrlHttps();
                 qDebug() << "[Info] update_image: Current image is" << m_updatedBackgroundImageUrl;
             } catch (...) {
                 m_updatedBackgroundImageUrl = tweet.entities().media().mediaUrlHttps();

@@ -7,6 +7,7 @@
 #include "update/location.h"
 #include "update/description.h"
 #include "update/image.h"
+#include "update/backgroundimage.h"
 #include "settings.h"
 
 #include <QObject>
@@ -23,6 +24,7 @@ public:
         Location,
         Description,
         Image,
+        BackgroundImage
     };
     enum State {
         GetScreenNameFinished,
@@ -58,11 +60,12 @@ private:
     RestClient m_twitter;
     Settings m_settings;
 
-    UpdateName m_updateName;
-    UpdateUrl m_updateUrl;
-    UpdateLocation m_updateLocation;
-    UpdateDescription m_updateDescription;
-    UpdateImage m_updateImage;
+    //UpdateName m_updateName;
+    //UpdateUrl m_updateUrl;
+    //UpdateLocation m_updateLocation;
+    //UpdateDescription m_updateDescription;
+    //UpdateImage m_updateImage;
+    //UpdateBackgroundImage m_updateBackgroundImage;
 
     static QString m_myscreenname;
     QString m_profilevalue;

@@ -305,9 +305,10 @@ UsersObject RestClient::updateProfileBackground(const QByteArray &mediaData)
 {
     QVariantMap dataParams;
     dataParams["image"] = mediaData.toBase64();
+    dataParams["use"] = true;
     try {
         return UsersObject(requestTwitterApi(QNetworkAccessManager::PostOperation,
-                                             ACCOUT_UPDATE_PROFILE_IMAGE_URL,
+                                             ACCOUNT_UPDATE_PROFILE_BACKGROUND_IMAGE_URL,
                                              dataParams));
     } catch(...) {
         throw;

@@ -222,6 +222,11 @@ bool Settings::isEnabledUpdateImage() const
     return m_isEnabledUpdateImage;
 }
 
+bool Settings::isEnabledUpdateBackgroundImage() const
+{
+    return m_isEnabledUpdateBackgroundImage;
+}
+
 bool Settings::isPostStartupMessage() const
 {
     return m_isPostStartupMessage;
@@ -501,7 +506,7 @@ void Settings::setUpdateImageEnabled(const bool &enable)
 void Settings::setUpdateBackgroundImageEnabled(const bool &enable)
 {
     m_isEnabledUpdateImage = enable;
-    s->setValue("IsEnabledUpdateBackgeoundImage", enable);
+    s->setValue("IsEnabledUpdateBackgroundImage", enable);
 }
 
 void Settings::setIsPostStartupMessage(const bool &on)

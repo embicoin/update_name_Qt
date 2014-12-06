@@ -26,7 +26,7 @@
    <item>
     <widget class="QTabWidget" name="tab">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -102,8 +102,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>478</width>
-            <height>527</height>
+            <width>494</width>
+            <height>560</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -215,6 +215,22 @@
             </widget>
            </item>
            <item>
+            <widget class="QGroupBox" name="groupBox_24">
+             <property name="title">
+              <string>background_image</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_37">
+              <item>
+               <widget class="QCheckBox" name="enabledUpdateBackgroundImageCheck">
+                <property name="text">
+                 <string>update_background_imageを有効にする</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <spacer name="verticalSpacer_4">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -259,7 +275,7 @@
        <item>
         <widget class="QStackedWidget" name="messageStack">
          <property name="currentIndex">
-          <number>5</number>
+          <number>6</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -712,6 +728,78 @@
               </item>
               <item>
                <widget class="QPlainTextEdit" name="updateImageFailedMessageText"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_7">
+          <layout class="QVBoxLayout" name="verticalLayout_38">
+           <item>
+            <widget class="QGroupBox" name="groupBox_25">
+             <property name="title">
+              <string>update_background_image成功時のメッセージ</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_40">
+              <item>
+               <widget class="QLabel" name="label_31">
+                <property name="text">
+                 <string>update_background_imageが成功したときにツイートします。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="postUpdateBackgroundImageSuccessedMessageCheck">
+                <property name="text">
+                 <string>update_background_image成功時のメッセージを有効にする</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_32">
+                <property name="text">
+                 <string>%uはupdate_background_imageを実行したユーザーのscreen_name、
+%iは新しいbackground_imageのURLに置き換えられます。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPlainTextEdit" name="updateBackgroundImageSuccessedMessageText"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_26">
+             <property name="title">
+              <string>update_background_image失敗時のメッセージ</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_39">
+              <item>
+               <widget class="QLabel" name="label_33">
+                <property name="text">
+                 <string>update_background_imageが失敗した時にツイートします。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="postUpdateBackgroundImageFailedMessageCheck">
+                <property name="text">
+                 <string>update_image失敗時のメッセージを有効にする</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_34">
+                <property name="text">
+                 <string>%uはupdate_background_imageを実行したユーザーのscreen_name、
+%eはエラーメッセージに置き換えられます。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPlainTextEdit" name="updateBackgroundImageFailedMessageText"/>
               </item>
              </layout>
             </widget>
