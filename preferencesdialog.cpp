@@ -163,9 +163,9 @@ void PreferencesDialog::loadSettings()
 
     //update_background_image
     ui->postUpdateBackgroundImageSuccessedMessageCheck->setChecked(m_settings.isPostUpdateBackgroundSuccessedMessage());
-    ui->updateBackgroundImageSuccessedMessageText->setPlainText(m_settings.updateImageSuccessedMessage());
+    ui->updateBackgroundImageSuccessedMessageText->setPlainText(m_settings.updateBackgroundImageSuccessedMessage());
     ui->postUpdateBackgroundImageFailedMessageCheck->setChecked(m_settings.isPostUpdateBackgroundFailedMessage());
-    ui->updateBackgroundImageFailedMessageText->setPlainText(m_settings.updateImageFailedMessage());
+    ui->updateBackgroundImageFailedMessageText->setPlainText(m_settings.updateBackgroundImageFailedMessage());
 }
 
 void PreferencesDialog::saveSettings()
