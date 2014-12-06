@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     update/location.cpp \
     update/description.cpp \
     update/image.cpp \
-    twitter/entitiesobject.cpp
+    twitter/entitiesobject.cpp \
+    update/backgroundimage.cpp
 
 HEADERS  += mainwindow.h \
     authdialog.h \
@@ -52,7 +53,8 @@ HEADERS  += mainwindow.h \
     update/location.h \
     update/description.h \
     update/image.h \
-    twitter/entitiesobject.h
+    twitter/entitiesobject.h \
+    update/backgroundimage.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \
