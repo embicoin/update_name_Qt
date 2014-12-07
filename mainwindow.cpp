@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "settings.h"
+#include "update_nane_qt_global.h"
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -200,13 +201,25 @@ void MainWindow::startUpdateName()
     }
 
     m_userStream.start();
-    if(m_settings.isPostStartupMessage()) {
-        try {
-            m_twitter.statusUpdate(m_settings.startupMessage());
-            writeLog(tr("スタートアップメッセージをツイートしました。"));
-        } catch(const std::runtime_error &e) {
-            writeLog(tr("スタートアップメッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
-        }
+    if (m_settings.isPostStartupMessage()) {
+        bool reTry = false;
+        QString endString;
+        do {
+            try {
+                m_twitter.statusUpdate(m_settings.startupMessage() + endString);
+                writeLog(tr("スタートアップメッセージをツイートしました。"));
+                reTry = false;
+            } catch(const std::runtime_error &e) {
+                writeLog(tr("スタートアップメッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
+                if (m_settings.isRetryTweetOnStatusIsADuplicate() && strcmp(e.what(), "Status is a duplicate.") == 0
+                        && m_settings.startupMessage().length() + endString.length() <= 140) {
+                    reTry = true;
+                    endString.append(UpdateNameQt::randomEndString());
+                } else {
+                    reTry = false;
+                }
+            }
+        } while (m_settings.isRetryTweetOnStatusIsADuplicate() && reTry);
     }
 
     ui->updateNameSwitchButton->setText(tr("update_nameストップ"));
@@ -221,12 +234,24 @@ void MainWindow::stopUpdateName()
 
     m_userStream.stop();
     if (m_settings.isPostClosedMessage()) {
-        try {
-            m_twitter.statusUpdate(m_settings.closedMessage());
-            writeLog(tr("終了メッセージをツイートしました。"));
-        } catch (const std::runtime_error &e) {
-            writeLog(tr("終了メッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
-        }
+        bool reTry = false;
+        QString endString;
+        do {
+            try {
+                m_twitter.statusUpdate(m_settings.closedMessage() + endString);
+                writeLog(tr("終了メッセージをツイートしました。"));
+                reTry = false;
+            } catch (const std::runtime_error &e) {
+                writeLog(tr("終了メッセージのツイートに失敗しました。: %1").arg(QString::fromStdString(e.what())));
+                if (m_settings.isRetryTweetOnStatusIsADuplicate() && strcmp(e.what(), "Status is a duplicate.") == 0
+                        && m_settings.closedMessage().length() + endString.length() <= 140) {
+                    reTry = true;
+                    endString.append(UpdateNameQt::randomEndString());
+                } else {
+                    reTry = false;
+                }
+            }
+        } while (m_settings.isRetryTweetOnStatusIsADuplicate() && reTry);
     }
 
     ui->updateNameSwitchButton->setText(tr("update_nameスタート"));

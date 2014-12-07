@@ -65,6 +65,7 @@ public:
 
     bool isStayOnSystemTray() const;
     bool isAutoStartUpdateName() const;
+    bool isRetryTweetOnStatusIsADuplicate() const;
 
     /*Setter*/
 
@@ -116,6 +117,7 @@ public:
 
     void setIsStayOnSystemTray(const bool &on);
     void setIsAutoStartUpdateName(const bool &on);
+    void setIsRetryTweetOnStatusIsADuplicate(const bool &on);
 
 private:
     static const QString SETTINGS_FILE_NAME;
@@ -186,6 +188,7 @@ private:
 
     static bool m_isStayOnSystemTray;
     static bool m_isAutoStartUpdateName;
+    static bool m_isRetryTweetOnStatusIsADuplicate;
 };
 
 #endif // SETTINGS_H

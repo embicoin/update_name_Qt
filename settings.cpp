@@ -78,6 +78,7 @@ bool Settings::m_isPostUpdateBackgroundImageFailedMessage = Settings::s->value("
 
 bool Settings::m_isStayOnSystemTray = Settings::s->value("IsStayOnSystemTray", false).toBool();
 bool Settings::m_isAutoStartUpdateName = Settings::s->value("IsAutoStartUpdateName", false).toBool();
+bool Settings::m_isRetryTweetOnStatusIsADuplicate = Settings::s->value("IsRetryTweetOnStatusIsADuplicate", true).toBool();
 
 Settings::Settings()
 {
@@ -305,6 +306,11 @@ bool Settings::isStayOnSystemTray() const
 bool Settings::isAutoStartUpdateName() const
 {
     return m_isAutoStartUpdateName;
+}
+
+bool Settings::isRetryTweetOnStatusIsADuplicate() const
+{
+    return m_isRetryTweetOnStatusIsADuplicate;
 }
 
 void Settings::setConsumerKey(const QString &ck)
@@ -603,4 +609,10 @@ void Settings::setIsAutoStartUpdateName(const bool &on)
 {
     m_isAutoStartUpdateName = on;
     s->setValue("IsAutoStartUpdateName", on);
+}
+
+void Settings::setIsRetryTweetOnStatusIsADuplicate(const bool &on)
+{
+    m_isRetryTweetOnStatusIsADuplicate = on;
+    s->setValue("IsRetryTweetOnStatusIsADuplicate", on);
 }

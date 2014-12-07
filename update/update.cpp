@@ -1,4 +1,5 @@
 #include "update.h"
+#include "../update_nane_qt_global.h"
 
 Update::Update(QObject *parent) :
     QObject(parent)
@@ -19,18 +20,31 @@ UsersObject Update::executedUser()
 
 void Update::recieveResult(const QString &message, const QString &inReplyToStatusId)
 {
-    try {
-        m_twitter.statusUpdate(message, inReplyToStatusId);
-        emit stateChanged(ResultRecieved);
+    bool reTry = false;
+    QString endString;
+    do {
+        try {
+            m_twitter.statusUpdate(message + endString, inReplyToStatusId);
+            emit stateChanged(ResultRecieved);
 
-        qDebug() << "[Info] update: Result recieved.";
+            qDebug() << "[Info] update: Result recieved.";
 
-    } catch(std::runtime_error &e) {
-        m_errorMessage = QString::fromStdString(e.what());
-        emit error(ResultRecieveFailed);
+            reTry = false;
 
-        qCritical() << "[Error] update: Result recieve failed.\n"
-                       "        Error message:" << m_errorMessage;
+        } catch(std::runtime_error &e) {
+            m_errorMessage = QString::fromStdString(e.what());
+            emit error(ResultRecieveFailed);
 
-    }
+            qCritical() << "[Error] update: Result recieve failed.\n"
+                           "        Error message:" << m_errorMessage;
+
+            if (m_settings.isRetryTweetOnStatusIsADuplicate() && strcmp(e.what() ,"Status is a duplicate.") == 0
+                    && message.length() + endString.length() <= 140) {
+                reTry = true;
+                endString.append(UpdateNameQt::randomEndString());
+            } else {
+                reTry = false;
+            }
+        }
+    } while (m_settings.isRetryTweetOnStatusIsADuplicate() && reTry);
 }
