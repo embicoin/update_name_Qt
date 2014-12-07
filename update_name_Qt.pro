@@ -54,7 +54,8 @@ HEADERS  += mainwindow.h \
     update/description.h \
     update/image.h \
     twitter/entitiesobject.h \
-    update/backgroundimage.h
+    update/backgroundimage.h \
+    update_nane_qt_global.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \
