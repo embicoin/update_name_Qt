@@ -196,9 +196,8 @@ void MainWindow::writeUserStreamLog(UserStream::State state)
 
 void MainWindow::startUpdateName()
 {
-    if(m_userStream.isRunning()) {
+    if (m_userStream.isRunning())
         return;
-    }
 
     m_userStream.start();
     if (m_settings.isPostStartupMessage()) {
@@ -229,7 +228,7 @@ void MainWindow::startUpdateName()
 
 void MainWindow::stopUpdateName()
 {
-    if (m_userStream.isFinished())
+    if (!m_userStream.isRunning())
         return;
 
     m_userStream.stop();
