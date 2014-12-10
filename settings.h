@@ -38,6 +38,7 @@ public:
     QString updateBackgroundImageFailedMessage() const;
 
     QString updateNameFormat() const;
+    QString historyFileName() const;
 
     /* Is Enabled Update Commands */
     bool isEnabledUpdateName() const;
@@ -66,6 +67,7 @@ public:
     bool isStayOnSystemTray() const;
     bool isAutoStartUpdateName() const;
     bool isRetryTweetOnStatusIsADuplicate() const;
+    bool isWriteHistoryFile() const;
 
     /*Setter*/
 
@@ -92,6 +94,7 @@ public:
     void setUpdateBackgroundImageFailedMessage(const QString &message);
 
     void setUpdateNameFormat(const QString &format);
+    void setHistoryFileName(const QString &fileName);
 
     void setUpdateNameEnabled(const bool &enable);
     void setUpdateUrlEnabled(const bool &enable);
@@ -118,6 +121,7 @@ public:
     void setIsStayOnSystemTray(const bool &on);
     void setIsAutoStartUpdateName(const bool &on);
     void setIsRetryTweetOnStatusIsADuplicate(const bool &on);
+    void setIsWriteHistoryFile(const bool &on);
 
 private:
     static const QString SETTINGS_FILE_NAME;
@@ -163,6 +167,7 @@ private:
     static QString m_updateBackgroundImageFailedMessage;
 
     static QString m_updateNameFormat;
+    static QString m_historyFileName;
 
     static bool m_isEnabledUpdateName;
     static bool m_isEnabledUdpateUrl;
@@ -189,6 +194,7 @@ private:
     static bool m_isStayOnSystemTray;
     static bool m_isAutoStartUpdateName;
     static bool m_isRetryTweetOnStatusIsADuplicate;
+    static bool m_isWriteHisotryFile;
 };
 
 #endif // SETTINGS_H

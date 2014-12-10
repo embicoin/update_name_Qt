@@ -1,4 +1,5 @@
 #include "image.h"
+#include "../updatehistory.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -70,6 +71,10 @@ void UpdateImage::exec(const TweetObject &tweet)
                 recieveResult(m_settings.updateImageSuccessedMessage()
                               .replace("%u", tweet.user().screen_name())
                               .replace("%i", m_updatedImageUrl.toString()), tweet.idStr());
+            if (m_settings.isWriteHistoryFile()) {
+                UpdateHistory updateHistory;
+                updateHistory.writeUpdateImageHistory(tweet.user());
+            }
             return;
         } catch (const std::runtime_error &e) {
             m_errorMessage = QString::fromStdString(e.what());

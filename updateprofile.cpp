@@ -51,7 +51,7 @@ QString UpdateProfile::profileTypeString(const UpdateProfile::ProfileType &type)
     case BackgroundImage:
         return tr("background_image");
     }
-    return NULL;
+    return QString::null;
 }
 
 void UpdateProfile::postStartupMessage()

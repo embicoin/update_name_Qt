@@ -2,6 +2,7 @@
 #define UPDATEHISTORY_H
 
 #include "twitter/usersobject.h"
+#include "settings.h"
 #include <QJsonObject>
 
 class UpdateHistory
@@ -9,7 +10,6 @@ class UpdateHistory
 public:    
     UpdateHistory();
 
-    void setHistoryFileName(const QString &fileName);
     bool writeUpdateNameHistory(const UsersObject &executedUser, const QString &newName);
     bool writeUpdateUrlHistory(const UsersObject &executedUser, const QUrl &newUrl);
     bool writeUpdateLocationHistory(const UsersObject &executedUser, const QString &newLocation);
@@ -17,12 +17,11 @@ public:
     bool writeUpdateImageHistory(const UsersObject &executedUser);
     bool writeUpdateBackgroundImageHistory(const UsersObject &executedUser);
 
-    QString historyFileName();
-
 private:
-    bool writeHistory(const QJsonObject &object);
+    bool writeHistory(QJsonObject object);
 
     QString m_historyFileName;
+    Settings m_settings;
 };
 
 #endif // UPDATEHISTORY_H

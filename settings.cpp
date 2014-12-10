@@ -53,6 +53,7 @@ QString Settings::m_updateBackgroundImageFailedMessage = Settings::s->value("Upd
                                                                        Settings::DEFAULT_UPDATE_BACKGROUND_IMAGE_FAILED_MESSAGE).toString();
 
 QString Settings::m_updateNameFormat = Settings::s->value("UpdateNameFormat").toString();
+QString Settings::m_historyFileName = Settings::s->value("HistoryFileName").toString();
 
 bool Settings::m_isEnabledUpdateName = Settings::s->value("IsEnabledUpdateName", true).toBool();
 bool Settings::m_isEnabledUdpateUrl = Settings::s->value("IsEnabledUpdateUrl", false).toBool();
@@ -79,6 +80,7 @@ bool Settings::m_isPostUpdateBackgroundImageFailedMessage = Settings::s->value("
 bool Settings::m_isStayOnSystemTray = Settings::s->value("IsStayOnSystemTray", false).toBool();
 bool Settings::m_isAutoStartUpdateName = Settings::s->value("IsAutoStartUpdateName", false).toBool();
 bool Settings::m_isRetryTweetOnStatusIsADuplicate = Settings::s->value("IsRetryTweetOnStatusIsADuplicate", true).toBool();
+bool Settings::m_isWriteHisotryFile = Settings::s->value("IsWriteHistoryFile", false).toBool();
 
 Settings::Settings()
 {
@@ -198,6 +200,11 @@ QString Settings::updateNameFormat() const
     return m_updateNameFormat;
 }
 
+QString Settings::historyFileName() const
+{
+    return m_historyFileName;
+}
+
 bool Settings::isEnabledUpdateName() const
 {
     return m_isEnabledUpdateName;
@@ -311,6 +318,11 @@ bool Settings::isAutoStartUpdateName() const
 bool Settings::isRetryTweetOnStatusIsADuplicate() const
 {
     return m_isRetryTweetOnStatusIsADuplicate;
+}
+
+bool Settings::isWriteHistoryFile() const
+{
+    return m_isWriteHisotryFile;
 }
 
 void Settings::setConsumerKey(const QString &ck)
@@ -469,6 +481,12 @@ void Settings::setUpdateNameFormat(const QString &format)
     s->setValue("UpdateNameFormat", format);
 }
 
+void Settings::setHistoryFileName(const QString &fileName)
+{
+    m_historyFileName = fileName;
+    s->setValue("HistoryFileName", fileName);
+}
+
 void Settings::setUpdateImageSuccessedMessage(const QString &message)
 {
     s->setValue("UpdateImageSuccessedMessage", message.isEmpty() ? DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE : message);
@@ -615,4 +633,10 @@ void Settings::setIsRetryTweetOnStatusIsADuplicate(const bool &on)
 {
     m_isRetryTweetOnStatusIsADuplicate = on;
     s->setValue("IsRetryTweetOnStatusIsADuplicate", on);
+}
+
+void Settings::setIsWriteHistoryFile(const bool &on)
+{
+    m_isWriteHisotryFile = on;
+    s->setValue("IsWriteHistoryFile", on);
 }

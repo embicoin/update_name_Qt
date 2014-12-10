@@ -1,18 +1,15 @@
 #include "updatehistory.h"
+#include "settings.h"
 
 #include <QJsonDocument>
 #include <QJsonValue>
 #include <QJsonArray>
 #include <QFile>
 #include <QStringList>
+#include <QDateTime>
 
 UpdateHistory::UpdateHistory()
 {
-}
-
-void UpdateHistory::setHistoryFileName(const QString &fileName)
-{
-    m_historyFileName = fileName;
 }
 
 bool UpdateHistory::writeUpdateNameHistory(const UsersObject &executedUser, const QString &newName)
@@ -97,18 +94,26 @@ bool UpdateHistory::writeUpdateBackgroundImageHistory(const UsersObject &execute
     return writeHistory(obj);
 }
 
-bool UpdateHistory::writeHistory(const QJsonObject &object)
+bool UpdateHistory::writeHistory(QJsonObject object)
 {
-    if (m_historyFileName.isEmpty() || !QFile::exists(m_historyFileName))
+    if (m_settings.historyFileName().isEmpty())
         return false;
 
-    QFile historyFile(m_historyFileName);
+    QFile historyFile(m_settings.historyFileName());
+    QJsonDocument doc;
+    QJsonArray array;
 
-    if (!historyFile.open(QFile::ReadWrite))
-        return false;
+    object.insert("Date time", QDateTime::currentDateTime().toString());
 
-    QJsonArray array = QJsonDocument::fromJson(historyFile.readAll()).array();
+    if (historyFile.exists()) {
+        if (!historyFile.open(QFile::ReadOnly | QFile::Text))
+            return false;
+        array = QJsonDocument::fromJson(historyFile.readAll()).array();
+        historyFile.close();
+    }
     array << object;
-    QJsonDocument doc(array);
+    doc.setArray(array);
+    if (!historyFile.open(QFile::WriteOnly | QFile::Text))
+        return false;
     return historyFile.write(doc.toJson());
 }

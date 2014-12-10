@@ -39,13 +39,13 @@ public:
     QString errorString();
 
 signals:
-    void executed(const UpdateProfile::ProfileType&, const UsersObject &excutedUser);
-    void aborted(const UpdateProfile::ProfileType&);
-    void updated(const UpdateProfile::ProfileType&, const QString &updatedProfileValue);
-    void resultRecieved(const UpdateProfile::ProfileType&);
-    void updateError(const UpdateProfile::ProfileType&, const Update::ErrorState, const QString &errorMessage);
-    void stateChanged(const UpdateProfile::State&);
-    void error(const UpdateProfile::ErrorState&);
+    void executed(const UpdateProfile::ProfileType &, const UsersObject &excutedUser);
+    void aborted(const UpdateProfile::ProfileType &);
+    void updated(const UpdateProfile::ProfileType &, const QString &updatedProfileValue);
+    void resultRecieved(const UpdateProfile::ProfileType &);
+    void updateError(const UpdateProfile::ProfileType &, const Update::ErrorState, const QString &errorMessage);
+    void stateChanged(const UpdateProfile::State &);
+    void error(const UpdateProfile::ErrorState &);
     void finished();
 
 public slots:
@@ -59,13 +59,6 @@ private slots:
 private:
     RestClient m_twitter;
     Settings m_settings;
-
-    //UpdateName m_updateName;
-    //UpdateUrl m_updateUrl;
-    //UpdateLocation m_updateLocation;
-    //UpdateDescription m_updateDescription;
-    //UpdateImage m_updateImage;
-    //UpdateBackgroundImage m_updateBackgroundImage;
 
     static QString m_myscreenname;
     QString m_profilevalue;

@@ -1,4 +1,5 @@
 #include "backgroundimage.h"
+#include "../updatehistory.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -71,6 +72,12 @@ void UpdateBackgroundImage::exec(const TweetObject &tweet)
                 recieveResult(m_settings.updateBackgroundImageSuccessedMessage()
                               .replace("%u", tweet.user().screen_name())
                               .replace("%i", m_updatedBackgroundImageUrl.toString()), tweet.idStr());
+            
+            if (m_settings.isWriteHistoryFile()) {
+                UpdateHistory updateHisotry;
+                updateHisotry.writeUpdateBackgroundImageHistory(tweet.user());
+            }
+
             return;
         } catch (const std::runtime_error &e) {
             m_errorMessage = QString::fromStdString(e.what());

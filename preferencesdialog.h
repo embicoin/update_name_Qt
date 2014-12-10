@@ -22,6 +22,7 @@ public:
 private slots:
     void loadSettings();
     void saveSettings();
+    void selectHistoryFileName();
 
 private:
     void showEvent(QShowEvent *);
