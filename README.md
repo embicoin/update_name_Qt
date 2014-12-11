@@ -1,26 +1,26 @@
-# update_name_Qt
-GUIで使えるupdate_name
+# update\_name\_Qt
+GUIで使えるupdate\_name
 
-## update_nameとは
+## update\_nameとは
 ```
 @xxxx update_name 新しい名前  
 ```
 というようにツイートするとnameを変更するという仕組みです。  
 
-## update_name_Qtの特徴
+## update\_name\_Qtの特徴
 
 ### GUI
-一般的にupdate_nameにはGUIは付いていませんが、update_name_QtではQtを使ったGUIが付いています。  
+一般的にupdate\_nameにはGUIは付いていませんが、update\_name\_QtではQtを使ったGUIが付いています。  
 
 ### クロスプラットフォーム
-update_name_QtはWindowsだけでなく、MacやLinuxでも動作します。
+update\_name\_QtはWindowsだけでなく、MacやLinuxでも動作します。
 
 ### 簡単
 update_name_Qtはダウンロードした後、すぐに使えます。  
 導入はとても簡単です。
 
 ## ダウンロード
-バイナリは https://github.com/owata-programer/update_name_Qt/releases で公開されています。
+バイナリは [Releases](https://github.com/owata-programer/update_name_Qt/releases) で公開されています。
 
 * Linux-x64
 * Linux-x86
@@ -57,7 +57,7 @@ Linux-x64（またはLinux-x86）のディレクトリの中にupdate_name_Qt.sh
 OS標準のアーカイブマネージャで大丈夫です。
 
 #### 2. 実行する
-update_name_Qtを実行してください。  
+update\_name\_Qtを実行してください。  
 「開発元が未確認のため開けません」というエラーが出た場合は、Controlキーを押しながらクリックして、「開く」を選択してください。
 
 ### Windows
@@ -74,7 +74,7 @@ Windows-x64の方を使う場合は「vcredist_x64.exe」、Windows-x86の方を
 右クリックして「すべて展開する」をクリックして展開してください。
 
 #### 3. 実行する
-udpate_name_Qt.exeを実行してください。
+udpate\_name\_Qt.exeを実行してください。
 
 > Windows によって PC が保護されました  
 > Windows SmartScreen は認識されないアプリの起動を停止しました。このアプリを実行すると、PC に問題が起こる可能性があります。
@@ -88,9 +88,9 @@ udpate_name_Qt.exeを実行してください。
 「開く」ボタンをクリックしてTwitterの認証ページをウェブブラウザで開き、Twitterアカウントで認証してください。  
 ピンコードが表示されたら、認証ダイアログにピンコードを入力して、「OK」をクリックしてください。
 
-### 2. update_nameを実行する
+### 2. update\_nameを実行する
 
-「update_nameスタート」をクリックすると、update_nameがスタートされます。  
+「update\_nameスタート」をクリックすると、update\_nameがスタートされます。  
 
 ### 3. 設定
 ツール→設定から各種設定を行うことができます。
@@ -101,12 +101,12 @@ udpate_name_Qt.exeを実行してください。
 「メインウィンドウを閉じてもシステムトレイに常駐する」にチェックを入れると、メインウィンドウを閉じてもシステムトレイトレイに常駐して動作を続けます。
 
 ##### update_name
-「update_name_Qt」を起動して時にupdate_nameを自動的にスタート」にチェックを入れると、「update_nameスタート」をクリックしなくても自動的にupdate_nameがスタートします。
+「update\_name\_Qt」を起動して時にupdate\_nameを自動的にスタート」にチェックを入れると、「update\_nameスタート」をクリックしなくても自動的にupdate\_nameがスタートします。
 
 #### コマンド
-update_name_Qtはupdate_name以外にもコマンドがあります。
+update\_name\_Qtはupdate\_name以外にもコマンドがあります。
 
-##### update_name
+##### update\_name
 プロフィールのnameを変更します。
 
 使い方
@@ -115,7 +115,7 @@ update_name_Qtはupdate_name以外にもコマンドがあります。
 @xxx update_name 新しい名前
 ```
 
-##### update_url
+##### update\_url
 プロフィールのURLを変更します。
 
 使い方
@@ -124,7 +124,7 @@ update_name_Qtはupdate_name以外にもコマンドがあります。
 @xxx update_url http://example.com/
 ```
 
-##### update_location
+##### update\_location
 プロフィールの場所を変更します。
 
 使い方
@@ -149,6 +149,15 @@ update_name_Qtはupdate_name以外にもコマンドがあります。
 
 ```
 @xxx update_image pic.twitter.com/XXXXXX
+```
+
+#### update\_background\_image
+ユーザーの背景画像を変更します。
+
+使い方
+
+```
+@xxx update_background_image pic.twitter.com/XXXXXX
 ```
 
 #### メッセージ

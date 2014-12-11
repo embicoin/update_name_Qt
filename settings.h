@@ -34,8 +34,11 @@ public:
     QString updateDescriptionFailedMessage() const;
     QString updateImageSuccessedMessage() const;
     QString updateImageFailedMessage() const;
+    QString updateBackgroundImageSuccessedMessage() const;
+    QString updateBackgroundImageFailedMessage() const;
 
     QString updateNameFormat() const;
+    QString historyFileName() const;
 
     /* Is Enabled Update Commands */
     bool isEnabledUpdateName() const;
@@ -43,6 +46,7 @@ public:
     bool isEnabledUpdateLocation() const;
     bool isEnabledUpdateDescription() const;
     bool isEnabledUpdateImage() const;
+    bool isEnabledUpdateBackgroundImage() const;
 
     /* Is Post Messages */
     bool isPostStartupMessage() const;
@@ -57,9 +61,13 @@ public:
     bool isPostUpdateDescriptionFailedMessage() const;
     bool isPostUpdateImageSuccessedMessage() const;
     bool isPostUpdateImageFailedMessage() const;
+    bool isPostUpdateBackgroundSuccessedMessage() const;
+    bool isPostUpdateBackgroundFailedMessage() const;
 
     bool isStayOnSystemTray() const;
     bool isAutoStartUpdateName() const;
+    bool isRetryTweetOnStatusIsADuplicate() const;
+    bool isWriteHistoryFile() const;
 
     /*Setter*/
 
@@ -82,14 +90,18 @@ public:
     void setUpdateDescriptionFailedMessage(const QString &message);
     void setUpdateImageSuccessedMessage(const QString &message);
     void setUpdateImageFailedMessage(const QString &message);
+    void setUpdateBackgroundImageSuccessedMessage(const QString &message);
+    void setUpdateBackgroundImageFailedMessage(const QString &message);
 
     void setUpdateNameFormat(const QString &format);
+    void setHistoryFileName(const QString &fileName);
 
     void setUpdateNameEnabled(const bool &enable);
     void setUpdateUrlEnabled(const bool &enable);
     void setUpdateLocationEnabled(const bool &enable);
     void setUpdateDescriptionEnabled(const bool &enable);
     void setUpdateImageEnabled(const bool &enable);
+    void setUpdateBackgroundImageEnabled(const bool &enable);
 
     void setIsPostStartupMessage(const bool &on);
     void setIsPostClosedMessage(const bool &on);
@@ -103,9 +115,13 @@ public:
     void setIsPostUpdateDescriptionFailedMessage(const bool &on);
     void setIsPostUpdateImageSuccessedMessage(const bool &on);
     void setIsPostUpdateImageFailedMessage(const bool &on);
+    void setIsPostUpdateBackgroundImageSuccessedMessage(const bool &on);
+    void setIsPostUpdateBackgroundImageFailedMessage(const bool &on);
 
     void setIsStayOnSystemTray(const bool &on);
     void setIsAutoStartUpdateName(const bool &on);
+    void setIsRetryTweetOnStatusIsADuplicate(const bool &on);
+    void setIsWriteHistoryFile(const bool &on);
 
 private:
     static const QString SETTINGS_FILE_NAME;
@@ -123,6 +139,8 @@ private:
     static const QString DEFAULT_UPDATE_DESCRIPTION_FAILED_MESSAGE;
     static const QString DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE;
     static const QString DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE;
+    static const QString DEFAULT_UPDATE_BACKGROUND_IMAGE_SUCCESSED_MESSAGE;
+    static const QString DEFAULT_UPDATE_BACKGROUND_IMAGE_FAILED_MESSAGE;
 
     static QSettings *s;
 
@@ -145,14 +163,18 @@ private:
     static QString m_updateDescriptionFailedMessage;
     static QString m_updateImageSuccessedMessage;
     static QString m_updateImageFailedMessage;
+    static QString m_updateBackgroundImageSuccessedMessage;
+    static QString m_updateBackgroundImageFailedMessage;
 
     static QString m_updateNameFormat;
+    static QString m_historyFileName;
 
     static bool m_isEnabledUpdateName;
     static bool m_isEnabledUdpateUrl;
     static bool m_isEnabledUpdateLocation;
     static bool m_isEnabledUpdateDescription;
     static bool m_isEnabledUpdateImage;
+    static bool m_isEnabledUpdateBackgroundImage;
 
     static bool m_isPostStartupMessage;
     static bool m_isPostClosedMessage;
@@ -166,9 +188,13 @@ private:
     static bool m_isPostUpdateDescriptionFailedMessage;
     static bool m_isPostUpdateImageSuccessedMessage;
     static bool m_isPostUpdateImageFailedMessage;
+    static bool m_isPostUpdateBackgroundImageSuccessedMessage;
+    static bool m_isPostUpdateBackgroundImageFailedMessage;
 
     static bool m_isStayOnSystemTray;
     static bool m_isAutoStartUpdateName;
+    static bool m_isRetryTweetOnStatusIsADuplicate;
+    static bool m_isWriteHisotryFile;
 };
 
 #endif // SETTINGS_H

@@ -1,4 +1,5 @@
 #include "name.h"
+#include "../updatehistory.h"
 
 #include <QDebug>
 
@@ -30,10 +31,16 @@ void UpdateName::exec(const TweetObject &tweet, QString newName)
         qDebug() << "[info] update_name: Name updated.\n"
                     "       New name:"<< m_updatedName;
 
-        if(m_settings.isPostUpdateNameSuccessedMessage()) {
+        if (m_settings.isPostUpdateNameSuccessedMessage()) {
             recieveResult(m_settings.updateNameSuccessedMessage()
                           .replace("%u", tweet.user().screen_name())
                           .replace("%n", m_updatedName), tweet.idStr());
+        }
+
+        if (m_settings.isWriteHistoryFile()) {
+            qDebug("aaaaaa");
+            UpdateHistory updateHistory;
+            updateHistory.writeUpdateNameHistory(tweet.user(), m_updatedName);
         }
     } catch(const std::runtime_error &e) {
         m_errorMessage = QString::fromStdString(e.what());

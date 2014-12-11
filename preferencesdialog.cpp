@@ -4,6 +4,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMessageBox>
+#include <QFileDialog>
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
     QDialog(parent),
@@ -21,12 +22,14 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
                                    << tr("update_url")
                                    << tr("update_location")
                                    << tr("update_description")
-                                   << tr("update_image"));
+                                   << tr("update_image")
+                                   << tr("update_background_image"));
     ui->selectMessageBox->setCurrentIndex(0);
     ui->messageStack->setCurrentIndex(0);
 
     ui->settingsFilePathLine->setText(m_settings.filePath());
     
+    connect(ui->selectHistoryFileNameButton, SIGNAL(clicked()), this, SLOT(selectHistoryFileName()));
     connect(ui->selectMessageBox, SIGNAL(currentIndexChanged(int)), ui->messageStack, SLOT(setCurrentIndex(int)));
     connect(ui->startupMessageText, &QTextEdit::textChanged, [&]() {
         ui->startupMessageLengthCountLabel->setText(QString::number(ui->startupMessageText->toPlainText().length()));
@@ -113,6 +116,9 @@ void PreferencesDialog::loadSettings()
     /* 動作 */
     ui->stayOnSystemTrayCheck->setChecked(m_settings.isStayOnSystemTray());
     ui->autoStartUpdateNameCheck->setChecked(m_settings.isAutoStartUpdateName());
+    ui->retryTweetOnStatusIsADuplicate->setChecked(m_settings.isRetryTweetOnStatusIsADuplicate());
+    ui->writeHistoryFileCheck->setChecked(m_settings.isWriteHistoryFile());
+    ui->historyFileNameLine->setText(m_settings.historyFileName());
 
     /* コマンド */
     ui->enabledUpdateNameCheck->setChecked(m_settings.isEnabledUpdateName());
@@ -121,6 +127,7 @@ void PreferencesDialog::loadSettings()
     ui->enabledUpdateLocationCheck->setChecked(m_settings.isEnabledUpdateLocation());
     ui->enabledUpdateDescriptionCheck->setChecked(m_settings.isEnabledUpdateDescription());
     ui->enabledUpdateImageCheck->setChecked(m_settings.isEnabledUpdateImage());
+    ui->enabledUpdateBackgroundImageCheck->setChecked(m_settings.isEnabledUpdateBackgroundImage());
 
     /* メッセージ */
     //開始/終了
@@ -158,6 +165,12 @@ void PreferencesDialog::loadSettings()
     ui->updateImageSuccessedMessageText->setPlainText(m_settings.updateImageSuccessedMessage());
     ui->postUpdateImageFailedMessageCheck->setChecked(m_settings.isPostUpdateImageFailedMessage());
     ui->updateImageFailedMessageText->setPlainText(m_settings.updateImageFailedMessage());
+
+    //update_background_image
+    ui->postUpdateBackgroundImageSuccessedMessageCheck->setChecked(m_settings.isPostUpdateBackgroundSuccessedMessage());
+    ui->updateBackgroundImageSuccessedMessageText->setPlainText(m_settings.updateBackgroundImageSuccessedMessage());
+    ui->postUpdateBackgroundImageFailedMessageCheck->setChecked(m_settings.isPostUpdateBackgroundFailedMessage());
+    ui->updateBackgroundImageFailedMessageText->setPlainText(m_settings.updateBackgroundImageFailedMessage());
 }
 
 void PreferencesDialog::saveSettings()
@@ -165,6 +178,9 @@ void PreferencesDialog::saveSettings()
     /* 動作 */
     m_settings.setIsStayOnSystemTray(ui->stayOnSystemTrayCheck->isChecked());
     m_settings.setIsAutoStartUpdateName(ui->autoStartUpdateNameCheck->isChecked());
+    m_settings.setIsRetryTweetOnStatusIsADuplicate(ui->retryTweetOnStatusIsADuplicate->isChecked());
+    m_settings.setIsWriteHistoryFile(ui->writeHistoryFileCheck->isChecked());
+    m_settings.setHistoryFileName(ui->historyFileNameLine->text());
 
     /* コマンド */
     m_settings.setUpdateNameEnabled(ui->enabledUpdateNameCheck->isChecked());
@@ -173,6 +189,7 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateLocationEnabled(ui->enabledUpdateLocationCheck->isChecked());
     m_settings.setUpdateDescriptionEnabled(ui->enabledUpdateDescriptionCheck->isChecked());
     m_settings.setUpdateImageEnabled(ui->enabledUpdateImageCheck->isChecked());
+    m_settings.setUpdateBackgroundImageEnabled(ui->enabledUpdateBackgroundImageCheck->isChecked());
     
     /* メッセージ */
     //開始/終了
@@ -210,4 +227,19 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateImageSuccessedMessage(ui->updateImageSuccessedMessageText->toPlainText());
     m_settings.setIsPostUpdateImageFailedMessage(ui->postUpdateImageFailedMessageCheck->isChecked());
     m_settings.setUpdateImageFailedMessage(ui->updateImageFailedMessageText->toPlainText());
+
+    //update_background_image
+    m_settings.setIsPostUpdateBackgroundImageSuccessedMessage(ui->postUpdateBackgroundImageSuccessedMessageCheck->isChecked());
+    m_settings.setUpdateBackgroundImageSuccessedMessage(ui->updateBackgroundImageSuccessedMessageText->toPlainText());
+    m_settings.setIsPostUpdateBackgroundImageFailedMessage(ui->postUpdateBackgroundImageFailedMessageCheck->isChecked());
+    m_settings.setUpdateBackgroundImageFailedMessage(ui->updateBackgroundImageFailedMessageText->toPlainText());
+}
+
+void PreferencesDialog::selectHistoryFileName()
+{
+    QFileDialog dialog(this, tr("履歴の保存先"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+    dialog.selectFile("update_history.json");
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    if (dialog.exec() == QFileDialog::Accepted)
+        ui->historyFileNameLine->setText(dialog.selectedFiles().first());
 }

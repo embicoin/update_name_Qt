@@ -1,4 +1,5 @@
 #include "location.h"
+#include "../updatehistory.h"
 
 UpdateLocation::UpdateLocation(QObject *parent) :
     Update(parent)
@@ -21,19 +22,24 @@ void UpdateLocation::exec(const TweetObject &tweet, const QString &newLocation)
         m_updatedLocation = m_twitter.updateLocation(newLocation).location();
         emit stateChanged(Updated);
 
-        qDebug() << "[Info] update_location: Location updated."
+        qDebug() << "[Info] update_location: Location updated.\n"
                     "       New location:" << m_updatedLocation;
 
-        if(m_settings.isPostUpdateLocationSuccessedMessage()) {
+        if (m_settings.isPostUpdateLocationSuccessedMessage()) {
             recieveResult(m_settings.updateLocationSuccessedMessage()
                           .replace("%u", tweet.user().screen_name())
                           .replace("%l", m_updatedLocation), tweet.idStr());
         }
-    } catch(const std::runtime_error &e) {
+
+        if (m_settings.isWriteHistoryFile()) {
+            UpdateHistory updateHistory;
+            updateHistory.writeUpdateLocationHistory(tweet.user(), m_updatedLocation);
+        }
+    } catch (const std::runtime_error &e) {
         m_errorMessage = e.what();
         emit error(UpdateFailed);
 
-        qCritical() << "[Error] update_location: Update location failed."
+        qCritical() << "[Error] update_location: Update location failed.\n"
                        "        Error message:" << m_errorMessage;
 
         if(m_settings.isPostUpdateLocationFailedMessage())

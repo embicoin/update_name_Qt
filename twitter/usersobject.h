@@ -19,6 +19,8 @@ public:
     QString description() const;
     QUrl profileImageUrl() const;
     QUrl profileImageUrlHttps() const;
+    QUrl profileBackgroundImageUrl() const;
+    QUrl profileBackgroundImageUrlHttps() const;
 
 private:
     QJsonObject m_object;

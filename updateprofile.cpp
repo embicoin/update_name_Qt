@@ -12,7 +12,8 @@ const QStringList UpdateProfile::updateCommands = QStringList() << tr("name")
                                                                 << tr("url")
                                                                 << tr("location")
                                                                 << tr("description")
-                                                                << tr("image");
+                                                                << tr("image")
+                                                                << tr("background_image");
 
 UpdateProfile::UpdateProfile(QObject *parent) :
     QObject(parent)
@@ -47,8 +48,10 @@ QString UpdateProfile::profileTypeString(const UpdateProfile::ProfileType &type)
         return tr("description");
     case Image:
         return tr("image");
+    case BackgroundImage:
+        return tr("background_image");
     }
-    return NULL;
+    return QString::null;
 }
 
 void UpdateProfile::postStartupMessage()
@@ -75,19 +78,18 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
     const QRegExp updateNameRegExp("^\\s*.+\\s*\\(@" + m_myscreenname + "\\).*$");
     QString command;
 
-    if(m_myscreenname.isEmpty()) {
-        if(!getScreenName()) {
-            if(m_settings.screenName().isEmpty()) {
+    if (m_myscreenname.isEmpty()) {
+        if (!getScreenName()) {
+            if (m_settings.screenName().isEmpty())
                 return;
-            } else {
+            else
                 m_myscreenname = m_settings.screenName();
-            }
         }
     }
 
-    if(!tweet.text().isEmpty() && !tweet.text().startsWith("RT")) {
-        if(updateNameRegExp.exactMatch(tweet.text())) {
-            if(m_settings.isEnabledUpdateName()) {
+    if (!tweet.text().isEmpty() && !tweet.text().startsWith("RT")) {
+        if (updateNameRegExp.exactMatch(tweet.text())) {
+            if (m_settings.isEnabledUpdateName()) {
                 qDebug() << "[Info] UpdateProfile: update_name executed.";
                 m_executeduser = tweet.user().screen_name();
                 m_profilevalue = tweet.text();
@@ -110,7 +112,7 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                     }
                 });
                 connect(updateName, &UpdateName::error, [&](const Update::ErrorState &state) {
-                    switch(state) {
+                    switch (state) {
                     case Update::UpdateFailed:
                         emit updateError(Name, state, updateName->errorString());
                         break;
@@ -131,9 +133,9 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
             }
         } else {
             bool isUpdateCommand = false;
-            foreach(command, updateCommands) {
+            foreach (command, updateCommands) {
                 const QRegExp updateRegExp("^.*@" + m_myscreenname + "\\s+update_" + command + "\\s+.*");
-                if(updateRegExp.exactMatch(tweet.text())) {
+                if (updateRegExp.exactMatch(tweet.text())) {
                     m_executeduser = tweet.user().screen_name();
                     m_profilevalue = tweet.text();
                     m_profilevalue.remove(QRegExp("^.*@" + m_myscreenname + "\\s+update_" + command + "\\s+"));
@@ -141,9 +143,9 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                     break;
                 }
             }
-            if(isUpdateCommand) {
-                if(command == "name") {
-                    if(m_settings.isEnabledUpdateName()) {
+            if (isUpdateCommand) {
+                if (command == "name") {
+                    if (m_settings.isEnabledUpdateName()) {
                         qDebug() << "[Info] UpdateProfile: update_name executed.";
 
                         UpdateName *updateName = new UpdateName;
@@ -182,8 +184,8 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                     } else {
                         qWarning() << "[Warning] UpdateProfile: update_name is disabled.";
                     }
-                } else if(command == "url") {
-                    if(m_settings.isEnabledUpdateUrl()) {
+                } else if (command == "url") {
+                    if (m_settings.isEnabledUpdateUrl()) {
                         qDebug() << "[Info] UpdateProfile: update_url executed.";
 
                         UpdateUrl *updateUrl = new UpdateUrl;
@@ -222,7 +224,7 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                     } else {
                         qWarning() << "[Warning] UpdateProfile: update_url is disabled.";
                     }
-                } else if(command == "location") {
+                } else if (command == "location") {
                     if(m_settings.isEnabledUpdateLocation()) {
                         qDebug() << "[Info] UpdateProfile: update_location executed.";
 
@@ -262,7 +264,7 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                     } else {
                         qWarning() << "[Warning] UpdateProfile: udpate_location is disabled.";
                     }
-                } else if(command == "description") {
+                } else if (command == "description") {
                     if(m_settings.isEnabledUpdateDescription()) {
                         qDebug() << "[Info] UpdateProfile: update_description executed.";
 
@@ -302,8 +304,8 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                     } else {
                         qWarning() << "[Warning] UpdateProfile: udpate_description is disabled.";
                     }
-                } else if(command == "image") {
-                    if(m_settings.isEnabledUpdateImage()) {
+                } else if (command == "image") {
+                    if (m_settings.isEnabledUpdateImage()) {
                         qDebug() << "[Info] UpdateProfile: update_image executed.";
 
                         UpdateImage *updateImage = new UpdateImage;
@@ -341,6 +343,46 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                         updateImage->exec(tweet);
                     } else {
                         qWarning() << "[Warning] UpdateProfile: update_image is disabled.";
+                    }
+                } else if (command == "background_image") {
+                    if (m_settings.isEnabledUpdateBackgroundImage()) {
+                        qDebug() << "[Info] UpdateProfile: update_background_image executed.";
+
+                        UpdateBackgroundImage *updateBackgroundImage = new UpdateBackgroundImage;
+                        QThread *updateBackgroundImageThread = new QThread;
+
+                        connect(updateBackgroundImage, &UpdateBackgroundImage::stateChanged, [&](const Update::State &state) {
+                            switch (state) {
+                            case Update::Executed:
+                                emit executed(BackgroundImage, updateBackgroundImage->executedUser());
+                                break;
+                            case Update::Updated:
+                                emit updated(BackgroundImage, updateBackgroundImage->backgroundImageUrl().toString());
+                                break;
+                            case Update::ResultRecieved:
+                                emit resultRecieved(BackgroundImage);
+                                break;
+                            }
+                        });
+                        connect(updateBackgroundImage, &UpdateBackgroundImage::error, [&](const Update::ErrorState &state) {
+                            switch (state) {
+                            case Update::UpdateFailed:
+                                emit updateError(BackgroundImage, state, updateBackgroundImage->errorString());
+                                break;
+                            case Update::ResultRecieveFailed:
+                                emit updateError(BackgroundImage, state, updateBackgroundImage->errorString());
+                                break;
+                            }
+                        });
+                        connect(updateBackgroundImage, SIGNAL(finished()), updateBackgroundImageThread, SLOT(quit()));
+                        connect(updateBackgroundImageThread, SIGNAL(finished()), updateBackgroundImage, SLOT(deleteLater()));
+                        connect(updateBackgroundImageThread, SIGNAL(finished()), updateBackgroundImageThread, SLOT(deleteLater()));
+
+                        updateBackgroundImage->moveToThread(updateBackgroundImageThread);
+                        updateBackgroundImageThread->start();
+                        updateBackgroundImage->exec(tweet);
+                    } else {
+                        qWarning() << "[Warning] UpdateProfile: update_background_image is disabled.";
                     }
                 } else {
                     qWarning() << "[Warning] UpdateProfile: Unknown command:" << command;

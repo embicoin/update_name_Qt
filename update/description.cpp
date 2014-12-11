@@ -1,4 +1,5 @@
 #include "description.h"
+#include "../updatehistory.h"
 
 UpdateDescription::UpdateDescription(QObject *parent) :
     Update(parent)
@@ -24,19 +25,24 @@ void UpdateDescription::exec(const TweetObject &tweet, const QString &newDescrip
         qDebug() << "[Info] update_description: Description updated."
                     "       New description:" << m_updatedDescription;
 
-        if(m_settings.isPostUpdateDescriptionSuccessedMessage()) {
+        if (m_settings.isPostUpdateDescriptionSuccessedMessage()) {
             recieveResult(m_settings.updateDescriptionSuccessedMessage()
                           .replace("%u", tweet.user().screen_name())
                           .replace("%d", m_updatedDescription), tweet.idStr());
         }
-    } catch(const std::runtime_error &e) {
+        
+        if (m_settings.isWriteHistoryFile()) {
+            UpdateHistory updateHistory;
+            updateHistory.writeUpdateDescriptionHistory(tweet.user(), m_updatedDescription);
+        }
+    } catch (const std::runtime_error &e) {
         m_errorMessage = QString::fromStdString(e.what());
         emit error(UpdateFailed);
 
         qCritical() << "[Error] update_description: Update description failed."
                        "        Error message:" << m_errorMessage;
 
-        if(m_settings.isPostUpdateDescriptionFailedMessage()) {
+        if (m_settings.isPostUpdateDescriptionFailedMessage()) {
             recieveResult(m_settings.updateDescriptionFailedMessage()
                           .replace("%u", tweet.user().screen_name())
                           .replace("%d", newDescription)

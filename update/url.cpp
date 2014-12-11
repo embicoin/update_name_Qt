@@ -1,4 +1,5 @@
 #include "url.h"
+#include "../updatehistory.h"
 
 UpdateUrl::UpdateUrl(QObject *parent) :
     Update(parent)
@@ -24,19 +25,24 @@ void UpdateUrl::exec(const TweetObject &tweet, const QString &newUrl)
         qDebug() << "[Info] update_url: Url updated."
                     "       New url:" << m_updatedUrl;
 
-        if(m_settings.isPostUpdateUrlSuccessedMessage()) {
+        if (m_settings.isPostUpdateUrlSuccessedMessage()) {
             recieveResult(m_settings.updateUrlSuccessedMessage()
                           .replace("%u", tweet.user().screen_name())
                           .replace("%l", m_updatedUrl), tweet.idStr());
         }
-    } catch(const std::runtime_error &e) {
+
+        if (m_settings.isWriteHistoryFile()) {
+            UpdateHistory updateHistory;
+            updateHistory.writeUpdateUrlHistory(tweet.user(), QUrl(m_updatedUrl));
+        }
+    } catch (const std::runtime_error &e) {
         m_errorMessage = QString::fromStdString(e.what());
         emit error(UpdateFailed);
 
         qCritical() << "[Error] update_description: Update url failed."
                        "        Error message:" << m_errorMessage;
 
-        if(m_settings.isPostUpdateUrlFailedMessage())
+        if (m_settings.isPostUpdateUrlFailedMessage())
             recieveResult(m_settings.updateUrlFailedMessage()
                           .replace("%u", tweet.user().screen_name())
                           .replace("%l", newUrl)

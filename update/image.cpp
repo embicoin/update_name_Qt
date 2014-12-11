@@ -1,4 +1,5 @@
 #include "image.h"
+#include "../updatehistory.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -10,6 +11,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QDebug>
+#include <memory>
 
 UpdateImage::UpdateImage(QObject *parent)
     : Update(parent)
@@ -24,7 +26,7 @@ QUrl UpdateImage::imageUrl()
 void UpdateImage::exec(const TweetObject &tweet)
 {
     QNetworkAccessManager manager;
-    QNetworkReply *reply;
+    std::unique_ptr<QNetworkReply> reply;
     QTimer timer;
     QEventLoop loop;
 
@@ -38,14 +40,14 @@ void UpdateImage::exec(const TweetObject &tweet)
 
     qDebug() << "[Info] update_image: Start download new image.";
 
-    reply = manager.get(QNetworkRequest(tweet.entities().media().mediaUrlHttps()));
+    reply.reset(manager.get(QNetworkRequest(tweet.entities().media().mediaUrlHttps())));
 
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    connect(reply.get(), SIGNAL(finished()), &loop, SLOT(quit()));
     connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
 
     loop.exec();
 
-    if(reply->error() == QNetworkReply::NoError && timer.isActive()) {
+    if (reply->error() == QNetworkReply::NoError && timer.isActive()) {
 
         qDebug() << "[Info] update_image: Download finished.";
 
@@ -56,7 +58,7 @@ void UpdateImage::exec(const TweetObject &tweet)
             qDebug() << "[Info] update_image: Getting current image.";
 
             try {
-                m_updatedImageUrl = m_twitter.verifyCredentials().profileImageUrlHttps();
+                m_updatedImageUrl = m_twitter.usersLookup(QString::null, m_settings.userId()).profileImageUrlHttps();
                 qDebug() << "[Info] update_image: Current image is" << m_updatedImageUrl;
             } catch(...) {
                 m_updatedImageUrl = tweet.entities().media().mediaUrlHttps();
@@ -65,12 +67,16 @@ void UpdateImage::exec(const TweetObject &tweet)
 
             emit stateChanged(Updated);
 
-            if(m_settings.isPostUpdateImageSuccessedMessage())
+            if (m_settings.isPostUpdateImageSuccessedMessage())
                 recieveResult(m_settings.updateImageSuccessedMessage()
                               .replace("%u", tweet.user().screen_name())
                               .replace("%i", m_updatedImageUrl.toString()), tweet.idStr());
+            if (m_settings.isWriteHistoryFile()) {
+                UpdateHistory updateHistory;
+                updateHistory.writeUpdateImageHistory(tweet.user());
+            }
             return;
-        } catch(const std::runtime_error &e) {
+        } catch (const std::runtime_error &e) {
             m_errorMessage = QString::fromStdString(e.what());
 
             qCritical() << "[Error] update_image: Update image failed."
@@ -85,9 +91,8 @@ void UpdateImage::exec(const TweetObject &tweet)
 
     emit error(UpdateFailed);
 
-    if(m_settings.isPostUpdateImageFailedMessage()) {
+    if (m_settings.isPostUpdateImageFailedMessage())
         recieveResult(m_settings.updateImageFailedMessage()
                       .replace("%u", tweet.user().screen_name())
                       .replace("%e", m_errorMessage), tweet.idStr());
-    }
 }
