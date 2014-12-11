@@ -58,7 +58,7 @@ void UpdateImage::exec(const TweetObject &tweet)
             qDebug() << "[Info] update_image: Getting current image.";
 
             try {
-                m_updatedImageUrl = m_twitter.verifyCredentials().profileImageUrlHttps();
+                m_updatedImageUrl = m_twitter.usersLookup(QString::null, m_settings.userId()).profileImageUrlHttps();
                 qDebug() << "[Info] update_image: Current image is" << m_updatedImageUrl;
             } catch(...) {
                 m_updatedImageUrl = tweet.entities().media().mediaUrlHttps();

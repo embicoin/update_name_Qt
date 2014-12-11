@@ -59,7 +59,7 @@ void UpdateBackgroundImage::exec(const TweetObject &tweet)
             qDebug() << "[Info] update_background_image: Getting current image.";
 
             try {
-                m_updatedBackgroundImageUrl = m_twitter.verifyCredentials().profileBackgroundImageUrlHttps();
+                m_updatedBackgroundImageUrl = m_twitter.usersLookup(QString::null, m_settings.screenName()).profileBackgroundImageUrlHttps();
                 qDebug() << "[Info] update_image: Current image is" << m_updatedBackgroundImageUrl;
             } catch (...) {
                 m_updatedBackgroundImageUrl = tweet.entities().media().mediaUrlHttps();
