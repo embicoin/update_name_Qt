@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setFixedSize(sizeHint());
 #endif
 
+    setWindowTitle(windowTitle() + " " + QApplication::applicationVersion());
 
     //システムトレイのセットアップ
     m_systemTray                 = new QSystemTrayIcon(QIcon(":/icon/update_name_icon.png"), this);
