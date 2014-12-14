@@ -36,6 +36,8 @@ public:
     QString updateImageFailedMessage() const;
     QString updateBackgroundImageSuccessedMessage() const;
     QString updateBackgroundImageFailedMessage() const;
+    QString updateBannerSuccessedMessage() const;
+    QString updateBannerFailedMessage() const;
 
     QString updateNameFormat() const;
     QString historyFileName() const;
@@ -47,6 +49,7 @@ public:
     bool isEnabledUpdateDescription() const;
     bool isEnabledUpdateImage() const;
     bool isEnabledUpdateBackgroundImage() const;
+    bool isEnabledUpdateBanner() const;
 
     /* Is Post Messages */
     bool isPostStartupMessage() const;
@@ -63,6 +66,8 @@ public:
     bool isPostUpdateImageFailedMessage() const;
     bool isPostUpdateBackgroundSuccessedMessage() const;
     bool isPostUpdateBackgroundFailedMessage() const;
+    bool isPostUpdateBannerSuccessedMessage() const;
+    bool isPostUpdateBannerFailedMesage() const;
 
     bool isStayOnSystemTray() const;
     bool isAutoStartUpdateName() const;
@@ -92,6 +97,8 @@ public:
     void setUpdateImageFailedMessage(const QString &message);
     void setUpdateBackgroundImageSuccessedMessage(const QString &message);
     void setUpdateBackgroundImageFailedMessage(const QString &message);
+    void setUpdateBannerSuccessedMessage(const QString &message);
+    void setUpdateBannerFailedMessage(const QString &message);
 
     void setUpdateNameFormat(const QString &format);
     void setHistoryFileName(const QString &fileName);
@@ -102,6 +109,7 @@ public:
     void setUpdateDescriptionEnabled(const bool &enable);
     void setUpdateImageEnabled(const bool &enable);
     void setUpdateBackgroundImageEnabled(const bool &enable);
+    void setUpdateBannerEnabled(const bool &enable);
 
     void setIsPostStartupMessage(const bool &on);
     void setIsPostClosedMessage(const bool &on);
@@ -117,6 +125,8 @@ public:
     void setIsPostUpdateImageFailedMessage(const bool &on);
     void setIsPostUpdateBackgroundImageSuccessedMessage(const bool &on);
     void setIsPostUpdateBackgroundImageFailedMessage(const bool &on);
+    void setIsPostUpdateBannerSuccessedMessage(const bool &on);
+    void setIsPostUpdateBannerFailedMessage(const bool &on);
 
     void setIsStayOnSystemTray(const bool &on);
     void setIsAutoStartUpdateName(const bool &on);
@@ -141,6 +151,8 @@ private:
     static const QString DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE;
     static const QString DEFAULT_UPDATE_BACKGROUND_IMAGE_SUCCESSED_MESSAGE;
     static const QString DEFAULT_UPDATE_BACKGROUND_IMAGE_FAILED_MESSAGE;
+    static const QString DEFAULT_UPDATE_BANNER_SUCCESSED_MESSAGE;
+    static const QString DEFAULT_UPDATE_BANNER_FAILED_MESSAGE;
 
     static QSettings *s;
 
@@ -165,6 +177,8 @@ private:
     static QString m_updateImageFailedMessage;
     static QString m_updateBackgroundImageSuccessedMessage;
     static QString m_updateBackgroundImageFailedMessage;
+    static QString m_updateBannerSuccessedMessage;
+    static QString m_updateBannerFailedMessage;
 
     static QString m_updateNameFormat;
     static QString m_historyFileName;
@@ -175,6 +189,7 @@ private:
     static bool m_isEnabledUpdateDescription;
     static bool m_isEnabledUpdateImage;
     static bool m_isEnabledUpdateBackgroundImage;
+    static bool m_isEnabledUpdateBanner;
 
     static bool m_isPostStartupMessage;
     static bool m_isPostClosedMessage;
@@ -190,6 +205,8 @@ private:
     static bool m_isPostUpdateImageFailedMessage;
     static bool m_isPostUpdateBackgroundImageSuccessedMessage;
     static bool m_isPostUpdateBackgroundImageFailedMessage;
+    static bool m_isPostUpdateBannerSuccessedMessage;
+    static bool m_isPostUpdateBannerFailedMessage;
 
     static bool m_isStayOnSystemTray;
     static bool m_isAutoStartUpdateName;
