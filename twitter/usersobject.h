@@ -21,6 +21,7 @@ public:
     QUrl profileImageUrlHttps() const;
     QUrl profileBackgroundImageUrl() const;
     QUrl profileBackgroundImageUrlHttps() const;
+    QUrl profileBannerUrl() const;
 
 private:
     QJsonObject m_object;

@@ -60,3 +60,8 @@ QUrl UsersObject::profileBackgroundImageUrlHttps() const
 {
     return QUrl(m_object.value("profile_background_image_url_https").toString());
 }
+
+QUrl UsersObject::profileBannerUrl() const
+{
+    return QUrl(m_object.value("profile_banner_url").toString());
+}
