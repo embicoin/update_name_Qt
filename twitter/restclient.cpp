@@ -21,6 +21,7 @@ const QString RestClient::MEDIA_UPLOAD_URL                            = "https:/
 const QString RestClient::ACCOUT_UPDATE_PROFILE_IMAGE_URL             = "https://api.twitter.com/1.1/account/update_profile_image.json";
 const QString RestClient::USERS_LOOKUP_URL                            = "https://api.twitter.com/1.1/users/lookup.json";
 const QString RestClient::ACCOUNT_UPDATE_PROFILE_BACKGROUND_IMAGE_URL = "https://api.twitter.com/1.1/account/update_profile_background_image.json";
+const QString RestClient::ACCOUNT_UPDATE_PROFILE_BANNER_URL           = "https://api.twitter.com/1.1/account/update_profile_banner.json";
 
 RestClient::RestClient(QObject *parent) :
     QObject(parent)
@@ -311,6 +312,19 @@ UsersObject RestClient::updateProfileBackground(const QByteArray &mediaData)
                                              ACCOUNT_UPDATE_PROFILE_BACKGROUND_IMAGE_URL,
                                              dataParams));
     } catch(...) {
+        throw;
+    }
+}
+
+UsersObject RestClient::updateProfileBanner(const QByteArray &mediaData)
+{
+    QVariantMap dataParams;
+    dataParams["banner"] = mediaData;
+    try {
+        return UsersObject(requestTwitterApi(QNetworkAccessManager::PostOperation,
+                                             ACCOUNT_UPDATE_PROFILE_BANNER_URL,
+                                             dataParams));
+    } catch (...) {
         throw;
     }
 }
