@@ -1,5 +1,12 @@
 #include "updateprofile.h"
 #include "twitter/tweetobject.h"
+#include "update/name.h"
+#include "update/url.h"
+#include "update/location.h"
+#include "update/description.h"
+#include "update/image.h"
+#include "update/backgroundimage.h"
+#include "update/banner.h"
 
 #include <QJsonDocument>
 #include <QJsonValue>
@@ -13,7 +20,8 @@ const QStringList UpdateProfile::updateCommands = QStringList() << tr("name")
                                                                 << tr("location")
                                                                 << tr("description")
                                                                 << tr("image")
-                                                                << tr("background_image");
+                                                                << tr("background_image")
+                                                                << tr("banner");
 
 UpdateProfile::UpdateProfile(QObject *parent) :
     QObject(parent)
@@ -50,6 +58,8 @@ QString UpdateProfile::profileTypeString(const UpdateProfile::ProfileType &type)
         return tr("image");
     case BackgroundImage:
         return tr("background_image");
+    case Banner:
+        return tr("banner");
     }
     return QString::null;
 }
@@ -383,6 +393,39 @@ void UpdateProfile::exec(const QByteArray &twitter_status_object_json_data)
                         updateBackgroundImage->exec(tweet);
                     } else {
                         qWarning() << "[Warning] UpdateProfile: update_background_image is disabled.";
+                    }
+                } else if (command == "banner") {
+                    if (m_settings.isEnabledUpdateBanner()) {
+                        qDebug() << "[Info] UpdateProfile: update_banner executed.";
+
+                        UpdateBanner *updateBanner = new UpdateBanner;
+                        QThread *updateBannerThread = new QThread;
+
+                        connect(updateBanner, &UpdateBanner::stateChanged, [&](const Update::State &state) {
+                            switch (state) {
+                            case Update::Executed:
+                                emit executed(Banner, updateBanner->executedUser());
+                                break;
+                            case Update::Updated:
+                                emit updated(Banner, updateBanner->bannerUrl().toString());
+                                break;
+                            case Update::ResultRecieved:
+                                emit resultRecieved(Banner);
+                                break;
+                            }
+                        });
+                        connect(updateBanner, &UpdateBanner::error, [&](const Update::ErrorState &state) {
+                            emit updateError(Banner, state, updateBanner->errorString());
+                        });
+                        connect(updateBanner, SIGNAL(finished()), updateBannerThread, SLOT(quit()));
+                        connect(updateBannerThread, SIGNAL(finished()), updateBanner, SLOT(deleteLater()));
+                        connect(updateBannerThread, SIGNAL(finished()), updateBannerThread, SLOT(deleteLater()));
+
+                        updateBanner->moveToThread(updateBannerThread);
+                        updateBannerThread->start();
+                        updateBanner->exec(tweet);
+                    } else {
+                        qWarning() << "[Warning] UpdateProfile: update_banner is disabled.";
                     }
                 } else {
                     qWarning() << "[Warning] UpdateProfile: Unknown command:" << command;
