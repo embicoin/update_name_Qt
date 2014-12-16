@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
-    <height>642</height>
+    <width>594</width>
+    <height>645</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,7 +26,7 @@
    <item>
     <widget class="QTabWidget" name="tab">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -171,9 +171,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>494</width>
-            <height>560</height>
+            <y>-83</y>
+            <width>539</width>
+            <height>622</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -301,6 +301,22 @@
             </widget>
            </item>
            <item>
+            <widget class="QGroupBox" name="groupBox_29">
+             <property name="title">
+              <string>banner</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_43">
+              <item>
+               <widget class="QCheckBox" name="enabledUpdateBannerCheck">
+                <property name="text">
+                 <string>update_bannerを有効にする</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <spacer name="verticalSpacer_4">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -345,7 +361,7 @@
        <item>
         <widget class="QStackedWidget" name="messageStack">
          <property name="currentIndex">
-          <number>6</number>
+          <number>7</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -870,6 +886,78 @@
               </item>
               <item>
                <widget class="QPlainTextEdit" name="updateBackgroundImageFailedMessageText"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_8">
+          <layout class="QVBoxLayout" name="verticalLayout_44">
+           <item>
+            <widget class="QGroupBox" name="groupBox_30">
+             <property name="title">
+              <string>update_banner成功時のメッセージ</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_46">
+              <item>
+               <widget class="QLabel" name="label_35">
+                <property name="text">
+                 <string>update_bannerが成功した時にツイートします。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="postUpdateBannerSuccessedMessageCheck">
+                <property name="text">
+                 <string>update_banner成功時のメッセージを有効にする</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_36">
+                <property name="text">
+                 <string>%uはupdate_bannerを実行したユーザーのscreen_name、
+%iは新しいbannerのURLに置き換えられます。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPlainTextEdit" name="updateBannerSuccessedMessageText"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_31">
+             <property name="title">
+              <string>update_banner失敗時のメッセージ</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_45">
+              <item>
+               <widget class="QLabel" name="label_37">
+                <property name="text">
+                 <string>update_bannerが失敗した時にツイートします。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="postUpdateBannerFailedMessage">
+                <property name="text">
+                 <string>update_banner失敗時のメッセージを有効にする</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_38">
+                <property name="text">
+                 <string>%uはupdate_bannerを実行したユーザーのscreen_name、
+%eはエラーメッセージに置き換えられます。</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPlainTextEdit" name="updateBannerFailedMessageText"/>
               </item>
              </layout>
             </widget>

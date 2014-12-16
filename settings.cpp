@@ -254,6 +254,11 @@ bool Settings::isEnabledUpdateBackgroundImage() const
     return m_isEnabledUpdateBackgroundImage;
 }
 
+bool Settings::isEnabledUpdateBanner() const
+{
+    return m_isEnabledUpdateBanner;
+}
+
 bool Settings::isPostStartupMessage() const
 {
     return m_isPostStartupMessage;
@@ -657,13 +662,25 @@ void Settings::setIsPostUpdateImageFailedMessage(const bool &on)
 void Settings::setIsPostUpdateBackgroundImageSuccessedMessage(const bool &on)
 {
     m_isPostUpdateBackgroundImageSuccessedMessage = on;
-    s->setValue("IsPostUpdateBackgroundImage", on);
+    s->setValue("IsPostUpdateBackgroundImageSuccessedMessage", on);
 }
 
 void Settings::setIsPostUpdateBackgroundImageFailedMessage(const bool &on)
 {
     m_isPostUpdateBackgroundImageFailedMessage = on;
-    s->setValue("IsPostUpdateBackgroundImage", on);
+    s->setValue("IsPostUpdateBackgroundImageFailedMessage", on);
+}
+
+void Settings::setIsPostUpdateBannerSuccessedMessage(const bool &on)
+{
+    m_isPostUpdateBannerSuccessedMessage = on;
+    s->setValue("IsPostUpdateBannerSuccessedMessage", on);
+}
+
+void Settings::setIsPostUpdateBannerFailedMessage(const bool &on)
+{
+    m_isPostUpdateBannerFailedMessage = on;
+    s->setValue("IsPostUpdateBannerFailedMessage", on);
 }
 
 void Settings::setIsStayOnSystemTray(const bool &on)
