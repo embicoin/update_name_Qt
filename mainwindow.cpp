@@ -21,6 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     setWindowTitle(windowTitle() + " " + QApplication::applicationVersion());
+    ui->actionClearLog->setIcon(QApplication::style()->standardIcon(QStyle::SP_LineEditClearButton));
+    ui->actionQuit->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogCloseButton));
+    ui->actionSaveLog->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton));
+    ui->actionSwitchUpdateName->setIcon(QApplication::style()->standardIcon(QStyle::SP_CommandLink));
+    ui->updateNameSwitchButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_CommandLink));
 
     //システムトレイのセットアップ
     m_systemTray                 = new QSystemTrayIcon(QIcon(":/icon/update_name_icon.png"), this);
