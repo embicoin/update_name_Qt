@@ -14,8 +14,18 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
     setFixedSize(size());
 
-    ui->tab->setCurrentIndex(0);
+#ifndef Q_OS_MAC
+    ui->selectHistoryFileNameButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
+    ui->reAuthButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogResetButton));
+    ui->logoutButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogCancelButton));
+    ui->openSettingsFile->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileIcon));
+    ui->removeSettingsFile->setIcon(QApplication::style()->standardIcon(QStyle::SP_TrashIcon));
+    ui->buttonBox->button(QDialogButtonBox::Apply)->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogApplyButton));
+    ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogCancelButton));
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogOkButton));
+#endif
 
+    ui->tab->setCurrentIndex(0);
     ui->selectMessageBox->addItems(QStringList()
                                    << tr("開始/終了")
                                    << tr("update_name")
@@ -23,7 +33,8 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
                                    << tr("update_location")
                                    << tr("update_description")
                                    << tr("update_image")
-                                   << tr("update_background_image"));
+                                   << tr("update_background_image")
+                                   << tr("update_banner"));
     ui->selectMessageBox->setCurrentIndex(0);
     ui->messageStack->setCurrentIndex(0);
 
@@ -128,6 +139,7 @@ void PreferencesDialog::loadSettings()
     ui->enabledUpdateDescriptionCheck->setChecked(m_settings.isEnabledUpdateDescription());
     ui->enabledUpdateImageCheck->setChecked(m_settings.isEnabledUpdateImage());
     ui->enabledUpdateBackgroundImageCheck->setChecked(m_settings.isEnabledUpdateBackgroundImage());
+    ui->enabledUpdateBannerCheck->setChecked(m_settings.isEnabledUpdateBanner());
 
     /* メッセージ */
     //開始/終了
@@ -171,6 +183,12 @@ void PreferencesDialog::loadSettings()
     ui->updateBackgroundImageSuccessedMessageText->setPlainText(m_settings.updateBackgroundImageSuccessedMessage());
     ui->postUpdateBackgroundImageFailedMessageCheck->setChecked(m_settings.isPostUpdateBackgroundFailedMessage());
     ui->updateBackgroundImageFailedMessageText->setPlainText(m_settings.updateBackgroundImageFailedMessage());
+
+    //update_banner
+    ui->postUpdateBannerSuccessedMessageCheck->setChecked(m_settings.isPostUpdateBannerSuccessedMessage());
+    ui->updateBannerSuccessedMessageText->setPlainText(m_settings.updateBannerSuccessedMessage());
+    ui->postUpdateBannerFailedMessage->setChecked(m_settings.isPostUpdateBannerFailedMesage());
+    ui->updateBannerFailedMessageText->setPlainText(m_settings.updateBannerFailedMessage());
 }
 
 void PreferencesDialog::saveSettings()
@@ -190,6 +208,7 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateDescriptionEnabled(ui->enabledUpdateDescriptionCheck->isChecked());
     m_settings.setUpdateImageEnabled(ui->enabledUpdateImageCheck->isChecked());
     m_settings.setUpdateBackgroundImageEnabled(ui->enabledUpdateBackgroundImageCheck->isChecked());
+    m_settings.setUpdateBannerEnabled(ui->enabledUpdateBannerCheck->isChecked());
     
     /* メッセージ */
     //開始/終了
@@ -233,6 +252,12 @@ void PreferencesDialog::saveSettings()
     m_settings.setUpdateBackgroundImageSuccessedMessage(ui->updateBackgroundImageSuccessedMessageText->toPlainText());
     m_settings.setIsPostUpdateBackgroundImageFailedMessage(ui->postUpdateBackgroundImageFailedMessageCheck->isChecked());
     m_settings.setUpdateBackgroundImageFailedMessage(ui->updateBackgroundImageFailedMessageText->toPlainText());
+
+    //update_banner
+    m_settings.setIsPostUpdateBannerSuccessedMessage(ui->postUpdateBannerSuccessedMessageCheck->isChecked());
+    m_settings.setUpdateBannerSuccessedMessage(ui->updateBannerSuccessedMessageText->toPlainText());
+    m_settings.setIsPostUpdateBannerFailedMessage(ui->postUpdateBannerFailedMessage->isChecked());
+    m_settings.setUpdateBannerFailedMessage(ui->updateBannerFailedMessageText->toPlainText());
 }
 
 void PreferencesDialog::selectHistoryFileName()

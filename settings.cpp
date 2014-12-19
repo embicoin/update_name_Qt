@@ -15,6 +15,8 @@ const QString Settings::DEFAULT_UPDATE_IMAGE_SUCCESSED_MESSAGE = QObject::tr(".@
 const QString Settings::DEFAULT_UPDATE_IMAGE_FAILED_MESSAGE = QObject::tr(".@%u プロフィール画像の変更に失敗しました。\n%e");
 const QString Settings::DEFAULT_UPDATE_BACKGROUND_IMAGE_SUCCESSED_MESSAGE = QObject::tr(".@%u 背景画像を\"%i\"に変更しました。");
 const QString Settings::DEFAULT_UPDATE_BACKGROUND_IMAGE_FAILED_MESSAGE = QObject::tr(".@%u 背景画像の変更に失敗しました。\n%e");
+const QString Settings::DEFAULT_UPDATE_BANNER_SUCCESSED_MESSAGE = QObject::tr(".@%u バーナーを\"%i\"に変更しました。");
+const QString Settings::DEFAULT_UPDATE_BANNER_FAILED_MESSAGE = QObject::tr(".@%u バーナー画像の変更に失敗しました。\n%e");
 
 QSettings* Settings::s = new QSettings(QSettings::IniFormat, QSettings::UserScope, Settings::SETTINGS_FILE_NAME);
 
@@ -51,6 +53,10 @@ QString Settings::m_updateBackgroundImageSuccessedMessage = Settings::s->value("
                                                                           Settings::DEFAULT_UPDATE_BACKGROUND_IMAGE_SUCCESSED_MESSAGE).toString();
 QString Settings::m_updateBackgroundImageFailedMessage = Settings::s->value("UpdateBackgroundFailedMessage",
                                                                        Settings::DEFAULT_UPDATE_BACKGROUND_IMAGE_FAILED_MESSAGE).toString();
+QString Settings::m_updateBannerSuccessedMessage = Settings::s->value("UpdateBannerSuccessedMessage",
+                                                                      Settings::DEFAULT_UPDATE_BANNER_SUCCESSED_MESSAGE).toString();
+QString Settings::m_updateBannerFailedMessage = Settings::s->value("UpdateBannerFailedMessage",
+                                                                   Settings::DEFAULT_UPDATE_BANNER_FAILED_MESSAGE).toString();
 
 QString Settings::m_updateNameFormat = Settings::s->value("UpdateNameFormat").toString();
 QString Settings::m_historyFileName = Settings::s->value("HistoryFileName").toString();
@@ -61,6 +67,7 @@ bool Settings::m_isEnabledUpdateLocation = Settings::s->value("IsEnabledUpdateLo
 bool Settings::m_isEnabledUpdateDescription = Settings::s->value("IsEnabledUpdateDescription", false).toBool();
 bool Settings::m_isEnabledUpdateImage = Settings::s->value("IsEnabledUpdateImage", false).toBool();
 bool Settings::m_isEnabledUpdateBackgroundImage = Settings::s->value("IsEnabledUpdateBackgroundImage", false).toBool();
+bool Settings::m_isEnabledUpdateBanner = Settings::s->value("IsEnabledUpdateBanner", false).toBool();
 
 bool Settings::m_isPostStartupMessage = Settings::s->value("IsPostStartupMessage", true).toBool();
 bool Settings::m_isPostClosedMessage = Settings::s->value("IsPostClosedMessage", true).toBool();
@@ -76,6 +83,8 @@ bool Settings::m_isPostUpdateImageSuccessedMessage = Settings::s->value("IsUpdat
 bool Settings::m_isPostUpdateImageFailedMessage = Settings::s->value("IsPostUpdateFailedMessage", true).toBool();
 bool Settings::m_isPostUpdateBackgroundImageSuccessedMessage = Settings::s->value("IsPostUpdateBackgroundImageSuccessedMessage", true).toBool();
 bool Settings::m_isPostUpdateBackgroundImageFailedMessage = Settings::s->value("IsPostUpdateBackgroundImageFailedMessage", true).toBool();
+bool Settings::m_isPostUpdateBannerSuccessedMessage = Settings::s->value("IsPostUpdateBannerSuccessedMessage", true).toBool();
+bool Settings::m_isPostUpdateBannerFailedMessage = Settings::s->value("IsPostUpdateBannerFailedMessage", true).toBool();
 
 bool Settings::m_isStayOnSystemTray = Settings::s->value("IsStayOnSystemTray", false).toBool();
 bool Settings::m_isAutoStartUpdateName = Settings::s->value("IsAutoStartUpdateName", false).toBool();
@@ -195,6 +204,16 @@ QString Settings::updateBackgroundImageFailedMessage() const
     return m_updateBackgroundImageFailedMessage;
 }
 
+QString Settings::updateBannerSuccessedMessage() const
+{
+    return m_updateBannerSuccessedMessage;
+}
+
+QString Settings::updateBannerFailedMessage() const
+{
+    return m_updateBannerFailedMessage;
+}
+
 QString Settings::updateNameFormat() const
 {
     return m_updateNameFormat;
@@ -233,6 +252,11 @@ bool Settings::isEnabledUpdateImage() const
 bool Settings::isEnabledUpdateBackgroundImage() const
 {
     return m_isEnabledUpdateBackgroundImage;
+}
+
+bool Settings::isEnabledUpdateBanner() const
+{
+    return m_isEnabledUpdateBanner;
 }
 
 bool Settings::isPostStartupMessage() const
@@ -303,6 +327,16 @@ bool Settings::isPostUpdateBackgroundSuccessedMessage() const
 bool Settings::isPostUpdateBackgroundFailedMessage() const
 {
     return m_isPostUpdateBackgroundImageFailedMessage;
+}
+
+bool Settings::isPostUpdateBannerSuccessedMessage() const
+{
+    return m_isPostUpdateBannerSuccessedMessage;
+}
+
+bool Settings::isPostUpdateBannerFailedMesage() const
+{
+    return m_isPostUpdateBannerFailedMessage;
 }
 
 bool Settings::isStayOnSystemTray() const
@@ -475,6 +509,20 @@ void Settings::setUpdateBackgroundImageFailedMessage(const QString &message)
     s->setValue("UpdateBackgroundImageFailedMessage", m_updateBackgroundImageFailedMessage);
 }
 
+void Settings::setUpdateBannerSuccessedMessage(const QString &message)
+{
+    m_updateBannerSuccessedMessage
+            = message.isEmpty() ? DEFAULT_UPDATE_BANNER_SUCCESSED_MESSAGE : message;
+    s->setValue("UpdateBannerSuccessedMessage", m_updateBannerSuccessedMessage);
+}
+
+void Settings::setUpdateBannerFailedMessage(const QString &message)
+{
+    m_updateBannerFailedMessage
+            = message.isEmpty() ? DEFAULT_UPDATE_BANNER_FAILED_MESSAGE : message;
+    s->setValue("UpdateBannerFailedMessage", m_updateBannerFailedMessage);
+}
+
 void Settings::setUpdateNameFormat(const QString &format)
 {
     m_updateNameFormat = format;
@@ -531,6 +579,12 @@ void Settings::setUpdateBackgroundImageEnabled(const bool &enable)
 {
     m_isEnabledUpdateImage = enable;
     s->setValue("IsEnabledUpdateBackgroundImage", enable);
+}
+
+void Settings::setUpdateBannerEnabled(const bool &enable)
+{
+    m_isEnabledUpdateBanner = enable;
+    s->setValue("IsEnabledUpdateBanner", enable);
 }
 
 void Settings::setIsPostStartupMessage(const bool &on)
@@ -608,13 +662,25 @@ void Settings::setIsPostUpdateImageFailedMessage(const bool &on)
 void Settings::setIsPostUpdateBackgroundImageSuccessedMessage(const bool &on)
 {
     m_isPostUpdateBackgroundImageSuccessedMessage = on;
-    s->setValue("IsPostUpdateBackgroundImage", on);
+    s->setValue("IsPostUpdateBackgroundImageSuccessedMessage", on);
 }
 
 void Settings::setIsPostUpdateBackgroundImageFailedMessage(const bool &on)
 {
     m_isPostUpdateBackgroundImageFailedMessage = on;
-    s->setValue("IsPostUpdateBackgroundImage", on);
+    s->setValue("IsPostUpdateBackgroundImageFailedMessage", on);
+}
+
+void Settings::setIsPostUpdateBannerSuccessedMessage(const bool &on)
+{
+    m_isPostUpdateBannerSuccessedMessage = on;
+    s->setValue("IsPostUpdateBannerSuccessedMessage", on);
+}
+
+void Settings::setIsPostUpdateBannerFailedMessage(const bool &on)
+{
+    m_isPostUpdateBannerFailedMessage = on;
+    s->setValue("IsPostUpdateBannerFailedMessage", on);
 }
 
 void Settings::setIsStayOnSystemTray(const bool &on)

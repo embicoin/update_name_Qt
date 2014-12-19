@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     update/image.cpp \
     twitter/entitiesobject.cpp \
     update/backgroundimage.cpp \
-    updatehistory.cpp
+    updatehistory.cpp \
+    update/banner.cpp
 
 HEADERS  += mainwindow.h \
     authdialog.h \
@@ -57,7 +58,8 @@ HEADERS  += mainwindow.h \
     twitter/entitiesobject.h \
     update/backgroundimage.h \
     update_nane_qt_global.h \
-    updatehistory.h
+    updatehistory.h \
+    update/banner.h
 
 FORMS    += mainwindow.ui \
     authdialog.ui \

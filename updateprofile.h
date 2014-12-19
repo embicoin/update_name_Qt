@@ -2,13 +2,8 @@
 #define UPDATEPROFILE_H
 
 #include "twitter/restclient.h"
-#include "update/name.h"
-#include "update/url.h"
-#include "update/location.h"
-#include "update/description.h"
-#include "update/image.h"
-#include "update/backgroundimage.h"
 #include "settings.h"
+#include "update/update.h"
 
 #include <QObject>
 
@@ -24,7 +19,8 @@ public:
         Location,
         Description,
         Image,
-        BackgroundImage
+        BackgroundImage,
+        Banner,
     };
     enum State {
         GetScreenNameFinished,

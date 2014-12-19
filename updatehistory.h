@@ -16,6 +16,7 @@ public:
     bool writeUpdateDescriptionHistory(const UsersObject &executedUser, const QString &newDescription);
     bool writeUpdateImageHistory(const UsersObject &executedUser);
     bool writeUpdateBackgroundImageHistory(const UsersObject &executedUser);
+    bool writeUpdateBannerHistory(const UsersObject &executedUser);
 
 private:
     bool writeHistory(QJsonObject object);

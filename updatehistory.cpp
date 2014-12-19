@@ -94,6 +94,19 @@ bool UpdateHistory::writeUpdateBackgroundImageHistory(const UsersObject &execute
     return writeHistory(obj);
 }
 
+bool UpdateHistory::writeUpdateBannerHistory(const UsersObject &executedUser)
+{
+    const QJsonObject bannerObj
+    {
+        {"Executed user's screen_name", executedUser.screen_name()}
+    };
+    const QJsonObject obj
+    {
+        {"update_background_image", bannerObj}
+    };
+    return writeHistory(obj);
+}
+
 bool UpdateHistory::writeHistory(QJsonObject object)
 {
     if (m_settings.historyFileName().isEmpty())
