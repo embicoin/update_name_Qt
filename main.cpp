@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
         a.setQuitOnLastWindowClosed(false);
         a.setWindowIcon(QIcon(":/icon/update_name_icon.png"));
-        a.setApplicationVersion("v0.4.1");
+        a.setApplicationVersion("v1.0.1");
 
         if(settings.consumerKey().isEmpty()
                 || settings.consumerSecret().isEmpty()
