@@ -26,7 +26,7 @@
    <item>
     <widget class="QTabWidget" name="tab">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -171,8 +171,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-83</y>
-            <width>539</width>
+            <y>0</y>
+            <width>430</width>
             <height>622</height>
            </rect>
           </property>
@@ -361,7 +361,7 @@
        <item>
         <widget class="QStackedWidget" name="messageStack">
          <property name="currentIndex">
-          <number>7</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QVBoxLayout" name="verticalLayout_22">

@@ -42,7 +42,7 @@ void UpdateBanner::exec(const TweetObject &tweet)
 
     reply.reset(manager.get(QNetworkRequest(tweet.entities().media().mediaUrlHttps())));
 
-    connect(reply.get(), SIGNAL(finished), &loop, SLOT(quit()));
+    connect(reply.get(), SIGNAL(finished()), &loop, SLOT(quit()));
     connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
 
     loop.exec();
@@ -52,13 +52,14 @@ void UpdateBanner::exec(const TweetObject &tweet)
         qDebug() << "[Info] udpate_banner: Download finished.";
 
         try {
-            m_twitter.updateProfileBackground(reply->readAll());
+            m_twitter.updateProfileBanner(reply->readAll()).profileBannerUrl();
 
             qDebug() << "[Info] update_banner: Banner updated.";
             qDebug() << "[Info] update_banner: Getting current banner.";
 
+
             try {
-                m_updatedBannerUrl = m_twitter.usersLookup(QString::null, m_settings.userId()).profileBannerUrl();
+                m_updatedBannerUrl = m_twitter.usersLookup(m_settings.userId()).profileBannerUrl();
                 qDebug() << "[Info] update_banner: Current banner is" << m_updatedBannerUrl;
             } catch (...) {
                 m_updatedBannerUrl = tweet.entities().media().mediaUrlHttps();
@@ -69,8 +70,7 @@ void UpdateBanner::exec(const TweetObject &tweet)
 
             if (m_settings.isPostUpdateBannerSuccessedMessage())
                 recieveResult(m_settings.updateBannerSuccessedMessage()
-                              .replace("%u", tweet.user().screen_name())
-                              .replace("%i", m_updatedBannerUrl.toString()));
+                              .replace("%u", tweet.user().screen_name()));
 
             if (m_settings.isWriteHistoryFile()) {
                 UpdateHistory history;

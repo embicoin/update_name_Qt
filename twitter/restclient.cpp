@@ -242,6 +242,7 @@ UsersObject RestClient::usersLookup(const QString &screenName, const QString &us
 {
     QVariantMap dataParams;
     if(!screenName.isEmpty()) {
+        qDebug("screen");
         dataParams["screen_name"] = screenName;
     }
     if(!userId.isEmpty()) {
@@ -319,7 +320,7 @@ UsersObject RestClient::updateProfileBackground(const QByteArray &mediaData)
 UsersObject RestClient::updateProfileBanner(const QByteArray &mediaData)
 {
     QVariantMap dataParams;
-    dataParams["banner"] = mediaData;
+    dataParams["banner"] = mediaData.toBase64();
     try {
         return UsersObject(requestTwitterApi(QNetworkAccessManager::PostOperation,
                                              ACCOUNT_UPDATE_PROFILE_BANNER_URL,
