@@ -14,6 +14,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
     setFixedSize(size());
 
+#ifndef Q_OS_MAC
     ui->selectHistoryFileNameButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
     ui->reAuthButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogResetButton));
     ui->logoutButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogCancelButton));
@@ -22,6 +23,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->buttonBox->button(QDialogButtonBox::Apply)->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogApplyButton));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogCancelButton));
     ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogOkButton));
+#endif
 
     ui->tab->setCurrentIndex(0);
     ui->selectMessageBox->addItems(QStringList()
