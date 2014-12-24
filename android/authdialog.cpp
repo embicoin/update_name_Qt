@@ -79,10 +79,7 @@ AuthDialog::AuthDialog(QWidget *parent) :
         UpdateNameQt::settings->setValue("UserId", userId);
         QMessageBox::information(this, tr("認証が完了しました"), tr("認証が完了しました！\n"
                                                            "あなたのscreen_name：%1").arg(screenName), QMessageBox::Ok);
-    });
-    //ダイアログ
-    connect(this, &QDialog::rejected, [&]() {
-        done(Cancelled);
+        done(AuthSuccessed);
     });
 
     //API Keyのセット
