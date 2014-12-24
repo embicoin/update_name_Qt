@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>
+#include <QFile>
 
 namespace UpdateNameQt {
 QSettings *settings;
@@ -24,7 +25,7 @@ int main(int argc, char *argv[])
         QTranslator t;
 
         //日本語化
-        t.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+        t.load("qt_ja", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
         a.installTranslator(&t);
 
         //設定ファイルの初期化
@@ -45,8 +46,13 @@ int main(int argc, char *argv[])
 #endif
         a.setApplicationVersion("update_name_Qt v2.0.1-dev " + os);
 
+        //標準設定のセット
+        if (!QFile::exists(settings->fileName()))
+            for (auto i = UpdateNameQt::defaultSettings.begin(); i != UpdateNameQt::defaultSettings.end(); i++)
+                settings->setValue(i.key(), i.value());
+
         //認証されていなかったら認証ダイアログを出す
-        if (settings->value("AccessToken").isNull() || settings->value("AccessTokenSecret").isNull()) {
+        if (settings->value("AccessToken").toString().isEmpty() || settings->value("AccessTokenSecret").toString().isEmpty()) {
             bool retry;
             do {
                 AuthDialog auth;
@@ -69,7 +75,7 @@ int main(int argc, char *argv[])
 
         result = a.exec();
 
-    } while ( result == UpdateNameQt::ExitRestart);
+    } while (result == UpdateNameQt::ExitRestart);
 
     return result;
 }
