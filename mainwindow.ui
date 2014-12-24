@@ -40,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>18</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">
@@ -86,10 +86,16 @@
    <property name="text">
     <string>終了(&amp;Q)</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
   </action>
   <action name="preferencesAction">
    <property name="text">
     <string>設定(&amp;P)</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
    </property>
   </action>
   <action name="updateNameSenderAction">
@@ -101,10 +107,16 @@
    <property name="text">
     <string>update_name_Qtについて</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
+   </property>
   </action>
   <action name="aboutQtAction">
    <property name="text">
     <string>Qtについて</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::AboutQtRole</enum>
    </property>
   </action>
   <action name="officialSiteAction">
