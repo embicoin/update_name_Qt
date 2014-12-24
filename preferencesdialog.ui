@@ -6,1103 +6,430 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
-    <height>645</height>
+    <width>729</width>
+    <height>615</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
-   <string>設定</string>
+   <string>Dialog</string>
   </property>
-  <property name="locale">
-   <locale language="Japanese" country="Japan"/>
-  </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QTabWidget" name="tab">
-     <property name="currentIndex">
-      <number>2</number>
-     </property>
-     <widget class="QWidget" name="tab_1">
-      <attribute name="title">
-       <string>動作</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QGroupBox" name="groupBox">
-         <property name="title">
-          <string>常駐</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>注意：Linuxだとシステムトレイが表示されない場合があります。</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="stayOnSystemTrayCheck">
-            <property name="text">
-             <string>メインウィンドウを閉じてもシステムトレイに常駐する。</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="title">
-          <string>update_name</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_10">
-          <item>
-           <widget class="QCheckBox" name="autoStartUpdateNameCheck">
-            <property name="text">
-             <string>upadte_name_Qtを起動した時にupdate_nameを自動的にスタートする。</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_27">
-         <property name="title">
-          <string>ツイート</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_41">
-          <item>
-           <widget class="QCheckBox" name="retryTweetOnStatusIsADuplicate">
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>&quot;Status is a duplicate.&quot;エラーが返された場合、
-可能であれば適当な記号をつけてツイートを再送信する。</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <property name="autoRepeat">
-             <bool>false</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>false</bool>
-            </property>
-            <property name="tristate">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_28">
-         <property name="title">
-          <string>履歴</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_42">
-          <item>
-           <widget class="QCheckBox" name="writeHistoryFileCheck">
-            <property name="text">
-             <string>履歴を保存を有効にする。</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="historyFileNameGroup">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="title">
-             <string>履歴の保存先</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLineEdit" name="historyFileNameLine"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="selectHistoryFileNameButton">
-               <property name="text">
-                <string>参照</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_4">
-      <attribute name="title">
-       <string>コマンド</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_16">
-       <item>
-        <widget class="QScrollArea" name="scrollArea_2">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_2">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>430</width>
-            <height>622</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_18">
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="text">
-              <string>コマンドの設定ができます。</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_10">
-             <property name="title">
-              <string>name</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_17">
-              <item>
-               <widget class="QCheckBox" name="enabledUpdateNameCheck">
-                <property name="text">
-                 <string>update_nameを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupBox_23">
-                <property name="title">
-                 <string>update_nameのフォーマット</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_36">
-                 <item>
-                  <widget class="QLabel" name="label_30">
-                   <property name="text">
-                    <string>%nに新しい名前が入ります。
-空欄にすると、新しい名前がそのまま適用されます。</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="updateNameFormatLine"/>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_11">
-             <property name="title">
-              <string>url</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_19">
-              <item>
-               <widget class="QCheckBox" name="enabledUpdateUrlCheck">
-                <property name="text">
-                 <string>update_urlを有効にする</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_12">
-             <property name="title">
-              <string>location</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_20">
-              <item>
-               <widget class="QCheckBox" name="enabledUpdateLocationCheck">
-                <property name="text">
-                 <string>update_locationを有効にする</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_13">
-             <property name="title">
-              <string>description</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_21">
-              <item>
-               <widget class="QCheckBox" name="enabledUpdateDescriptionCheck">
-                <property name="text">
-                 <string>update_descriptionを有効にする</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_16">
-             <property name="title">
-              <string>image</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_35">
-              <item>
-               <widget class="QCheckBox" name="enabledUpdateImageCheck">
-                <property name="text">
-                 <string>update_imageを有効にする</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_24">
-             <property name="title">
-              <string>background_image</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_37">
-              <item>
-               <widget class="QCheckBox" name="enabledUpdateBackgroundImageCheck">
-                <property name="text">
-                 <string>update_background_imageを有効にする</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_29">
-             <property name="title">
-              <string>banner</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_43">
-              <item>
-               <widget class="QCheckBox" name="enabledUpdateBannerCheck">
-                <property name="text">
-                 <string>update_bannerを有効にする</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="messageTab">
-      <attribute name="title">
-       <string>メッセージ</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>空欄にするとデフォルト設定がセットされます。
-また、文字数には気をつけましょう。</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="selectMessageBox">
-         <property name="currentText">
-          <string/>
-         </property>
-         <property name="currentIndex">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QStackedWidget" name="messageStack">
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="page">
-          <layout class="QVBoxLayout" name="verticalLayout_22">
-           <item>
-            <widget class="QGroupBox" name="groupBox_2">
-             <property name="title">
-              <string>開始時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
-              <item>
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>update_nameを作動させた時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postStartupMessageCheck">
-                <property name="text">
-                 <string>開始時のメッセージを有効にする。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTextEdit" name="startupMessageText">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="acceptRichText">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="startupMessageLengthCountLabel">
-                <property name="locale">
-                 <locale language="Japanese" country="Japan"/>
-                </property>
-                <property name="text">
-                 <string>TextLabel</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_3">
-             <property name="title">
-              <string>終了時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <item>
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>update_nameを終了させた時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postClosedMessageCheck">
-                <property name="text">
-                 <string>終了時のメッセージを有効にする。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTextEdit" name="closedMessageText">
-                <property name="acceptRichText">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="closedMessageLengthCountLabel">
-                <property name="text">
-                 <string>TextLabel</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_2">
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QGroupBox" name="groupBox_4">
-             <property name="title">
-              <string>update_name成功時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_8">
-              <item>
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>update_nameが成功した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateNameSuccessedMessageCheck">
-                <property name="text">
-                 <string>update_name成功時のメッセージを有効にする。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>%uはupdate_nameを実行したユーザーのscreen_name、
-%nは新しいnameに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateNameSuccessedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_5">
-             <property name="title">
-              <string>update_name失敗時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9">
-              <item>
-               <widget class="QLabel" name="label_7">
-                <property name="text">
-                 <string>update_nameが失敗した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateNameFailedMessageCheck">
-                <property name="text">
-                 <string>update_name失敗時のメッセージを有効にする。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>%uはupdate_nameを実行したユーザーのscreen_name、
-%nは新しいname、
-%eはエラーメッセージに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateNameFailedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_3">
-          <layout class="QVBoxLayout" name="verticalLayout_25">
-           <item>
-            <widget class="QGroupBox" name="groupBox_17">
-             <property name="title">
-              <string>update_url成功時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_27">
-              <item>
-               <widget class="QLabel" name="label_14">
-                <property name="text">
-                 <string>update_urlが成功したときにツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateUrlSuccessedMessageCheck">
-                <property name="text">
-                 <string>update_url成功時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_15">
-                <property name="text">
-                 <string>%uはupdate_urlを実行したユーザーのscreen_name、
-%lは新しいURLに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateUrlSuccessedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_18">
-             <property name="title">
-              <string>update_url失敗時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_28">
-              <item>
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>update_urlが失敗した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateUrlFailedMessageCheck">
-                <property name="text">
-                 <string>update_url失敗時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_17">
-                <property name="text">
-                 <string>%uはupdate_urlを実行したユーザーのscreen_name、
-%lは新しいURL、
-%eはエラーメッセージに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateUrlFailedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_4">
-          <layout class="QVBoxLayout" name="verticalLayout_29">
-           <item>
-            <widget class="QGroupBox" name="groupBox_19">
-             <property name="title">
-              <string>update_location成功時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_31">
-              <item>
-               <widget class="QLabel" name="label_18">
-                <property name="text">
-                 <string>update_locationが成功したときにツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateLocationSuccessedMessageCheck">
-                <property name="text">
-                 <string>update_location成功時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_19">
-                <property name="text">
-                 <string>%uはupdate_locationを実行したユーザーのscreen_name、
-%lは新しいLocationに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateLocationSuccessedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_20">
-             <property name="title">
-              <string>update_location失敗時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_30">
-              <item>
-               <widget class="QLabel" name="label_20">
-                <property name="text">
-                 <string>update_locationが失敗した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateLocationFailedMessageCheck">
-                <property name="text">
-                 <string>update_location失敗時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_21">
-                <property name="text">
-                 <string>%uはupdate_locationを実行したユーザーのscreen_name、
-%lは新しいLocation、
-%eはエラーメッセージに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateLocationFailedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_5">
-          <layout class="QVBoxLayout" name="verticalLayout_32">
-           <item>
-            <widget class="QGroupBox" name="groupBox_21">
-             <property name="title">
-              <string>update_description成功時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_33">
-              <item>
-               <widget class="QLabel" name="label_22">
-                <property name="text">
-                 <string>update_descriptionが成功したときにツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateDescriptionSuccessedMessageCheck">
-                <property name="text">
-                 <string>update_description成功時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_23">
-                <property name="text">
-                 <string>%uはupdate_descriptionを実行したユーザーのscreen_name、
-%dは新しいDescriptionに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateDescriptionSuccessedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_22">
-             <property name="title">
-              <string>update_description失敗時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_34">
-              <item>
-               <widget class="QLabel" name="label_24">
-                <property name="text">
-                 <string>update_descriptionが失敗した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateDescriptionFailedMessageCheck">
-                <property name="text">
-                 <string>update_description失敗時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_25">
-                <property name="text">
-                 <string>%uはupdate_descriptionを実行したユーザーのscreen_name、
-%dは新しいDescription、
-%eはエラーメッセージに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateDescriptionFailedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_6">
-          <layout class="QVBoxLayout" name="verticalLayout_23">
-           <item>
-            <widget class="QGroupBox" name="groupBox_14">
-             <property name="title">
-              <string>update_image成功時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_24">
-              <item>
-               <widget class="QLabel" name="label_26">
-                <property name="text">
-                 <string>update_imageが成功したときにツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateImageSuccessedMessageCheck">
-                <property name="text">
-                 <string>update_image成功時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_27">
-                <property name="text">
-                 <string>%uはupdate_imageを実行したユーザーのscreen_name、
-%iは新しいImageのURLに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateImageSuccessedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_15">
-             <property name="title">
-              <string>update_image失敗時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_26">
-              <item>
-               <widget class="QLabel" name="label_28">
-                <property name="text">
-                 <string>update_imageが失敗した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateImageFailedMessageCheck">
-                <property name="text">
-                 <string>update_image失敗時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_29">
-                <property name="text">
-                 <string>%uはupdate_imageを実行したユーザーのscreen_name、
-%eはエラーメッセージに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateImageFailedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_7">
-          <layout class="QVBoxLayout" name="verticalLayout_38">
-           <item>
-            <widget class="QGroupBox" name="groupBox_25">
-             <property name="title">
-              <string>update_background_image成功時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_40">
-              <item>
-               <widget class="QLabel" name="label_31">
-                <property name="text">
-                 <string>update_background_imageが成功したときにツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateBackgroundImageSuccessedMessageCheck">
-                <property name="text">
-                 <string>update_background_image成功時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_32">
-                <property name="text">
-                 <string>%uはupdate_background_imageを実行したユーザーのscreen_name、
-%iは新しいbackground_imageのURLに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateBackgroundImageSuccessedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_26">
-             <property name="title">
-              <string>update_background_image失敗時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_39">
-              <item>
-               <widget class="QLabel" name="label_33">
-                <property name="text">
-                 <string>update_background_imageが失敗した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateBackgroundImageFailedMessageCheck">
-                <property name="text">
-                 <string>update_image失敗時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_34">
-                <property name="text">
-                 <string>%uはupdate_background_imageを実行したユーザーのscreen_name、
-%eはエラーメッセージに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateBackgroundImageFailedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_8">
-          <layout class="QVBoxLayout" name="verticalLayout_44">
-           <item>
-            <widget class="QGroupBox" name="groupBox_30">
-             <property name="title">
-              <string>update_banner成功時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_46">
-              <item>
-               <widget class="QLabel" name="label_35">
-                <property name="text">
-                 <string>update_bannerが成功した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateBannerSuccessedMessageCheck">
-                <property name="text">
-                 <string>update_banner成功時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_36">
-                <property name="text">
-                 <string>%uはupdate_bannerを実行したユーザーのscreen_name、
-%iは新しいbannerのURLに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateBannerSuccessedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_31">
-             <property name="title">
-              <string>update_banner失敗時のメッセージ</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_45">
-              <item>
-               <widget class="QLabel" name="label_37">
-                <property name="text">
-                 <string>update_bannerが失敗した時にツイートします。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="postUpdateBannerFailedMessage">
-                <property name="text">
-                 <string>update_banner失敗時のメッセージを有効にする</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_38">
-                <property name="text">
-                 <string>%uはupdate_bannerを実行したユーザーのscreen_name、
-%eはエラーメッセージに置き換えられます。</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="updateBannerFailedMessageText"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_3">
-      <attribute name="title">
-       <string>認証</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_13">
-       <item>
-        <widget class="QGroupBox" name="groupBox_8">
-         <property name="title">
-          <string>アカウントの再認証</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_14">
-          <item>
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>プログラムを一旦終了して、Twitterアカウントを認証し直します。</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="reAuthButton">
-            <property name="text">
-             <string>再認証する</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_9">
-         <property name="title">
-          <string>ログアウト</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_15">
-          <item>
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>Twitterからログアウトして、プログラムを終了します。</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="logoutButton">
-            <property name="text">
-             <string>ログアウト</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>デバッグ</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_11">
-       <item>
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>注意：一般ユーザーにはあまり関係ない項目です。</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_7">
-         <property name="title">
-          <string>設定ファイル</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_12">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QScrollArea" name="scrollArea">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>131</width>
+          <height>547</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QPushButton" name="actionButton">
+           <property name="font">
+            <font>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>動作</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="commandButton">
+           <property name="text">
+            <string>コマンド</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="messageButton">
+           <property name="text">
+            <string>メッセージ</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="advancedSettingButton">
+           <property name="text">
+            <string>詳細設定</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="stackedWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="page">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>常駐</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QLabel" name="label_10">
+             <widget class="QCheckBox" name="staysOnSystemSrayCheck">
               <property name="text">
-               <string>パス:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="settingsFilePathLine">
-              <property name="readOnly">
-               <bool>true</bool>
+               <string>メインウィンドウを閉じてもシステムトレイに常駐する</string>
               </property>
              </widget>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="QPushButton" name="openSettingsFile">
-            <property name="text">
-             <string>設定ファイルを開く</string>
-            </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>重複対策</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QCheckBox" name="reSendStatusCheck">
+              <property name="text">
+               <string>&quot;Status is a duplicate.&quot;エラーの場合、可能であれば末尾に記号をつけて再送信する</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>履歴</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QCheckBox" name="saveUpdateHistoryCheck">
+              <property name="text">
+               <string>update履歴を保存する</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>保存先：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="updateHistoryFileNameLine"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="selectUpdateHistoryFileButton">
+                <property name="text">
+                 <string>参照</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="QComboBox" name="commandBox"/>
+         </item>
+         <item>
+          <widget class="QStackedWidget" name="commandStack">
+           <property name="currentIndex">
+            <number>2</number>
+           </property>
+           <widget class="QWidget" name="page_5">
+            <layout class="QVBoxLayout" name="verticalLayout_11">
+             <item>
+              <widget class="QCheckBox" name="enabledUpdateNameCheck">
+               <property name="text">
+                <string>update_nameを有効にする</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_5">
+               <property name="title">
+                <string>フォーマット</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_12">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>update_nameのフォーマットを指定します。
+%{name}には新しいnameが入ります。</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="enabledUpdateNameFormatCheck">
+                  <property name="text">
+                   <string>フォーマット指定を有効にする</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QLabel" name="label_5">
+                    <property name="text">
+                     <string>フォーマット：</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="updateNameFormatLine"/>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_6">
+               <property name="title">
+                <string>20文字を超えたときの処理</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_13">
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>20文字を超えるnameの処理方法を選択します。</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="over20CharNameButton1">
+                  <property name="text">
+                   <string>20文字を超えた文字を消去する</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="over20CharNameButton2">
+                  <property name="text">
+                   <string>update_nameをキャンセルする</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="removeSettingsFile">
-            <property name="text">
-             <string>設定ファイルを削除する</string>
-            </property>
+           <widget class="QWidget" name="page_6">
+            <layout class="QVBoxLayout" name="verticalLayout_14">
+             <item>
+              <widget class="QCheckBox" name="enabledUpdateUrlCheck">
+               <property name="text">
+                <string>update_urlを有効にする</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="enabledCheckUrlCheck">
+               <property name="text">
+                <string>指定されたURLにアクセスできるかチェックする</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </widget>
+           <widget class="QWidget" name="page_7"/>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_3">
+        <layout class="QVBoxLayout" name="verticalLayout_8"/>
+       </widget>
+       <widget class="QWidget" name="page_4">
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="title">
+            <string>設定ファイル</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>設定ファイルの場所：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="settingsFileNameLine"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="openSettingsFileButton">
+                <property name="text">
+                 <string>設定ファイルを開く</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="deleteSettingsFileButton">
+                <property name="text">
+                 <string>設定ファイルを削除する</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>設定ファイルの内容：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTextBrowser" name="textBrowser"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -1110,7 +437,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Discard|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
      </property>
     </widget>
    </item>
@@ -1119,114 +446,34 @@
  <resources/>
  <connections>
   <connection>
-   <sender>postUpdateNameFailedMessageCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>updateNameFailedMessageText</receiver>
-   <slot>setEnabled(bool)</slot>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>PreferencesDialog</receiver>
+   <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>716</y>
+     <x>248</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
-     <x>278</x>
-     <y>818</y>
+     <x>157</x>
+     <y>274</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>postUpdateNameSuccessedMessageCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>updateNameSuccessedMessageText</receiver>
-   <slot>setEnabled(bool)</slot>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>PreferencesDialog</receiver>
+   <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>514</y>
+     <x>316</x>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
-     <x>278</x>
-     <y>601</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>postClosedMessageCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>closedMessageText</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>289</x>
-     <y>354</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>285</x>
-     <y>410</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>postStartupMessageCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>startupMessageText</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>289</x>
-     <y>153</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>285</x>
-     <y>209</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>postUpdateUrlFailedMessageCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>updateUrlFailedMessageText</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>278</x>
-     <y>429</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>541</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>postUpdateUrlSuccessedMessageCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>updateUrlSuccessedMessageText</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>278</x>
-     <y>198</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>294</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>writeHistoryFileCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>historyFileNameGroup</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>274</x>
-     <y>328</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>377</y>
+     <x>286</x>
+     <y>274</y>
     </hint>
    </hints>
   </connection>

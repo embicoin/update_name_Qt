@@ -3,8 +3,7 @@
 
 #include <QDialog>
 
-#include "updatenameqtglobal.h"
-#include "twitterAPI/oauth/oauth.h"
+#include "../twitterAPI/oauth/oauth.h"
 
 namespace Ui {
 class AuthDialog;

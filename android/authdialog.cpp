@@ -1,6 +1,8 @@
 #include "authdialog.h"
 #include "ui_authdialog.h"
+#include "../updatenameqtglobal.h"
 
+#include <QDesktopServices>
 #include <QMessageBox>
 
 AuthDialog::AuthDialog(QWidget *parent) :
@@ -8,29 +10,28 @@ AuthDialog::AuthDialog(QWidget *parent) :
     ui(new Ui::AuthDialog)
 {
     ui->setupUi(this);
-    ui->progressBar->hide();
+    setWindowState(Qt::WindowMaximized);
 
     //SIGNALの接続
     //認証ページを開く
     connect(ui->openAuthPageButton, &QPushButton::clicked, [&]() {
-        ui->webView->load(m_oauth.authorizeUrl());
+        QDesktopServices::openUrl(QUrl(ui->urlLine->text()));
     });
-    //APIキーの設定
+    //PAIキーの設定
     connect(ui->apiKeyConfigButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(1);
     });
     //PINコード入力欄
     connect(ui->pinCodeLine, &QLineEdit::textChanged, [&](const QString &text) {
-            ui->enterPinCodeButton->setEnabled(text.length() == 7);
+        ui->enterPinCodeButton->setEnabled(text.length() == 7);
     });
-    connect(ui->pinCodeLine, SIGNAL(returnPressed()), ui->enterPinCodeButton, SIGNAL(clicked()));
     //入力
     connect(ui->enterPinCodeButton, &QPushButton::clicked, [&]() {
         m_oauth.authorizePin(ui->pinCodeLine->text());
     });
     //APIキー設定の画面のボタン
     connect(ui->apiKeyConfigButtonBox, &QDialogButtonBox::clicked, [&](QAbstractButton *button) {
-        switch (ui->apiKeyConfigButtonBox->standardButton(button)) {
+        switch(ui->apiKeyConfigButtonBox->standardButton(button)) {
         case QDialogButtonBox::Help: {
             QMessageBox helpMessage(QMessageBox::NoIcon, tr("APIキーとは"),
                                     tr("APIキーはConsumerKeyとConsumerSecretがあり、認証に使います。\n"
@@ -43,7 +44,7 @@ AuthDialog::AuthDialog(QWidget *parent) :
         case QDialogButtonBox::Ok:
             m_oauth.setConsumerKey(ui->consumerKeyLine->text());
             m_oauth.setConsumerSecret(ui->consumerSecretLine->text());
-            ui->webView->load(m_oauth.authorizeUrl());
+            ui->urlLine->setText(m_oauth.authorizeUrl().toString());
             ui->stackedWidget->setCurrentIndex(0);
             break;
         case QDialogButtonBox::Cancel:
@@ -51,33 +52,9 @@ AuthDialog::AuthDialog(QWidget *parent) :
             ui->consumerSecretLine->setText(m_oauth.consumerSecret());
             ui->stackedWidget->setCurrentIndex(0);
             break;
-        default:
-            break;
-        }
-    });
-    //埋め込みブラウザ
-    connect(ui->webView, SIGNAL(loadStarted()), ui->progressBar, SLOT(show()));
-    connect(ui->webView, SIGNAL(loadFinished(bool)), ui->progressBar, SLOT(hide()));
-    connect(ui->webView, SIGNAL(loadProgress(int)), ui->progressBar, SLOT(setValue(int)));
-    //ダイアログのボタン
-    connect(ui->buttonBox, &QDialogButtonBox::clicked, [&](QAbstractButton *button) {
-        switch (ui->buttonBox->standardButton(button)) {
         case QDialogButtonBox::RestoreDefaults:
-            if (QMessageBox::question(this, tr("標準設定に戻す"), tr("APIキーの設定を標準設定に戻します。\n"
-                                                              "よろしいですか？"), QMessageBox::Yes, QMessageBox::No)
-                    == QMessageBox::Yes) {
-                ui->consumerKeyLine->setText(UpdateNameQt::defaultSettings["ConsumerKey"].toString());
-                ui->consumerSecretLine->setText(UpdateNameQt::defaultSettings["ConsumerSecret"].toString());
-                m_oauth.setConsumerKey(ui->consumerKeyLine->text());
-                m_oauth.setConsumerSecret(ui->consumerSecretLine->text());
-                ui->webView->load(m_oauth.authorizeUrl());
-            }
-            break;
-        case QDialogButtonBox::Cancel:
-            done(Cancelled);
-            break;
-        case QDialogButtonBox::Retry:
-            done(Retry);
+            ui->consumerKeyLine->setText(UpdateNameQt::defaultSettings["ConsumerKey"].toString());
+            ui->consumerSecretLine->setText(UpdateNameQt::defaultSettings["ConsumerSecret"].toString());
             break;
         default:
             break;
@@ -102,7 +79,10 @@ AuthDialog::AuthDialog(QWidget *parent) :
         UpdateNameQt::settings->setValue("UserId", userId);
         QMessageBox::information(this, tr("認証が完了しました"), tr("認証が完了しました！\n"
                                                            "あなたのscreen_name：%1").arg(screenName), QMessageBox::Ok);
-        done(AuthSuccessed);
+    });
+    //ダイアログ
+    connect(this, &QDialog::rejected, [&]() {
+        done(Cancelled);
     });
 
     //API Keyのセット
@@ -115,8 +95,8 @@ AuthDialog::AuthDialog(QWidget *parent) :
     m_oauth.setConsumerKey(ui->consumerKeyLine->text());
     m_oauth.setConsumerSecret(ui->consumerSecretLine->text());
 
-    //認証ページの表示
-    ui->webView->load(m_oauth.authorizeUrl());
+    //URLの表示
+    ui->urlLine->setText(m_oauth.authorizeUrl().toString());
 }
 
 AuthDialog::~AuthDialog()

@@ -1,53 +1,67 @@
+#include "updatenameqtglobal.h"
 #include "mainwindow.h"
+#ifdef Q_OS_ANDROID
+#include "android/authdialog.h"
+#else
 #include "authdialog.h"
-#include "settings.h"
+#endif
+
 #include <QApplication>
-#include <QLockFile>
-#include <QDir>
-#include <QDebug>
+#include <QTranslator>
+#include <QLibraryInfo>
+
+namespace UpdateNameQt {
+QSettings *settings;
+}
 
 int main(int argc, char *argv[])
 {
-#ifdef Q_OS_MAC
-    qDebug() << "Set library path...";
-    QDir dir(argv[0]);
-    dir.cdUp();
-    dir.cdUp();
-    dir.cd("PlugIns");
-    QCoreApplication::addLibraryPath(dir.path());
-    qDebug() << "Set library path finished\n"
-                "LibraryPath:" << QCoreApplication::libraryPaths();
-#endif
-    int result = 255;
+    using UpdateNameQt::settings;
+    int result;
 
-    while(result == 255) {
+    do {
         QApplication a(argc, argv);
-        QLockFile lockfile(".update_name_Qt_lockfile");
-        Settings settings;
+        QTranslator t;
 
-        lockfile.tryLock();
-        if(lockfile.error() != QLockFile::NoError) {
-            qWarning() << "update_name_Qt is already running!";
-            return 1;
-        }
+        //日本語化
+        t.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+        a.installTranslator(&t);
 
-        a.setQuitOnLastWindowClosed(false);
-        a.setWindowIcon(QIcon(":/icon/update_name_icon.png"));
-        a.setApplicationVersion("v1.0.1");
+        //設定ファイルの初期化
+        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "update_name_Qt_config_2");
 
-        if(settings.consumerKey().isEmpty()
-                || settings.consumerSecret().isEmpty()
-                || settings.accessToken().isEmpty()
-                || settings.accessTokenSecret().isEmpty()) {
-            AuthDialog d;
-            switch (d.exec()) {
-            case QDialog::Rejected:
-                return 1;
-            case 255:
-                continue;
-            default:
-                break;
-            }
+        //バージョン名のセット
+        QString os;
+#ifdef Q_OS_LINUX
+#ifdef Q_OS_ANDROID
+        os = "Android";
+#else
+        os = "Linux";
+#endif
+#elif defined(Q_OS_MAC)
+        os = "MacOS X";
+#elif defined(Q_OS_WIN)
+        os = "Windows";
+#endif
+        a.setApplicationVersion("update_name_Qt v2.0.1-dev " + os);
+
+        //認証されていなかったら認証ダイアログを出す
+        if (settings->value("AccessToken").isNull() || settings->value("AccessTokenSecret").isNull()) {
+            bool retry;
+            do {
+                AuthDialog auth;
+                retry = false;
+                switch (auth.exec()) {
+                case AuthDialog::AuthSuccessed:
+                    break;
+                case AuthDialog::Cancelled:
+                    return 1;
+                case AuthDialog::Retry:
+                    retry = true;
+                default:
+                    return 1;
+                }
+            } while (retry);
         }
 
         MainWindow w;
@@ -55,9 +69,7 @@ int main(int argc, char *argv[])
 
         result = a.exec();
 
-        lockfile.unlock();
-
-    }
+    } while ( result == UpdateNameQt::ExitRestart);
 
     return result;
 }
