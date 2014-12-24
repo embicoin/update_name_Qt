@@ -15,8 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->saveLogAction->setVisible(false);
 #endif
 
-    qDebug("aaaa");
-
     //connect
     //ログのクリア
     connect(ui->clearLogAction, SIGNAL(triggered()), ui->logText, SLOT(clear()));
