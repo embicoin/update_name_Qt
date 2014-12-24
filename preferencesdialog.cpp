@@ -6,8 +6,11 @@
 #include <QUrl>
 #include <QMessageBox>
 #include <QFile>
+#include <QDebug>
 
 const QSize PreferencesDialog::ICON_SIZE(20, 20);
+
+using UpdateNameQt::settings;
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
     QDialog(parent),
@@ -20,18 +23,24 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->commandButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_TitleBarMenuButton));
     ui->messageButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation));
     ui->advancedSettingButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning));
+    //1ページ目を選択させる
+    ui->stackedWidget->setCurrentIndex(0);
     //アイコンの大きさのセット
     for (QPushButton *button : ui->scrollAreaWidgetContents->findChildren<QPushButton *>())
         button->setIconSize(ICON_SIZE);
     //コマンド名のセット
     ui->commandBox->addItems(UpdateNameQt::updateCommands);
-
-
+    //1ページ目を選択させる
+    ui->commandStack->setCurrentIndex(0);
+    //メッセージの種類のセット
+    ui->messageBox->addItems(QStringList() << "起動/終了" << UpdateNameQt::updateCommands);
     //設定ファイルの場所のセット
     ui->settingsFileNameLine->setText(UpdateNameQt::settings->fileName());
     //設定ファイルの内容のセット
     ui->textBrowser->setSource(QUrl(UpdateNameQt::settings->fileName()));
 
+    //connect
+    //ページの切り替え
     connect(ui->actionButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(0);
     });
@@ -44,9 +53,11 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     connect(ui->advancedSettingButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(3);
     });
+    //設定ファイルを開く
     connect(ui->openSettingsFileButton, &QPushButton::clicked, [&]() {
         QDesktopServices::openUrl(QUrl(UpdateNameQt::settings->fileName()));
     });
+    //設定ファイルの削除
     connect(ui->deleteSettingsFileButton, &QPushButton::clicked, [&]() {
         QFile file(UpdateNameQt::settings->fileName());
         if (QMessageBox::question(this, tr("確認"), tr("設定ファイルを削除します。\nよろしいですか？"), QMessageBox::Yes, QMessageBox::No)
@@ -59,9 +70,84 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
         }
         QMessageBox::critical(this, tr("エラー"), tr("設定ファイルの削除に失敗しました。\n%1").arg(file.errorString()), QMessageBox::Ok);
     });
+    //ダイアログのボタン
+    connect(ui->buttonBox, &QDialogButtonBox::clicked, [&](QAbstractButton *button) {
+        switch (ui->buttonBox->standardButton(button)) {
+        case QDialogButtonBox::RestoreDefaults:
+            if (QMessageBox::question(this, tr("確認"), tr("設定を標準設定に戻します。\nよろしいですか？"), QMessageBox::Yes, QMessageBox::No)
+                == QMessageBox::Yes) {
+                //認証設定以外を標準設定をセットする
+                for (auto i = UpdateNameQt::defaultSettings.constBegin(); i != UpdateNameQt::defaultSettings.constEnd(); i++)
+                    if (i.key() != "ConsumerKey" || i.key() != "ConsumerSecret" || i.key() != "AccessToken" || i.key() != "AccessTokenSecret")
+                        settings->setValue(i.key(), i.value());
+                loadSettings();
+            }
+            break;
+        case QDialogButtonBox::Apply:
+            saveSettings();
+            break;
+        case QDialogButtonBox::Cancel:
+            reject();
+            break;
+        case QDialogButtonBox::Ok:
+            saveSettings();
+            accept();
+            break;
+        default:
+            break;
+        }
+    });
+
+    loadSettings();
 }
 
 PreferencesDialog::~PreferencesDialog()
 {
     delete ui;
+}
+
+/**
+ * @brief 設定ファイルの内容を読み込むメソッド
+ */
+void PreferencesDialog::loadSettings()
+{
+    QStringList keys = UpdateNameQt::defaultSettings.keys();
+    QCheckBox *checkBox;
+    QPlainTextEdit *text;
+    QLineEdit *line;
+
+    for (auto i = keys.constBegin(); i != keys.constEnd(); i++) {
+        QString keyWord = *i;
+        //先頭文字を小文字にする
+        keyWord.replace(0, 1, keyWord.at(0).toLower());
+
+        if ((checkBox = findChild<QCheckBox *>(keyWord + "Check")) != NULL)
+            checkBox->setChecked(settings->value(*i, UpdateNameQt::defaultSettings[*i]).toBool());
+        else if ((text = findChild<QPlainTextEdit *>(keyWord + "Text")) != NULL)
+            text->setPlainText(settings->value(*i, UpdateNameQt::defaultSettings[*i]).toString());
+        else if ((line = findChild<QLineEdit *>(keyWord + "Line")) != NULL)
+            line->setText(settings->value(*i, UpdateNameQt::defaultSettings[*i]).toString());
+    }
+
+    ui->over20CharNameButton1->setChecked(settings->value("Over20CharName", UpdateNameQt::defaultSettings["Over20CharName"]).toInt() == UpdateNameQt::ChopName);
+    ui->over20CharNameButton2->setChecked(settings->value("Over20CharName", UpdateNameQt::defaultSettings["Over20CharName"]).toInt() == UpdateNameQt::CancelUpdateName);
+}
+
+/**
+ * @brief 設定ファイルに保存するメソッド
+ */
+void PreferencesDialog::saveSettings()
+{
+    auto checkBoxs = findChildren<QCheckBox *>();
+    auto texts = findChildren<QPlainTextEdit *>();
+    auto lines = findChildren<QLineEdit *>();
+
+    for (QCheckBox *checkBox : checkBoxs)
+        settings->setValue(checkBox->objectName().replace(0, 1, checkBox->objectName().at(0).toUpper()), checkBox->isChecked());
+    for (QPlainTextEdit *text : texts)
+        settings->setValue(text->objectName().replace(0, 1, text->objectName().at(0).toUpper()), text->toPlainText());
+    for (QLineEdit *line : lines)
+        settings->setValue(line->objectName().replace(0, 1, line->objectName().at(0).toUpper()), line->text());
+
+    settings->setValue("Over20CharName", ui->over20CharNameButton1->isChecked());
 }
