@@ -39,7 +39,6 @@ HEADERS  += mainwindow.h \
     twitterAPI/object/tweets.h \
     twitterAPI/object/users.h
 
-# Androidとそれ以外で分ける
 android {
     SOURCES  += android/authdialog.cpp
     HEADERS  += android/authdialog.h
@@ -47,7 +46,11 @@ android {
 } else {
     SOURCES  += authdialog.cpp
     HEADERS  += authdialog.h
-    FORMS    += authdialog.ui
+    win32|win64 {
+        FORMS    += windows/authdialog.ui
+    } else {
+        FORMS    += authdialog.ui
+    }
 }
 
 FORMS    += mainwindow.ui \
