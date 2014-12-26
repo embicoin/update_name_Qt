@@ -1,4 +1,4 @@
-#ifndef AUTHDIALOG_H
+﻿#ifndef AUTHDIALOG_H
 #define AUTHDIALOG_H
 
 #include <QDialog>
@@ -19,9 +19,9 @@ public:
     ~AuthDialog();
 
     enum Result {
-        AuthSuccessed,
-        Cancelled,
-        Retry,
+        AuthSuccessed = QDialog::Accepted,
+        Cancelled = QDialog::Rejected,
+        Retry = 1000,
     };
 
 private:

@@ -1,19 +1,28 @@
-#include "authdialog.h"
+﻿#include "authdialog.h"
 #include "ui_authdialog.h"
 
+#pragma execution_character_set("utf-8")
+
 #include <QMessageBox>
+#include <QDesktopServices>
 
 AuthDialog::AuthDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AuthDialog)
 {
     ui->setupUi(this);
+#ifndef Q_OS_WIN
     ui->progressBar->hide();
+#endif
 
     //SIGNALの接続
     //認証ページを開く
     connect(ui->openAuthPageButton, &QPushButton::clicked, [&]() {
+#ifdef Q_OS_WIN
+        QDesktopServices::openUrl(QUrl(ui->urlLine->text()));
+#else
         ui->webView->load(m_oauth.authorizeUrl());
+#endif
     });
     //APIキーの設定
     connect(ui->apiKeyConfigButton, &QPushButton::clicked, [&]() {
@@ -43,7 +52,11 @@ AuthDialog::AuthDialog(QWidget *parent) :
         case QDialogButtonBox::Ok:
             m_oauth.setConsumerKey(ui->consumerKeyLine->text());
             m_oauth.setConsumerSecret(ui->consumerSecretLine->text());
-            ui->webView->load(m_oauth.authorizeUrl());
+#ifdef Q_OS_WIN
+                ui->urlLine->setText(m_oauth.authorizeUrl().toString());
+#else
+                ui->webView->load(m_oauth.authorizeUrl());
+#endif
             ui->stackedWidget->setCurrentIndex(0);
             break;
         case QDialogButtonBox::Cancel:
@@ -56,9 +69,11 @@ AuthDialog::AuthDialog(QWidget *parent) :
         }
     });
     //埋め込みブラウザ
+#ifndef Q_OS_WIN
     connect(ui->webView, SIGNAL(loadStarted()), ui->progressBar, SLOT(show()));
     connect(ui->webView, SIGNAL(loadFinished(bool)), ui->progressBar, SLOT(hide()));
     connect(ui->webView, SIGNAL(loadProgress(int)), ui->progressBar, SLOT(setValue(int)));
+#endif
     //ダイアログのボタン
     connect(ui->buttonBox, &QDialogButtonBox::clicked, [&](QAbstractButton *button) {
         switch (ui->buttonBox->standardButton(button)) {
@@ -70,7 +85,11 @@ AuthDialog::AuthDialog(QWidget *parent) :
                 ui->consumerSecretLine->setText(UpdateNameQt::defaultSettings["ConsumerSecret"].toString());
                 m_oauth.setConsumerKey(ui->consumerKeyLine->text());
                 m_oauth.setConsumerSecret(ui->consumerSecretLine->text());
+#ifdef Q_OS_WIN
+                ui->urlLine->setText(m_oauth.authorizeUrl().toString());
+#else
                 ui->webView->load(m_oauth.authorizeUrl());
+#endif
             }
             break;
         case QDialogButtonBox::Cancel:
@@ -116,7 +135,11 @@ AuthDialog::AuthDialog(QWidget *parent) :
     m_oauth.setConsumerSecret(ui->consumerSecretLine->text());
 
     //認証ページの表示
+#ifdef Q_OS_WIN
+    ui->urlLine->setText(m_oauth.authorizeUrl().toString());
+#else
     ui->webView->load(m_oauth.authorizeUrl());
+#endif
 }
 
 AuthDialog::~AuthDialog()
