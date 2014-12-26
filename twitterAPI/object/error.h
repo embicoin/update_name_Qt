@@ -1,4 +1,4 @@
-#ifndef ERROROBJECT_H
+﻿#ifndef ERROROBJECT_H
 #define ERROROBJECT_H
 
 #include <QJsonObject>

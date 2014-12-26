@@ -1,4 +1,4 @@
-#include "updatenameqtglobal.h"
+﻿#include "updatenameqtglobal.h"
 #include "mainwindow.h"
 #ifdef Q_OS_ANDROID
 #include "android/authdialog.h"

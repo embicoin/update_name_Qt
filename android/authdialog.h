@@ -1,4 +1,4 @@
-#ifndef AUTHDIALOG_H
+﻿#ifndef AUTHDIALOG_H
 #define AUTHDIALOG_H
 
 #include <QDialog>

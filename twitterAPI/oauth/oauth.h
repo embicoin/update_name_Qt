@@ -1,4 +1,4 @@
-#ifndef OAUTH_H
+﻿#ifndef OAUTH_H
 #define OAUTH_H
 
 #include <QObject>

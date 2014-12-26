@@ -1,4 +1,4 @@
-#ifndef USERS_H
+﻿#ifndef USERS_H
 #define USERS_H
 
 #include "../twitterglobal.h"

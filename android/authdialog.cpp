@@ -1,4 +1,4 @@
-#include "authdialog.h"
+﻿#include "authdialog.h"
 #include "ui_authdialog.h"
 #include "../updatenameqtglobal.h"
 

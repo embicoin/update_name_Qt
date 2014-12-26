@@ -1,4 +1,4 @@
-#include "oauth.h"
+﻿#include "oauth.h"
 #include "../twitterglobal.h"
 
 #include <QNetworkAccessManager>

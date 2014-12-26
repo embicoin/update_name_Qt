@@ -1,4 +1,4 @@
-#ifndef PREFERENCESDIALOG_H
+﻿#ifndef PREFERENCESDIALOG_H
 #define PREFERENCESDIALOG_H
 
 #include <QDialog>
