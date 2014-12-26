@@ -15,11 +15,10 @@ public:
     explicit PreferencesDialog(QWidget *parent = 0);
     ~PreferencesDialog();
 
-private slots:
+private:
     void loadSettings();
     void saveSettings();
 
-private:
     static const QSize ICON_SIZE;
     Ui::PreferencesDialog *ui;
 };

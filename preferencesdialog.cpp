@@ -22,6 +22,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui->actionButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_CommandLink));
     ui->commandButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_TitleBarMenuButton));
     ui->messageButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation));
+    ui->authButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogYesButton));
     ui->advancedSettingButton->setIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning));
     //1ページ目を選択させる
     ui->stackedWidget->setCurrentIndex(0);
@@ -50,8 +51,23 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     connect(ui->messageButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(2);
     });
-    connect(ui->advancedSettingButton, &QPushButton::clicked, [&]() {
+    connect(ui->authButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(3);
+    });
+    connect(ui->advancedSettingButton, &QPushButton::clicked, [&]() {
+        ui->stackedWidget->setCurrentIndex(4);
+    });
+    //ログアウト
+    connect(ui->logoutButton, &QPushButton::clicked, [&]() {
+        if (QMessageBox::question(this, tr("確認"), tr("Twitterからログアウトしてアプリケーションを再起動します。\nよろしいですか？"),
+                                  QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+            settings->setValue("ConsumerKey", UpdateNameQt::defaultSettings["ConsumerKey"]);
+            settings->setValue("ConsumerSecret", UpdateNameQt::defaultSettings["ConsumerSecret"]);
+            settings->setValue("AccessToken", UpdateNameQt::defaultSettings["AccessToken"]);
+            settings->setValue("AccessTokenSecret", UpdateNameQt::defaultSettings["AccessTokenSecret"]);
+            QMessageBox::information(this, tr("ログアウト"), tr("ログアウトしました。\nアプリケーションを再起動します。"), QMessageBox::Ok);
+            QApplication::exit(UpdateNameQt::ExitRestart);
+        }
     });
     //設定ファイルを開く
     connect(ui->openSettingsFileButton, &QPushButton::clicked, [&]() {
@@ -143,11 +159,17 @@ void PreferencesDialog::saveSettings()
     auto lines = findChildren<QLineEdit *>();
 
     for (QCheckBox *checkBox : checkBoxs)
-        settings->setValue(checkBox->objectName().replace(0, 1, checkBox->objectName().at(0).toUpper()), checkBox->isChecked());
+        settings->setValue(checkBox->objectName()
+                           .replace(0, 1, checkBox->objectName().at(0).toUpper())
+                           .remove(QRegExp("Check$")), checkBox->isChecked());
     for (QPlainTextEdit *text : texts)
-        settings->setValue(text->objectName().replace(0, 1, text->objectName().at(0).toUpper()), text->toPlainText());
+        settings->setValue(text->objectName()
+                           .replace(0, 1, text->objectName().at(0).toUpper())
+                           .remove(QRegExp("Text$")), text->toPlainText());
     for (QLineEdit *line : lines)
-        settings->setValue(line->objectName().replace(0, 1, line->objectName().at(0).toUpper()), line->text());
+        settings->setValue(line->objectName()
+                           .replace(0, 1, line->objectName().at(0).toUpper())
+                           .remove(QRegExp("Line$")), line->text());
 
     settings->setValue("Over20CharName", ui->over20CharNameButton1->isChecked());
 }
