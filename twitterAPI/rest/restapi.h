@@ -1,4 +1,4 @@
-#ifndef RESTAPI_H
+﻿#ifndef RESTAPI_H
 #define RESTAPI_H
 
 #include <QObject>

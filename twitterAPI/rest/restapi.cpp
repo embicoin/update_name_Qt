@@ -1,6 +1,6 @@
-#include "restapi.h"
+﻿#include "restapi.h"
 #include "../twitterglobal.h"
-#include "../objects/error.h"
+#include "../object/error.h"
 
 #include <QNetworkRequest>
 #include <QTimer>
@@ -17,7 +17,7 @@ RestApi::RestApi(QObject *parent) :
 {
 }
 
-RestApi::RestApi(const OAuth &oauth, QObject *parent) :
+RestApi::RestApi(const TwitterAPI::OAuth &oauth, QObject *parent) :
     QObject(parent)
 {
     m_consumerKey       = oauth.consumerKey().toUtf8();
@@ -26,7 +26,7 @@ RestApi::RestApi(const OAuth &oauth, QObject *parent) :
     m_accessTokenSecret = oauth.accessTokenSecret().toUtf8();
 }
 
-void RestApi::setOAuth(const OAuth &oauth)
+void RestApi::setOAuth(const TwitterAPI::OAuth &oauth)
 {
     m_consumerKey       = oauth.consumerKey().toUtf8();
     m_consumerSecret    = oauth.consumerSecret().toUtf8();

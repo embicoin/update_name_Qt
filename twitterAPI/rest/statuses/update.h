@@ -1,4 +1,4 @@
-#ifndef UPDATE_H
+﻿#ifndef UPDATE_H
 #define UPDATE_H
 
 #include "../restapi.h"
@@ -24,7 +24,7 @@ class Update : public RestApi
     Q_OBJECT
 public:    
     explicit Update(QObject *parent = 0);
-    explicit Update(const OAuth &oauth, QObject *parent = 0);
+    explicit Update(const TwitterAPI::OAuth &oauth, QObject *parent = 0);
 
 signals:
     void finished();

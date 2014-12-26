@@ -1,4 +1,4 @@
-#include "update.h"
+﻿#include "update.h"
 
 #include <QDebug>
 
@@ -6,7 +6,7 @@ using namespace TwitterAPI::Rest::Statuses;
 
 UpdateParameters::UpdateParameters()
 {
-    qRegisterMetaType<Statuses::UpdateParameters>("Statuses::UpdateParameters");
+    qRegisterMetaType<TwitterAPI::Rest::Statuses::UpdateParameters>("TwitterAPI::Rest::Statuses::UpdateParameters");
 }
 
 const QUrl Update::UPDATE_URL("https://api.twitter.com/1.1/statuses/update.json");
@@ -19,7 +19,7 @@ Update::Update(QObject *parent) :
     connect(this, SIGNAL(successed(TweetObject)), this, SIGNAL(finished()));
 }
 
-Update::Update(const OAuth &oauth, QObject *parent) :
+Update::Update(const TwitterAPI::OAuth &oauth, QObject *parent) :
     RestApi(oauth, parent)
 {
     connect(this, SIGNAL(apiError(ErrorObject)), this, SIGNAL(finished()));
@@ -69,15 +69,15 @@ TwitterAPI::Object::Tweets Update::exec(const UpdateParameters &parameters)
 {
     QVariantMap params;
     params["status"] = parameters.status;
-    if (!parameters.inReplyToStatusId.isEmpty())
+    if (!parameters.inReplyToStatusId.isNull())
         params["in_reply_to_status_id"] = parameters.inReplyToStatusId;
     if (parameters.possiblySensitive)
         params["possibly_sensitive"] = parameters.possiblySensitive;
-    if (!parameters.lat.isEmpty())
+    if (!parameters.lat.isNull())
         params["lat"] = parameters.lat;
-    if (!parameters._long.isEmpty())
+    if (!parameters._long.isNull())
         params["long"] = parameters._long;
-    if (!parameters.placeId.isEmpty())
+    if (!parameters.placeId.isNull())
         params["place_id"] = parameters.placeId;
     if (!parameters.displayCoordinates)
         params["display_coordinates"] = parameters.displayCoordinates;

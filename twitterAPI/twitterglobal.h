@@ -1,4 +1,4 @@
-#ifndef TWITTERGLOBAL
+﻿#ifndef TWITTERGLOBAL
 #define TWITTERGLOBAL
 
 #include <QDateTime>

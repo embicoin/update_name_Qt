@@ -1,4 +1,4 @@
-#ifndef UPLOAD_H
+﻿#ifndef UPLOAD_H
 #define UPLOAD_H
 
 #include <QFile>
@@ -15,7 +15,7 @@ class Upload : public RestApi
     Q_OBJECT
 public:
     explicit Upload(QObject *parent = 0);
-    explicit Upload(const OAuth &oauth, QObject *parent = 0);
+    explicit Upload(const TwitterAPI::OAuth &oauth, QObject *parent = 0);
 
 signals:
     void finished();

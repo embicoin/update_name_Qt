@@ -1,4 +1,4 @@
-#include "upload.h"
+﻿#include "upload.h"
 
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -6,6 +6,7 @@
 #include <QJsonObject>
 
 using namespace TwitterAPI::Rest::Media;
+using TwitterAPI::OAuth;
 
 const QUrl Upload::UPLOAD_URL("https://upload.twitter.com/1.1/media/upload.json");
 
