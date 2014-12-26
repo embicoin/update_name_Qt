@@ -24,7 +24,9 @@ SOURCES += main.cpp\
     twitterAPI/rest/account/updateprofile.cpp \
     twitterAPI/object/error.cpp \
     twitterAPI/object/tweets.cpp \
-    twitterAPI/object/users.cpp
+    twitterAPI/object/users.cpp \
+    twitterAPI/streaming/user.cpp \
+    twitterAPI/streaming/parsejson.cpp
 
 HEADERS  += mainwindow.h \
     twitterAPI/oauth/oauth.h \
@@ -37,7 +39,9 @@ HEADERS  += mainwindow.h \
     twitterAPI/rest/account/updateprofile.h \
     twitterAPI/object/error.h \
     twitterAPI/object/tweets.h \
-    twitterAPI/object/users.h
+    twitterAPI/object/users.h \
+    twitterAPI/streaming/user.h \
+    twitterAPI/streaming/parsejson.h
 
 android {
     SOURCES  += android/authdialog.cpp
