@@ -84,17 +84,17 @@ AuthDialog::AuthDialog(QWidget *parent) :
         }
     });
     //OAuth
-    connect(&m_oauth, &OAuth::requestTokenError, [&](QNetworkReply::NetworkError, const QString &errorResponse) {
+    connect(&m_oauth, &TwitterAPI::OAuth::requestTokenError, [&](QNetworkReply::NetworkError, const QString &errorResponse) {
         QMessageBox::critical(this, tr("エラー"), tr("認証ページを開くのに失敗しました。\n"
                                                   "もう一度やり直してください。\n"
                                                   "%1").arg(errorResponse), QMessageBox::Ok);
     });
-    connect(&m_oauth, &OAuth::authorizeError, [&](QNetworkReply::NetworkError, const QString &errorResponse) {
+    connect(&m_oauth, &TwitterAPI::OAuth::authorizeError, [&](QNetworkReply::NetworkError, const QString &errorResponse) {
         QMessageBox::critical(this, tr("エラー"), tr("認証に失敗しました。\n"
                                                   "もう一度やり直してください。\n"
                                                   "%1").arg(errorResponse), QMessageBox::Ok);
     });
-    connect(&m_oauth, &OAuth::authorizeSuccessed, [&](const QString &accessToken, const QString &accessTokenSecret, const QString &userId, const QString &screenName) {
+    connect(&m_oauth, &TwitterAPI::OAuth::authorizeSuccessed, [&](const QString &accessToken, const QString &accessTokenSecret, const QString &userId, const QString &screenName) {
         UpdateNameQt::settings->setValue("ConsumerKey", m_oauth.consumerKey());
         UpdateNameQt::settings->setValue("ConsumerSecret", m_oauth.consumerSecret());
         UpdateNameQt::settings->setValue("AccessToken", accessToken);

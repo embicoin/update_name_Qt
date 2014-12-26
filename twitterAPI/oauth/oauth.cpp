@@ -12,6 +12,8 @@
 #include <memory>
 #include <QDebug>
 
+using namespace TwitterAPI;
+
 const QUrl OAuth::REQUEST_TOKEN_URL("https://api.twitter.com/oauth/request_token");
 const QUrl OAuth::AUTHORIZE_URL("https://api.twitter.com/oauth/authorize");
 const QUrl OAuth::ACCESS_TOKEN_URL("https://api.twitter.com/oauth/access_token");

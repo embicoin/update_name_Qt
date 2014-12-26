@@ -5,6 +5,7 @@
 #include <QUrl>
 #include <QNetworkReply>
 
+namespace TwitterAPI {
 class OAuth : public QObject
 {
     Q_OBJECT
@@ -56,5 +57,6 @@ private:
     QString m_userId;
     QString m_screenName;
 };
+}
 
 #endif // OAUTH_H

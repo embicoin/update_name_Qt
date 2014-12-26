@@ -9,7 +9,7 @@
 #define OAUTH_VERSION "1.0"
 #define TIMEOUT_COUNT_MSEC 30000
 
-namespace Twitter {
+namespace TwitterAPI {
 enum triBool {
     True = 1,
     False = 0,

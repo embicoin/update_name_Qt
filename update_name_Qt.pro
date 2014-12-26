@@ -17,13 +17,27 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     twitterAPI/oauth/oauth.cpp \
-    preferencesdialog.cpp
+    preferencesdialog.cpp \
+    twitterAPI/rest/media/upload.cpp \
+    twitterAPI/rest/statuses/update.cpp \
+    twitterAPI/rest/restapi.cpp \
+    twitterAPI/rest/account/updateprofile.cpp \
+    twitterAPI/object/error.cpp \
+    twitterAPI/object/tweets.cpp \
+    twitterAPI/object/users.cpp
 
 HEADERS  += mainwindow.h \
     twitterAPI/oauth/oauth.h \
     twitterAPI/twitterglobal.h \
     updatenameqtglobal.h \
-    preferencesdialog.h
+    preferencesdialog.h \
+    twitterAPI/rest/media/upload.h \
+    twitterAPI/rest/statuses/update.h \
+    twitterAPI/rest/restapi.h \
+    twitterAPI/rest/account/updateprofile.h \
+    twitterAPI/object/error.h \
+    twitterAPI/object/tweets.h \
+    twitterAPI/object/users.h
 
 # Androidとそれ以外で分ける
 android {
