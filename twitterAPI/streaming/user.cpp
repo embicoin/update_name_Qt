@@ -19,7 +19,7 @@ UserParameters::UserParameters()
 
 const QUrl User::USERSTREAM_URL("https://userstream.twitter.com/1.1/user.json");
 
-User::User(const OAuth &oauth, QObject *parent)
+User::User(const TwitterAPI::OAuth &oauth, QObject *parent)
     : QThread(parent)
 {
     m_consumerKey = oauth.consumerKey().toUtf8();
@@ -136,24 +136,20 @@ void User::run()
                 response = reply->readAll();
 
                 int index = response.indexOf("\r");
-                if (index > 0) {
-                    if (!buffer.isEmpty()) {
-                        //レスポンスに途切れたデータをくっつける
-                        response.prepend(QString::fromUtf8(buffer).split("\r").first().toUtf8());
-                        //バッファのクリア
+
+                if (index != 0) {
+                    if (index == -1) {
+                        buffer.append(response);
+                    } else {
+                        response.prepend(buffer);
                         buffer.clear();
+                        auto *parseJson = new ParseJson(response);
+                        connect(parseJson, SIGNAL(tweet(TwitterAPI::Object::Tweets)), this, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)));
+                        connect(parseJson, SIGNAL(statusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)),
+                                this, SIGNAL(recievedStatusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)));
+                        connect(parseJson, SIGNAL(finished()), parseJson, SLOT(deleteLater()));
+                        parseJson->start();
                     }
-                    //Jsonを解析する
-                    auto *parseJson = new ParseJson(response);
-                    connect(parseJson, SIGNAL(tweet(TwitterAPI::Object::Tweets)), this, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)));
-                    connect(parseJson, SIGNAL(statusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)),
-                            this, SIGNAL(recievedStatusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)));
-                    //終わったらdeleteする
-                    connect(parseJson, SIGNAL(finished()), parseJson, SLOT(deleteLater()));
-                    parseJson->start();
-                } else if (index == -1) {
-                    //途切れたデータをバッファに追加する
-                    buffer.append(response);
                 }
             }
         }

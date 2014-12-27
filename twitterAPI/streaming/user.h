@@ -45,7 +45,7 @@ private:
 
     static const QUrl USERSTREAM_URL;
 
-    volatile bool m_stopped = true;
+    volatile bool m_stopped = true; //ユーザーストリームが止まっているかどうか
     QByteArray m_consumerKey;
     QByteArray m_consumerSecret;
     QByteArray m_accessToken;

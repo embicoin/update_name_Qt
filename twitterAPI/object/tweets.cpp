@@ -5,11 +5,12 @@
 #include <QVariant>
 #include <QJsonArray>
 
-using TwitterAPI::Object::Tweets;
+using namespace TwitterAPI::Object;
 
 Tweets::Tweets(const QByteArray &json)
 {
     m_object = QJsonDocument::fromJson(json).object();
+    qRegisterMetaType<TwitterAPI::Object::Tweets>("TwitterAPI::Object::Tweets");
 }
 
 void Tweets::setJson(const QByteArray &json)
