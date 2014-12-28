@@ -109,6 +109,13 @@ bool Tweets::truncated() const
     return m_object.value("truncated").toBool();
 }
 
+Users Tweets::user() const
+{
+    QJsonDocument doc;
+    doc.setObject(m_object.value("user").toObject());
+    return Users(doc.toJson());
+}
+
 bool Tweets::withheldCopyright() const
 {
     return m_object.value("withheld_copyright").toBool();

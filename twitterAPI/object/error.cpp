@@ -3,11 +3,13 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QMetaType>
 
-using TwitterAPI::Object::Error;
+using namespace TwitterAPI::Object;
 
 Error::Error(const QByteArray &json)
 {
+    qRegisterMetaType<TwitterAPI::Object::Error>("TwitterAPI::Object::Error");
     m_object = QJsonDocument::fromJson(json).object();
 }
 

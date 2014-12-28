@@ -31,8 +31,8 @@ public slots:
     void stop();
 
 signals:
-    void connectionStarted();
     void started();
+    void running();
     void disConnected();
     void stopping();
     void error(const QString &errorMessage);

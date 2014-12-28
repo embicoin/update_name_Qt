@@ -6,9 +6,12 @@
 
 #include <QLocale>
 #include <QUrl>
+#include <QJsonObject>
 
 namespace TwitterAPI {
 namespace Object {
+class Tweets;
+
 class Users
 {
 public:
@@ -50,7 +53,7 @@ public:
     bool _protected() const;
     QString screenName() const;
     bool showAllInlineMedia() const;
-    Tweets status() const;
+    TwitterAPI::Object::Tweets status() const;
     int statusesCount() const;
     QString timeZone() const;
     QUrl url() const;

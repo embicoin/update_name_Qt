@@ -56,7 +56,7 @@ void User::run()
         QTimer waitTimer;
 
         //接続開始
-        emit connectionStarted();
+        emit started();
 
         //パラメータの成形
         oauthParams["oauth_consumer_key"]     = m_consumerKey;
@@ -127,7 +127,7 @@ void User::run()
             } else {
                 if (!connected) {
                     //ユーザーストリーム開始
-                    emit started();
+                    emit running();
                     //接続済みにする
                     connected = true;
                     //待機時間のリセット

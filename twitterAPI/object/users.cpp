@@ -6,6 +6,7 @@ using namespace TwitterAPI::Object;
 
 Users::Users(const QByteArray &json)
 {
+    qRegisterMetaType<TwitterAPI::Object::Users>("TwitterAPI::Object::Users");
     setJson(json);
 }
 

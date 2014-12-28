@@ -14,17 +14,17 @@ const QUrl Update::UPDATE_URL("https://api.twitter.com/1.1/statuses/update.json"
 Update::Update(QObject *parent) :
     RestApi(parent)
 {
-    connect(this, SIGNAL(apiError(ErrorObject)), this, SIGNAL(finished()));
+    connect(this, SIGNAL(apiError(TwitterAPI::Object::Error)), this, SIGNAL(finished()));
     connect(this, SIGNAL(networkError(QString)), this, SIGNAL(finished()));
-    connect(this, SIGNAL(successed(TweetObject)), this, SIGNAL(finished()));
+    connect(this, SIGNAL(successed(TwitterAPI::Object::Tweets)), this, SIGNAL(finished()));
 }
 
 Update::Update(const TwitterAPI::OAuth &oauth, QObject *parent) :
     RestApi(oauth, parent)
 {
-    connect(this, SIGNAL(apiError(ErrorObject)), this, SIGNAL(finished()));
+    connect(this, SIGNAL(apiError(TwitterAPI::Object::Error)), this, SIGNAL(finished()));
     connect(this, SIGNAL(networkError(QString)), this, SIGNAL(finished()));
-    connect(this, SIGNAL(successed(TweetObject)), this, SIGNAL(finished()));
+    connect(this, SIGNAL(successed(TwitterAPI::Object::Tweets)), this, SIGNAL(finished()));
 }
 
 TwitterAPI::Object::Tweets Update::exec(const QString &status, const QString &inReplyToStatusId,

@@ -18,11 +18,14 @@ limitations under the License.
 #define TWEETS_H
 
 #include "../twitterglobal.h"
+#include "twitterAPI/object/users.h"
 
 #include <QJsonObject>
 
 namespace TwitterAPI {
 namespace Object {
+class Users;
+
 class Tweets
 {
 public:
@@ -44,6 +47,7 @@ public:
     QString source() const;
     QString text() const;
     bool truncated() const;
+    TwitterAPI::Object::Users user() const;
     bool withheldCopyright() const;
     QStringList withheldInCountries() const;
     QString withheldScope() const;
