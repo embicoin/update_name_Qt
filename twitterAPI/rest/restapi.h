@@ -20,11 +20,13 @@ public:
     void setOAuth(const OAuth &oauth);
     QByteArray requestApi(const QNetworkAccessManager::Operation &httpMethod, QUrl resourceUrl,
                           const QVariantMap &parameters = QVariantMap());
+    QString errorString();
 protected:
     QByteArray m_consumerKey;
     QByteArray m_consumerSecret;
     QByteArray m_accessToken;
     QByteArray m_accessTokenSecret;
+    QString m_errorMessage;
 };
 }
 }

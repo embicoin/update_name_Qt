@@ -34,6 +34,11 @@ void RestApi::setOAuth(const TwitterAPI::OAuth &oauth)
     m_accessTokenSecret = oauth.accessTokenSecret().toUtf8();
 }
 
+QString RestApi::errorString()
+{
+    return m_errorMessage;
+}
+
 QByteArray RestApi::requestApi(const QNetworkAccessManager::Operation &httpMethod,
                                    QUrl resourceUrl, const QVariantMap &parameters)
 {
@@ -118,15 +123,20 @@ QByteArray RestApi::requestApi(const QNetworkAccessManager::Operation &httpMetho
     loop.exec();
 
     if (!reply->isFinished()) {
-        throw std::runtime_error("Timeout");
+        m_errorMessage = tr("タイムアウトしました。");
+        throw std::runtime_error(tr("タイムアウトしました。").toStdString());
     } else {
         QByteArray response = reply->readAll();
         if (reply->error() != QNetworkReply::NoError) {
-            if (response.isEmpty())
+            if (response.isEmpty()) {
+                m_errorMessage = reply->errorString();
                 throw std::runtime_error(reply->errorString().toStdString());
-            else
+            } else {
+                m_errorMessage = TwitterAPI::Object::Error(response).message();
                 throw TwitterAPI::Object::Error(response);
+            }
         } else {
+            m_errorMessage.clear();
             return response;
         }
     }
