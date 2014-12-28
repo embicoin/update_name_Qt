@@ -1,5 +1,6 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "updatenameqtglobal.h"
 
 #ifdef _MSC_VER
 #pragma execution_character_set("utf-8")
@@ -10,10 +11,12 @@
 #include <QStandardPaths>
 #include <QFile>
 
+using UpdateNameQt::settings;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
-{
+{    
     ui->setupUi(this);
 #ifdef Q_OS_ANDROID
     ui->saveLogAction->setVisible(false);
@@ -48,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->aboutQtAction, &QAction::triggered, [&]() {
         QMessageBox::aboutQt(this, tr("Qtについて"));
     });
+
+    connect(ui->updateNameSwitch, SIGNAL(clicked()), &m_updateName, SLOT(start()));
 }
 
 MainWindow::~MainWindow()

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "preferencesdialog.h"
+#include "updatename.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,6 +21,7 @@ public:
 private:
     Ui::MainWindow *ui;
     PreferencesDialog m_preferencesDialog;
+    UpdateName m_updateName;
 };
 
 #endif // MAINWINDOW_H
