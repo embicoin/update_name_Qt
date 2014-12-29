@@ -6,18 +6,14 @@
 
 #include <QThread>
 
-class UpdateName : public QThread
+class UpdateProfile : public QObject
 {
     Q_OBJECT
 public:
-    UpdateName(QObject *parent = 0);
-    ~UpdateName();
+    explicit UpdateProfile(const TwitterAPI::OAuth &oauth, QObject *parent = 0);
 
-    enum State {
-        UserStream,
-        ScreenNameLookup,
-        PostResultTweet,
-    };
+    QString errorString() const;
+
     enum UpdateType {
         Name,
         Url,
@@ -29,18 +25,51 @@ public:
     };
 
 signals:
+    void updateStarted(UpdateProfile::UpdateType type);
+    void updateFinished(UpdateProfile::UpdateType type, const QString &newProfile);
+    void resultPosted();
+    void updateError(UpdateProfile::UpdateType type, const QString &errorMessage);
+    void resultPostError(const QString &errorMessage);
+    void finished();
+
+public slots:
+    void update(UpdateProfile::UpdateType type, const TwitterAPI::Object::Tweets &updateTweet, const QString newProfile);
+
+private:
+    void postResult(const TwitterAPI::Rest::Statuses::UpdateParameters &parameters);
+
+    TwitterAPI::OAuth m_oauth;
+    QString m_errorMessage;
+};
+
+class UpdateName : public QThread
+{
+    Q_OBJECT
+public:
+    UpdateName(QObject *parent = 0);
+    ~UpdateName();
+
+    enum State {
+        UserStream,
+        ScreenNameLookup,
+    };
+
+signals:
     void started();
     void running();
     void stopping();
     void stopped();
+    void screenNameLookuped(const QString &screenName);
     void error(UpdateName::State state, const QString &errorMessage);
-    void updateError(UpdateName::UpdateType type, const QString &errorMessage);
-    void screenNameLookuped(const QString &errorMessage);
-    void updated(UpdateName::UpdateType type, const QString &newProfile);
-    void resultPosted();
 
-private slots:
-    void postResult(const TwitterAPI::Rest::Statuses::UpdateParameters &parameters);
+    void updateStarted(UpdateProfile::UpdateType type);
+    void updateFinished(UpdateProfile::UpdateType type);
+    void resultPosted(UpdateProfile::UpdateType type);
+    void updateError(UpdateProfile::UpdateType type, const QString &errorMessage);
+    void resultPostError(UpdateProfile::UpdateType type, const QString &errorMessage);
+
+public slots:
+    void stop();
 
 private:
     void run();
