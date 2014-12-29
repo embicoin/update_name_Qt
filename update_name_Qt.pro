@@ -28,7 +28,12 @@ SOURCES += main.cpp\
     twitterAPI/streaming/user.cpp \
     twitterAPI/streaming/parsejson.cpp \
     updatename.cpp \
-    twitterAPI/rest/users/lookup.cpp
+    twitterAPI/rest/users/lookup.cpp \
+    twitterAPI/object/entities.cpp \
+    twitterAPI/object/object.cpp \
+    twitterAPI/rest/account/updateprofileimage.cpp \
+    twitterAPI/rest/account/updateprofilebackgroundimage.cpp \
+    twitterAPI/rest/account/updateprofilebanner.cpp
 
 HEADERS  += mainwindow.h \
     twitterAPI/oauth/oauth.h \
@@ -45,7 +50,12 @@ HEADERS  += mainwindow.h \
     twitterAPI/streaming/user.h \
     twitterAPI/streaming/parsejson.h \
     updatename.h \
-    twitterAPI/rest/users/lookup.h
+    twitterAPI/rest/users/lookup.h \
+    twitterAPI/object/entities.h \
+    twitterAPI/object/object.h \
+    twitterAPI/rest/account/updateprofileimage.h \
+    twitterAPI/rest/account/updateprofilebackgroundimage.h \
+    twitterAPI/rest/account/updateprofilebanner.h
 
 android {
     SOURCES  += android/authdialog.cpp
