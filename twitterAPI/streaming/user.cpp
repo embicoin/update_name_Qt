@@ -156,7 +156,7 @@ void User::run()
         //切断
         connected = false;
         //待機
-        emit wait(waitCount);
+        emit waitting(waitCount);
         connect(&waitTimer, SIGNAL(timeout()), &waitLoop, SLOT(quit()));
         connect(this, SIGNAL(stopping()), &waitLoop, SLOT(quit()));
         waitTimer.setSingleShot(true);

@@ -36,7 +36,7 @@ signals:
     void disConnected();
     void stopping();
     void error(const QString &errorMessage);
-    void wait(uint count);
+    void waitting(uint count);
     void recievedTweet(const TwitterAPI::Object::Tweets &tweet);
     void recievedStatusDeletion(const TwitterAPI::Streaming::StatusDeletionNotices &notice);
 
