@@ -7,6 +7,7 @@
 
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QWebSettings>
 
 AuthDialog::AuthDialog(QWidget *parent) :
     QDialog(parent),
@@ -147,4 +148,7 @@ AuthDialog::AuthDialog(QWidget *parent) :
 AuthDialog::~AuthDialog()
 {
     delete ui;
+#ifndef Q_OS_WIN
+    QWebSettings::clearMemoryCaches();
+#endif
 }
