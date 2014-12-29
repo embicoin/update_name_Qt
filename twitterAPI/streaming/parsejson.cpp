@@ -13,17 +13,14 @@ StatusDeletionNotices::StatusDeletionNotices()
 ParseJson::ParseJson(const QByteArray &json, QObject *parent)
     : QThread(parent)
 {
-    QJsonParseError e;
-    m_json = QJsonDocument::fromJson(json, &e);
-    if (e.error != QJsonParseError::NoError)
-        qDebug() << e.errorString() << json;
+    m_json = QJsonDocument::fromJson(json);
 }
 
 void ParseJson::run()
 {
     const QJsonObject object = m_json.object();
     if (!object.value("text").isUndefined()) {
-        qDebug() << TwitterAPI::Object::Tweets(m_json.toJson()).text();
+        //qDebug() << TwitterAPI::Object::Tweets(m_json.toJson()).text();
         emit tweet(TwitterAPI::Object::Tweets(m_json.toJson()));
     } else if (!object.value("delete").isUndefined()) {
         StatusDeletionNotices statusDeletionNotices;
