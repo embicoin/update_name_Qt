@@ -8,14 +8,9 @@
 using namespace TwitterAPI::Object;
 
 Error::Error(const QByteArray &json)
+    : Object(json)
 {
     qRegisterMetaType<TwitterAPI::Object::Error>("TwitterAPI::Object::Error");
-    m_object = QJsonDocument::fromJson(json).object();
-}
-
-void Error::setJson(const QByteArray &json)
-{
-    m_object = QJsonDocument::fromJson(json).object();
 }
 
 int Error::code() const

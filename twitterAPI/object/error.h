@@ -1,21 +1,16 @@
 ﻿#ifndef ERROROBJECT_H
 #define ERROROBJECT_H
 
-#include <QJsonObject>
+#include "object.h"
 
 namespace TwitterAPI {
 namespace Object {
-class Error
+class Error : public TwitterAPI::Object::Object
 {
 public:
     Error(const QByteArray &json = NULL);
-    void setJson(const QByteArray &json);
-
     int code() const;
     QString message() const;
-
-private:
-    QJsonObject m_object;
 };
 }
 }

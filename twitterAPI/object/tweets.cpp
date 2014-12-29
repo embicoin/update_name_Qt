@@ -8,14 +8,9 @@
 using namespace TwitterAPI::Object;
 
 Tweets::Tweets(const QByteArray &json)
+    : Object(json)
 {
-    m_object = QJsonDocument::fromJson(json).object();
     qRegisterMetaType<TwitterAPI::Object::Tweets>("TwitterAPI::Object::Tweets");
-}
-
-void Tweets::setJson(const QByteArray &json)
-{
-    m_object = QJsonDocument::fromJson(json).object();
 }
 
 QString Tweets::createdAt() const
@@ -39,6 +34,13 @@ TwitterAPI::triBool Tweets::favorited() const
         else
             return TwitterAPI::False;
     }
+}
+
+Entities Tweets::entities() const
+{
+    QJsonDocument doc;
+    doc.setObject(m_object.value("entities").toObject());
+    return doc.toJson();
 }
 
 QString Tweets::filterLevel() const

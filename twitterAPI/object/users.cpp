@@ -1,20 +1,16 @@
 ﻿#include "users.h"
 
 #include <QJsonDocument>
+#include <QJsonValue>
+#include <QDebug>
 
 using namespace TwitterAPI::Object;
 
 Users::Users(const QByteArray &json)
+    : Object(json)
 {
     qRegisterMetaType<TwitterAPI::Object::Users>("TwitterAPI::Object::Users");
-    setJson(json);
 }
-
-void Users::setJson(const QByteArray &json)
-{
-    m_object = QJsonDocument::fromJson(json).object();
-}
-
 bool Users::contributorsEnabled() const
 {
     return m_object.value("contributors_enabled").toBool();

@@ -3,6 +3,7 @@
 
 #include "../twitterglobal.h"
 #include "tweets.h"
+#include "object.h"
 
 #include <QLocale>
 #include <QUrl>
@@ -12,11 +13,10 @@ namespace TwitterAPI {
 namespace Object {
 class Tweets;
 
-class Users
+class Users : public TwitterAPI::Object::Object
 {
 public:
     Users(const QByteArray &json = NULL);
-    void setJson(const QByteArray &json);
 
     bool contributorsEnabled() const;
     QString createdAt() const;
@@ -61,8 +61,6 @@ public:
     bool verified() const;
     QString WithheldInCountries() const;
     QString withheldScope() const;
-private:
-    QJsonObject m_object;
 };
 }
 }
