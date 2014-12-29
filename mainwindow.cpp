@@ -57,5 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    //m_updateName.quit();
+    m_updateName.stop();
+    m_updateName.wait();
     delete ui;
 }
