@@ -39,6 +39,11 @@ QString RestApi::errorString()
     return m_errorMessage;
 }
 
+int RestApi::responseCode()
+{
+    return m_responseCode;
+}
+
 QByteArray RestApi::requestApi(const QNetworkAccessManager::Operation &httpMethod,
                                    QUrl resourceUrl, const QVariantMap &parameters)
 {
@@ -56,6 +61,9 @@ QByteArray RestApi::requestApi(const QNetworkAccessManager::Operation &httpMetho
     std::unique_ptr<QNetworkReply> reply;
     QTimer timer;
     QEventLoop loop;
+
+    m_errorMessage.clear();
+    m_responseCode = 0;
 
     switch (httpMethod) {
     case QNetworkAccessManager::GetOperation:
@@ -127,6 +135,7 @@ QByteArray RestApi::requestApi(const QNetworkAccessManager::Operation &httpMetho
         throw std::runtime_error(tr("タイムアウトしました。").toStdString());
     } else {
         QByteArray response = reply->readAll();
+        m_responseCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() != QNetworkReply::NoError) {
             if (response.isEmpty()) {
                 m_errorMessage = reply->errorString();

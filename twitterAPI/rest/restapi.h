@@ -21,12 +21,14 @@ public:
     QByteArray requestApi(const QNetworkAccessManager::Operation &httpMethod, QUrl resourceUrl,
                           const QVariantMap &parameters = QVariantMap());
     QString errorString();
+    int responseCode();
 protected:
     QByteArray m_consumerKey;
     QByteArray m_consumerSecret;
     QByteArray m_accessToken;
     QByteArray m_accessTokenSecret;
     QString m_errorMessage;
+    int m_responseCode = 0;
 };
 }
 }
