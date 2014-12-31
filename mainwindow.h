@@ -19,6 +19,8 @@ public:
     ~MainWindow();
 
 private:
+    QString updateTypeToString(UpdateProfile::UpdateType type);
+
     Ui::MainWindow *ui;
     PreferencesDialog m_preferencesDialog;
     UpdateName m_updateName;
