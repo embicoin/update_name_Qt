@@ -4,6 +4,7 @@
 #include "../twitterglobal.h"
 #include "tweets.h"
 #include "object.h"
+#include "entities.h"
 
 #include <QLocale>
 #include <QUrl>
@@ -23,7 +24,7 @@ public:
     bool defaultProfile() const;
     bool defaultProfileImage() const;
     QString description() const;
-    //EntitiesObject entities() const;
+    TwitterAPI::Object::Entities entities() const;
     int favouritesCount() const;
     TwitterAPI::triBool followRequestSent() const;
     TwitterAPI::triBool following() const;

@@ -9,6 +9,7 @@ using namespace TwitterAPI::Object;
 Users::Users(const QByteArray &json)
     : Object(json)
 {
+    qDebug() << m_object.isEmpty();
     qRegisterMetaType<TwitterAPI::Object::Users>("TwitterAPI::Object::Users");
 }
 bool Users::contributorsEnabled() const
@@ -34,6 +35,12 @@ bool Users::defaultProfileImage() const
 QString Users::description() const
 {
     return m_object.value("description").toString();
+}
+
+TwitterAPI::Object::Entities Users::entities() const {
+    QJsonDocument doc;
+    doc.setObject(m_object.value("entities").toObject());
+    return doc.toJson();
 }
 
 int Users::favouritesCount() const
