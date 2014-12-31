@@ -1,7 +1,5 @@
 ﻿#include "updateprofilebackgroundimage.h"
 
-#include <QBuffer>
-
 using namespace TwitterAPI::Rest::Account;
 
 UpdateProfileBackgroundImageparameters::UpdateProfileBackgroundImageparameters()
@@ -27,10 +25,10 @@ UpdateProfileBackgroundImage::UpdateProfileBackgroundImage(const TwitterAPI::OAu
     connect(this, SIGNAL(successed(TwitterAPI::Object::Users)), this, SIGNAL(finished()));
 }
 
-TwitterAPI::Object::Users UpdateProfileBackgroundImage::exec(const QImage &image, bool tile, bool use)
+TwitterAPI::Object::Users UpdateProfileBackgroundImage::exec(const QByteArray &imageData, bool tile, bool use)
 {
     UpdateProfileBackgroundImageparameters p;
-    p.image = image;
+    p.imageData = imageData;
     p.tile = tile;
     p.use = use;
     return exec(p);
@@ -39,12 +37,7 @@ TwitterAPI::Object::Users UpdateProfileBackgroundImage::exec(const QImage &image
 TwitterAPI::Object::Users UpdateProfileBackgroundImage::exec(const UpdateProfileBackgroundImageparameters &parameters)
 {
     QVariantMap params;
-    QByteArray data;
-    QBuffer buf(&data);
-    buf.open(QBuffer::WriteOnly);
-    parameters.image.save(buf);
-    buf.close();
-    params["image"] = data.toBase64();
+    params["image"] = parameters.imageData.toBase64();
     params["tile"] = parameters.tile;
     params["use"] = parameters.use;
     try {
@@ -59,5 +52,5 @@ TwitterAPI::Object::Users UpdateProfileBackgroundImage::exec(const UpdateProfile
         emit apiError(e);
     }
 
-    return NULL;
+    return TwitterAPI::Object::Users();
 }

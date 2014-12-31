@@ -1,6 +1,4 @@
-﻿#include <QBuffer>
-
-#include "updateprofileimage.h"
+﻿#include "updateprofileimage.h"
 
 using namespace TwitterAPI::Rest::Account;
 
@@ -22,17 +20,12 @@ UpdateProfileImage::UpdateProfileImage(const TwitterAPI::OAuth &oauth, QObject *
     connect(this, SIGNAL(successed(TwitterAPI::Object::Users)), this, SIGNAL(finished()));
 }
 
-TwitterAPI::Object::Users UpdateProfileImage::exec(const QImage &media)
+TwitterAPI::Object::Users UpdateProfileImage::exec(const QByteArray &imageData)
 {
-    QByteArray data;
-    QBuffer buf(&data);
-    buf.open(QBuffer::WriteOnly);
-    media.save(&buf);
-    buf.close();
     try {
         TwitterAPI::Object::Users user = requestApi(QNetworkAccessManager::PostOperation,
                                                     ACCOUNT_UPDATE_PROFILE_IMAGE_URL,
-                                                    {{"media", data.toBase64()}});
+                                                    {{"image", imageData.toBase64()}});
         emit successed(user);
         return user;
     } catch (const std::runtime_error &e) {
@@ -41,5 +34,5 @@ TwitterAPI::Object::Users UpdateProfileImage::exec(const QImage &media)
         emit apiError(e);
     }
 
-    return NULL;
+    return TwitterAPI::Object::Users();
 }

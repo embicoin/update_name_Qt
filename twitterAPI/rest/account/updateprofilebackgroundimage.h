@@ -5,15 +5,13 @@
 #include "../../object/users.h"
 #include "../../object/error.h"
 
-#include <QImage>
-
 namespace TwitterAPI {
 namespace Rest {
 namespace Account {
 
 struct UpdateProfileBackgroundImageparameters {
     explicit UpdateProfileBackgroundImageparameters();
-    QImage image;
+    QByteArray imageData;
     bool tile = false;
     bool use = false;
 };
@@ -31,7 +29,7 @@ signals:
     void networkError(const QString &errorMessage);
 
 public slots:
-    TwitterAPI::Object::Users exec(const QImage &image = NULL, bool tile = false, bool use = false);
+    TwitterAPI::Object::Users exec(const QByteArray &imageData = NULL, bool tile = false, bool use = false);
     TwitterAPI::Object::Users exec(const TwitterAPI::Rest::Account::UpdateProfileBackgroundImageparameters &parameters);
 
 private:

@@ -5,8 +5,6 @@
 #include "../../object/users.h"
 #include "../../object/error.h"
 
-#include <QImage>
-
 namespace TwitterAPI {
 namespace Rest {
 namespace Account {
@@ -23,7 +21,7 @@ signals:
     void networkError(const QString &errorMessage);
 
 public slots:
-    TwitterAPI::Object::Users exec(const QImage &media);
+    TwitterAPI::Object::Users exec(const QByteArray &imageData);
 
 private:
     static const QUrl ACCOUNT_UPDATE_PROFILE_IMAGE_URL;
