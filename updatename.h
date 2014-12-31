@@ -25,7 +25,7 @@ public:
     };
 
 signals:
-    void updateStarted(UpdateProfile::UpdateType type);
+    void updateStarted(UpdateProfile::UpdateType type, const TwitterAPI::Object::Users &executedUser);
     void updateFinished(UpdateProfile::UpdateType type, const QString &newProfile);
     void resultPosted();
     void updateError(UpdateProfile::UpdateType type, const QString &errorMessage);
@@ -58,15 +58,14 @@ signals:
     void started();
     void running();
     void stopping();
-    void stopped();
     void screenNameLookuped(const QString &screenName);
     void error(UpdateName::State state, const QString &errorMessage);
 
-    void updateStarted(UpdateProfile::UpdateType type);
-    void updateFinished(UpdateProfile::UpdateType type);
-    void resultPosted(UpdateProfile::UpdateType type);
+    void updateStarted(UpdateProfile::UpdateType type, const TwitterAPI::Object::Users &executedUser);
+    void updateFinished(UpdateProfile::UpdateType type, const QString &newProfile);
+    void resultPosted();
     void updateError(UpdateProfile::UpdateType type, const QString &errorMessage);
-    void resultPostError(UpdateProfile::UpdateType type, const QString &errorMessage);
+    void resultPostError(const QString &errorMessage);
 
 public slots:
     void stop();

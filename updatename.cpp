@@ -3,6 +3,9 @@
 #include "twitterAPI/rest/users/lookup.h"
 #include "twitterAPI/rest/account/updateprofile.h"
 #include "twitterAPI/rest/statuses/update.h"
+#include "twitterAPI/rest/account/updateprofilebackgroundimage.h"
+#include "twitterAPI/rest/account/updateprofilebanner.h"
+#include "twitterAPI/rest/account/updateprofileimage.h"
 
 #include <QEventLoop>
 #include <QTimer>
@@ -10,6 +13,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <memory>
+#include <QImage>
 #include <QDebug>
 
 using UpdateNameQt::settings;
@@ -31,6 +35,8 @@ QString UpdateProfile::errorString() const
 
 void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Object::Tweets &updateTweet, const QString newProfile)
 {
+    emit updateStarted(type, updateTweet.user());
+
     switch (type) {
     //account/update_profileで変更する部分
     case Name:
@@ -66,10 +72,14 @@ void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Obj
 
                 timer.setSingleShot(true);
                 timer.start(TIMEOUT_COUNT_MSEC);
-                rep.reset(man.get(QNetworkRequest(updateTweet.entities().urls().first().expandedUrl())));
+                rep.reset(man.get(QNetworkRequest(updateTweet.entities().urls().isEmpty()
+                                                      ? newProfile
+                                                      : updateTweet.entities().urls().first().expandedUrl())));
                 el.exec();
 
                 if (rep->error() != QNetworkReply::NoError || !timer.isActive()) {
+                    emit updateError(Url, timer.isActive() ? rep->errorString() : tr("タイムアウトしました。"));
+
                     if (settings->value("EnabledUpdateUrlFailedMessage").toBool()) {
                         TwitterAPI::Rest::Statuses::UpdateParameters p;
                         p.status = settings->value("UpdateUrlFailedMessage").toString()
@@ -78,6 +88,7 @@ void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Obj
                         p.inReplyToStatusId = updateTweet.idStr();
                         postResult(p);
                     }
+                    emit finished();
                     return;
                 }
             }
@@ -198,6 +209,182 @@ void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Obj
             }
         }
     }
+        break;
+    case Image:
+    case Background:
+    case Banner:
+        //画像のダウンロード
+        QNetworkAccessManager man;
+        std::unique_ptr<QNetworkReply> rep;
+        QTimer timer;
+        QEventLoop el;
+        QByteArray image;
+
+        //画像のダウンロード
+        connect(&man, SIGNAL(finished(QNetworkReply*)), &el, SLOT(quit()));
+        connect(&timer, SIGNAL(timeout()), &el, SLOT(quit()));
+
+        timer.setSingleShot(true);
+        timer.start(TIMEOUT_COUNT_MSEC);
+        rep.reset(man.get(QNetworkRequest(updateTweet.entities().media().isEmpty()
+                                          ? newProfile : updateTweet.entities().media().first().mediaUrlHttps())));
+        el.exec();
+
+        if (rep->error() != QNetworkReply::NoError || !timer.isActive()) {
+            emit updateError(type, timer.isActive() ? rep->errorString() : tr("タイムアウトしました。"));
+
+            bool isPostResult = false;
+            switch (type) {
+            case Image:
+                isPostResult = settings->value("EnabledUpdateImageFailedMessage").toBool();
+                break;
+            case Background:
+                isPostResult = settings->value("EnabledUpdateBackgroundFailedMessage").toBool();
+                break;
+            case Banner:
+                isPostResult = settings->value("EnabledUpdateBackgroundFailedMessage").toBool();
+                break;
+            default:
+                break;
+            }
+            if (isPostResult) {
+                TwitterAPI::Rest::Statuses::UpdateParameters p;
+                p.inReplyToStatusId = updateTweet.idStr();
+                switch (type) {
+                case Image:
+                    p.status = settings->value("UpdateImageFailedMessage").toString()
+                            .replace("%{image}", updateTweet.entities().media().isEmpty()
+                                     ? newProfile : updateTweet.entities().media().first().mediaUrlHttps().toString());
+                    break;
+                case Background:
+                    p.status = settings->value("UpdateBackgroundFailedMessage").toString()
+                            .replace("%{background}", updateTweet.entities().media().isEmpty()
+                                     ? newProfile : updateTweet.entities().media().first().mediaUrlHttps().toString());
+                    break;
+                case Banner:
+                    p.status = settings->value("UpdateBannerFailedMessage").toString()
+                            .replace("%{banner}", updateTweet.entities().media().isEmpty()
+                                     ? newProfile : updateTweet.entities().media().first().mediaUrlHttps().toString());
+                    break;
+                default:
+                    break;
+                }
+                p.status.replace("%{screen_name}", updateTweet.idStr())
+                        .replace("%{error}", timer.isActive() ? rep->errorString() : tr("タイムアウトしました。"));
+                postResult(p);
+            }
+        } else {
+            TwitterAPI::Rest::Statuses::UpdateParameters p;
+            p.inReplyToStatusId = updateTweet.idStr();
+
+            image = rep->readAll();
+            switch (type) {
+            case Image: {
+                TwitterAPI::Rest::Account::UpdateProfileImage updateImage(m_oauth);
+                TwitterAPI::Object::Users user = updateImage.exec(image);
+
+                emit updateFinished(Image, user.profileImageUrlHttps().toString());
+
+                if (updateImage.errorString().isEmpty()) {
+                    if (settings->value("EnabledUpdateImageSuccessedMessage").toBool()) {
+                        p.status = settings->value("UpdateImageSuccessedMessage").toString()
+                                .replace("%{screen_name}", updateTweet.user().screenName())
+                                .replace("%{image}", user.profileImageUrlHttps().toString());
+                        postResult(p);
+                    }
+                } else {
+                    if (settings->value("EnabledUpdateImageFailedMessage").toBool()) {
+                        p.status = settings->value("UpdateImageFailedMessage").toString()
+                                .replace("%{screen_name}", updateTweet.user().screenName())
+                                .replace("%{image}", updateTweet.entities().media().isEmpty()
+                                         ? newProfile : updateTweet.entities().media().first().mediaUrlHttps().toString())
+                                .replace("%{error}", updateImage.errorString());
+                        postResult(p);
+                    }
+            }
+                break;
+            }
+            case Background: {
+                TwitterAPI::Rest::Account::UpdateProfileBackgroundImage updateBackground(m_oauth);
+                TwitterAPI::Object::Users user = updateBackground.exec(image, false, true);
+
+                emit updateFinished(Background, user.profileBackgroundImageUrlHttps().toString());
+
+                if (updateBackground.errorString().isEmpty()) {
+                    if (settings->value("EnabledUpdateBackgroundSuccessedMessage").toBool()) {
+                        p.status = settings->value("UpdateBackgroundSuccessedMessage").toString()
+                                .replace("%{screen_name}", updateTweet.user().screenName())
+                                .replace("%{background}", user.profileBackgroundImageUrlHttps().toString());
+                        postResult(p);
+                    }
+                } else {
+                    if (settings->value("EnabledUpdateBackgroundFailedMessage").toBool()) {
+                        p.status = settings->value("UpdateBackgroundFailedMessage").toString()
+                                .replace("%{screen_name}", updateTweet.user().screenName())
+                                .replace("%{background}", updateTweet.entities().media().isEmpty()
+                                         ? newProfile : updateTweet.entities().media().first().mediaUrlHttps().toString())
+                                .replace("%{error}", updateBackground.errorString());
+                        postResult(p);
+                    }
+            }
+                break;
+            }
+            case Banner: {
+                TwitterAPI::Rest::Account::UpdateProfileBanner updateBanner(m_oauth);
+                TwitterAPI::Rest::Account::UpdateProfileBanner::Result result;
+                TwitterAPI::Rest::Users::Lookup lookup(m_oauth);
+                TwitterAPI::Rest::Users::LookupParameters lookupParameters;
+                TwitterAPI::Object::Users user;
+
+                result = updateBanner.exec(image);
+                lookupParameters.userId << settings->value("UserId").toString().toLongLong();
+                user = lookup.exec(lookupParameters).first();
+
+                if (result == TwitterAPI::Rest::Account::UpdateProfileBanner::SuccesfullyUploaded) {
+
+                    emit updateFinished(Banner, user.profileBannerUrl().toString());
+
+                    if (updateBanner.errorString().isEmpty()) {
+                        if (settings->value("EnabledUpdateBannerSuccessedMessage").toBool()) {
+                            p.status = settings->value("UpdateBannerSuccessedMessage").toString()
+                                    .replace("%{screen_name}", updateTweet.user().screenName())
+                                    .replace("%{banner}", user.profileBannerUrl().toString());
+                        postResult(p);
+                        }
+                    } else {
+                        if (settings->value("EnabledUpdateBannerFailedMessage").toBool()) {
+                            p.status = settings->value("UpdateBannerFailedMessage").toString()
+                                    .replace("%{screen_name}", updateTweet.user().screenName())
+                                    .replace("%{banner}", updateTweet.entities().media().isEmpty()
+                                             ? newProfile : updateTweet.entities().media().first().mediaUrlHttps().toString())
+                                .replace("%{error}", updateBanner.errorString());
+                            postResult(p);
+                        }
+                    }
+                } else {
+                    if (settings->value("EnabledUpdateImageFailedMessage").toBool()) {
+                        QString errmsg;
+                        TwitterAPI::Rest::Statuses::UpdateParameters p;
+
+                        if (result == TwitterAPI::Rest::Account::UpdateProfileBanner::ImageWasNotProvidedOrTheImageData)
+                            errmsg = tr("画像のデータが正しくありません。");
+                        else
+                            errmsg = tr("画像のサイズが大きすぎます。");
+                        p.inReplyToStatusId = updateTweet.idStr();
+                        p.status = settings->value("UpdateImageFailedMessage").toString()
+                                .replace("%{screem_name}", updateTweet.user().screenName())
+                                .replace("%{image}", updateTweet.entities().media().isEmpty()
+                                         ? newProfile : updateTweet.entities().media().first().mediaUrlHttps().toString())
+                                .replace("%{error}", errmsg);
+                        postResult(p);
+                    }
+                }
+                    break;
+                }
+            default:
+                break;
+            }
+        }
     }
 
     emit finished();
@@ -259,6 +446,8 @@ void UpdateName::run()
         return;
     }
 
+    emit running();
+
     connect(m_userStream, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)), &loop, SLOT(quit()));
     connect(m_userStream, &TwitterAPI::Streaming::User::recievedTweet, [&](const TwitterAPI::Object::Tweets &tweet) {
         for (const QString &command : UpdateNameQt::updateCommands) {
@@ -268,8 +457,13 @@ void UpdateName::run()
                 auto *updateProfileThread = new QThread;
 
                 connect(&updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(quit()));
-                connect(this, SIGNAL(stopping()), &updateProfile, SLOT(quit()));
+                connect(this, SIGNAL(stopping()), updateProfileThread, SLOT(quit()));
                 connect(&updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(deleteLater()));
+                connect(&updateProfile, SIGNAL(updateStarted(UpdateProfile::UpdateType)), this, SIGNAL(updateStarted(UpdateProfile::UpdateType)));
+                connect(&updateProfile, SIGNAL(updateFinished(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateFinished(UpdateProfile::UpdateType,QString)));
+                connect(&updateProfile, SIGNAL(resultPosted()), this, SIGNAL(resultPosted()));
+                connect(&updateProfile, SIGNAL(updateError(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateError(UpdateProfile::UpdateType,QString)));
+                connect(&updateProfile, SIGNAL(resultPostError(QString)), this, SIGNAL(resultPostError(QString)));
 
                 updateProfile.moveToThread(updateProfileThread);
                 updateProfileThread->start();
@@ -282,6 +476,14 @@ void UpdateName::run()
                     updateProfile.update(UpdateProfile::Location, tweet, profileValue);
                 else if (command == "update_description")
                     updateProfile.update(UpdateProfile::Description, tweet, profileValue);
+                else if (command == "update_image")
+                    updateProfile.update(UpdateProfile::Image, tweet, profileValue);
+                else if (command == "update_background")
+                    updateProfile.update(UpdateProfile::Background, tweet, profileValue);
+                else if (command == "update_banner")
+                    updateProfile.update(UpdateProfile::Banner, tweet, profileValue);
+                else
+                    continue;
                 break;
             }
         }
