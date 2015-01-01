@@ -16,8 +16,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    twitterAPI/oauth/oauth.cpp \
     preferencesdialog.cpp \
+    twitterAPI/oauth/oauth.cpp \
     twitterAPI/rest/media/upload.cpp \
     twitterAPI/rest/statuses/update.cpp \
     twitterAPI/rest/restapi.cpp \
@@ -60,10 +60,12 @@ HEADERS  += mainwindow.h \
 android {
     SOURCES  += android/authdialog.cpp
     HEADERS  += android/authdialog.h
-    FORMS    += android/authdialog.ui
+    FORMS    += android/authdialog.ui \
+                android/preferencesdialog.ui
 } else {
     SOURCES  += authdialog.cpp
     HEADERS  += authdialog.h
+    FORMS    += preferencesdialog.ui
     win32|win64 {
         FORMS    += windows/authdialog.ui
     } else {
@@ -71,8 +73,7 @@ android {
     }
 }
 
-FORMS    += mainwindow.ui \
-    preferencesdialog.ui
+FORMS    += mainwindow.ui
 
 CONFIG += mobility
 MOBILITY = 
