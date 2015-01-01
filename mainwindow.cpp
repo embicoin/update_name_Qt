@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {    
+    qDebug("main window");
     ui->setupUi(this);
 #ifdef Q_OS_ANDROID
     ui->saveLogAction->setVisible(false);
@@ -92,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("結果のツイートに失敗しました。: %1").arg(errorMessage)));
     });
 
+    //update_nameスイッチ
     connect(ui->updateNameSwitch, &QPushButton::clicked, [&]() {
         if (ui->updateNameSwitch->isChecked()) {
             ui->updateNameSwitch->setChecked(false);

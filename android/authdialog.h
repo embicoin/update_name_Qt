@@ -25,7 +25,7 @@ public:
 
 private:
     Ui::AuthDialog *ui;
-    OAuth m_oauth;
+    TwitterAPI::OAuth m_oauth;
 };
 
 #endif // AUTHDIALOG_H

@@ -459,7 +459,7 @@ void UpdateName::run()
                 connect(&updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(quit()));
                 connect(this, SIGNAL(stopping()), updateProfileThread, SLOT(quit()));
                 connect(&updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(deleteLater()));
-                connect(&updateProfile, SIGNAL(updateStarted(UpdateProfile::UpdateType)), this, SIGNAL(updateStarted(UpdateProfile::UpdateType)));
+                connect(&updateProfile, SIGNAL(updateStarted(UpdateProfile::UpdateType, TwitterAPI::Object::Users)), this, SIGNAL(updateStarted(UpdateProfile::UpdateType, TwitterAPI::Object::Users)));
                 connect(&updateProfile, SIGNAL(updateFinished(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateFinished(UpdateProfile::UpdateType,QString)));
                 connect(&updateProfile, SIGNAL(resultPosted()), this, SIGNAL(resultPosted()));
                 connect(&updateProfile, SIGNAL(updateError(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateError(UpdateProfile::UpdateType,QString)));
