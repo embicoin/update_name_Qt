@@ -2,6 +2,8 @@
 #define PREFERENCESDIALOG_H
 
 #include <QDialog>
+#include <QCloseEvent>
+#include <QKeyEvent>
 
 namespace Ui {
 class PreferencesDialog;
@@ -16,6 +18,8 @@ public:
     ~PreferencesDialog();
 
 private:
+    void closeEvent(QCloseEvent *);
+    void keyReleaseEvent(QKeyEvent *event);
     void loadSettings();
     void saveSettings();
 
