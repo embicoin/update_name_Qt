@@ -16,8 +16,7 @@ using UpdateNameQt::settings;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
-{    
-    qDebug("main window");
+{
     ui->setupUi(this);
 #ifdef Q_OS_ANDROID
     ui->saveLogAction->setVisible(false);
@@ -67,6 +66,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_updateName, &UpdateName::stopping, [&]() {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを終了しています。")));
     });
+    connect(&m_updateName, &UpdateName::waitting, [&](uint waitCount) {
+        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1秒待機します。").arg(waitCount)));
+    });
     connect(&m_updateName, &UpdateName::finished, [&]() {
         QMetaObject::invokeMethod(ui->updateNameSwitch, "setChecked", Qt::QueuedConnection, Q_ARG(bool, false));
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを終了しました。")));
@@ -97,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->updateNameSwitch, &QPushButton::clicked, [&]() {
         if (ui->updateNameSwitch->isChecked()) {
             ui->updateNameSwitch->setChecked(false);
-            m_updateName.start();
+            m_updateName.start(QThread::HighPriority);
         } else {
             ui->updateNameSwitch->setChecked(true);
             m_updateName.stop();
