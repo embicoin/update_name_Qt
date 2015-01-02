@@ -9,7 +9,6 @@ using namespace TwitterAPI::Object;
 Users::Users(const QByteArray &json)
     : Object(json)
 {
-    qDebug() << m_object.isEmpty();
     qRegisterMetaType<TwitterAPI::Object::Users>("TwitterAPI::Object::Users");
 }
 bool Users::contributorsEnabled() const
