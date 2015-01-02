@@ -57,6 +57,7 @@ public:
 signals:
     void started();
     void running();
+    void waitting(uint waitCount);
     void stopping();
     void screenNameLookuped(const QString &screenName);
     void error(UpdateName::State state, const QString &errorMessage);
@@ -69,6 +70,9 @@ signals:
 
 public slots:
     void stop();
+
+private slots:
+    void startUpdateName(const TwitterAPI::Object::Tweets &tweet);
 
 private:
     void run();

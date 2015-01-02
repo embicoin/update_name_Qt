@@ -408,6 +408,12 @@ UpdateName::UpdateName(QObject *parent)
               settings->value("AccessToken").toString(), settings->value("AccessTokenSecret").toString())
 {
     m_userStream = new TwitterAPI::Streaming::User(m_oauth);
+
+    connect(m_userStream, SIGNAL(waitting(uint)), this, SIGNAL(waitting(uint)));
+    connect(this, SIGNAL(stopping()), m_userStream, SLOT(stop()));
+    connect(m_userStream, &TwitterAPI::Streaming::User::error, [&](const QString &errorMessage) {
+        emit error(UserStream, errorMessage);
+    });
 }
 
 UpdateName::~UpdateName()
@@ -427,14 +433,12 @@ void UpdateName::run()
 
     connect(m_userStream, SIGNAL(running()), &loop, SLOT(quit()));
     connect(m_userStream, SIGNAL(finished()), &loop, SLOT(quit()));
-    connect(this, SIGNAL(stopping()), m_userStream, SLOT(stop()));
-    connect(m_userStream, &TwitterAPI::Streaming::User::error, [&](const QString &errorMessage) {
-        emit error(UserStream, errorMessage);
-    });
 
     emit started();
     m_userStream->start();
     loop.exec();
+
+    disconnect(m_userStream, SIGNAL(running()), &loop, SLOT(quit()));
 
     //スクリーンネームの取得
     const QList<TwitterAPI::Object::Users> users = lookup.exec(p);
@@ -448,51 +452,54 @@ void UpdateName::run()
 
     emit running();
 
-    connect(m_userStream, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)), &loop, SLOT(quit()));
-    connect(m_userStream, &TwitterAPI::Streaming::User::recievedTweet, [&](const TwitterAPI::Object::Tweets &tweet) {
-        for (const QString &command : UpdateNameQt::updateCommands) {
-            if (tweet.text().contains(QRegExp("^.*@" + m_screenName + "\\s+" + command + "\\s+.*"))) {
-                const QString profileValue = tweet.text().remove(QRegExp("^.*@" + m_screenName + "\\s+" + command + "\\s+"));
-                UpdateProfile updateProfile(m_oauth);
-                auto *updateProfileThread = new QThread;
-
-                connect(&updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(quit()));
-                connect(this, SIGNAL(stopping()), updateProfileThread, SLOT(quit()));
-                connect(&updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(deleteLater()));
-                connect(&updateProfile, SIGNAL(updateStarted(UpdateProfile::UpdateType, TwitterAPI::Object::Users)), this, SIGNAL(updateStarted(UpdateProfile::UpdateType, TwitterAPI::Object::Users)));
-                connect(&updateProfile, SIGNAL(updateFinished(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateFinished(UpdateProfile::UpdateType,QString)));
-                connect(&updateProfile, SIGNAL(resultPosted()), this, SIGNAL(resultPosted()));
-                connect(&updateProfile, SIGNAL(updateError(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateError(UpdateProfile::UpdateType,QString)));
-                connect(&updateProfile, SIGNAL(resultPostError(QString)), this, SIGNAL(resultPostError(QString)));
-
-                updateProfile.moveToThread(updateProfileThread);
-                updateProfileThread->start();
-
-                if (command == "update_name")
-                    updateProfile.update(UpdateProfile::Name, tweet, profileValue);
-                else if (command == "update_url")
-                    updateProfile.update(UpdateProfile::Url, tweet, profileValue);
-                else if (command == "update_location")
-                    updateProfile.update(UpdateProfile::Location, tweet, profileValue);
-                else if (command == "update_description")
-                    updateProfile.update(UpdateProfile::Description, tweet, profileValue);
-                else if (command == "update_image")
-                    updateProfile.update(UpdateProfile::Image, tweet, profileValue);
-                else if (command == "update_background")
-                    updateProfile.update(UpdateProfile::Background, tweet, profileValue);
-                else if (command == "update_banner")
-                    updateProfile.update(UpdateProfile::Banner, tweet, profileValue);
-                else
-                    continue;
-                break;
-            }
-        }
-    });
-    while (m_userStream->isRunning())
-        loop.exec();
+    //connect(m_userStream, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)), &loop, SLOT(quit()));
+    connect(m_userStream, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)), this, SLOT(startUpdateName(TwitterAPI::Object::Tweets)));
+    loop.exec();
 }
 
 void UpdateName::stop()
 {
     emit stopping();
+}
+
+void UpdateName::startUpdateName(const TwitterAPI::Object::Tweets &tweet)
+{
+    qDebug() << tweet.text();
+    for (const QString &command : UpdateNameQt::updateCommands) {
+        if (tweet.text().contains(QRegExp("^.*@" + m_screenName + "\\s+" + command + "\\s+.*"))) {
+            const QString profileValue = tweet.text().remove(QRegExp("^.*@" + m_screenName + "\\s+" + command + "\\s+"));
+            UpdateProfile updateProfile(m_oauth);
+            auto *updateProfileThread = new QThread;
+
+            connect(&updateProfile, SIGNAL(updateStarted(UpdateProfile::UpdateType, TwitterAPI::Object::Users)), this, SIGNAL(updateStarted(UpdateProfile::UpdateType, TwitterAPI::Object::Users)));
+            connect(&updateProfile, SIGNAL(updateFinished(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateFinished(UpdateProfile::UpdateType,QString)));
+            connect(&updateProfile, SIGNAL(resultPosted()), this, SIGNAL(resultPosted()));
+            connect(&updateProfile, SIGNAL(updateError(UpdateProfile::UpdateType, QString)), this, SIGNAL(updateError(UpdateProfile::UpdateType,QString)));
+            connect(&updateProfile, SIGNAL(resultPostError(QString)), this, SIGNAL(resultPostError(QString)));
+            connect(&updateProfile, SIGNAL(finished()), updateProfileThread, SLOT(quit()));
+            connect(this, SIGNAL(stopping()), updateProfileThread, SLOT(quit()));
+            connect(updateProfileThread, SIGNAL(finished()), updateProfileThread, SLOT(deleteLater()));
+
+            updateProfile.moveToThread(updateProfileThread);
+            updateProfileThread->start();
+
+            if (command == "update_name")
+                updateProfile.update(UpdateProfile::Name, tweet, profileValue);
+            else if (command == "update_url")
+                updateProfile.update(UpdateProfile::Url, tweet, profileValue);
+            else if (command == "update_location")
+                updateProfile.update(UpdateProfile::Location, tweet, profileValue);
+            else if (command == "update_description")
+                updateProfile.update(UpdateProfile::Description, tweet, profileValue);
+            else if (command == "update_image")
+                updateProfile.update(UpdateProfile::Image, tweet, profileValue);
+            else if (command == "update_background")
+                updateProfile.update(UpdateProfile::Background, tweet, profileValue);
+            else if (command == "update_banner")
+                updateProfile.update(UpdateProfile::Banner, tweet, profileValue);
+            //else
+                //continue;
+            break;
+        }
+    }
 }
