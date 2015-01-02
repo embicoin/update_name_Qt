@@ -78,3 +78,7 @@ FORMS    += mainwindow.ui
 CONFIG += mobility
 MOBILITY = 
 
+DISTFILES +=
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
