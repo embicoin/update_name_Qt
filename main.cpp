@@ -1,6 +1,7 @@
-﻿#include "updatenameqtglobal.h"
+#include "updatenameqtglobal.h"
 #include "mainwindow.h"
 #ifdef Q_OS_ANDROID
+#include <QtAndroidExtras>
 #include "android/authdialog.h"
 #else
 #include "authdialog.h"
@@ -17,6 +18,9 @@ QSettings *settings;
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_ANDROID
+    QAndroidJniObject serviceManager("org/owata_programer/update_name_Qt/ServiceManager");
+#endif
     using UpdateNameQt::settings;
     int result;
 
@@ -70,12 +74,22 @@ int main(int argc, char *argv[])
             } while (retry);
         }
 
+#ifdef Q_OS_ANDROID
+        //サービス開始
+        serviceManager.callMethod<void>("start");
+#endif
+
         MainWindow w;
         w.show();
 
         result = a.exec();
 
     } while (result == UpdateNameQt::ExitRestart);
+
+#ifdef Q_OS_ANDROID
+    //サービス停止
+    serviceManager.callMethod<void>("stop");
+#endif
 
     return result;
 }

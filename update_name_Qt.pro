@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui network
+android: QT += androidextras
 !android: QT += webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -78,7 +79,8 @@ FORMS    += mainwindow.ui
 CONFIG += mobility
 MOBILITY = 
 
-DISTFILES +=
+DISTFILES += \
+    android/src/ServiceManager.java
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
