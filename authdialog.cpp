@@ -1,4 +1,4 @@
-﻿#include "authdialog.h"
+#include "authdialog.h"
 #include "ui_authdialog.h"
 
 #ifdef _MSC_VER
@@ -14,9 +14,9 @@ AuthDialog::AuthDialog(QWidget *parent) :
     ui(new Ui::AuthDialog)
 {
     ui->setupUi(this);
-#ifndef Q_OS_WIN
-    ui->progressBar->hide();
-#endif
+//#ifndef Q_OS_WIN
+//    ui->progressBar->hide();
+//#endif
 
     //SIGNALの接続
     //認証ページを開く

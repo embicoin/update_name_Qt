@@ -1,4 +1,4 @@
-﻿#include "user.h"
+#include "user.h"
 #include "../twitterglobal.h"
 
 #include <QNetworkAccessManager>
@@ -144,27 +144,12 @@ void User::run()
                     } else {
                         response.prepend(buffer);
                         buffer.clear();
-                        //-----This code isn't work on Android.-----
-                        //auto *parseJson = new ParseJson(response);
-                        //connect(parseJson, SIGNAL(tweet(TwitterAPI::Object::Tweets)), this, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)));
-                        //connect(parseJson, SIGNAL(statusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)),
-                                //this, SIGNAL(recievedStatusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)));
-                        //connect(parseJson, SIGNAL(finished()), parseJson, SLOT(deleteLater()));
-                        //parseJson->start();
-
-                        const QJsonObject object = QJsonDocument::fromJson(response).object();
-                        if (!object.value("text").isUndefined()) {
-                            //qDebug() << TwitterAPI::Object::Tweets(m_json.toJson()).text();
-                            emit recievedTweet(response);
-                        } else if (!object.value("delete").isUndefined()) {
-                            StatusDeletionNotices statusDeletionNotices;
-                            const QJsonObject statusObject = object.value("status").toObject();
-                            statusDeletionNotices.id = statusObject.value("id").toVariant().toLongLong();
-                            statusDeletionNotices.idStr = statusObject.value("id_str").toString();
-                            statusDeletionNotices.userId = statusObject.value("user_id").toVariant().toLongLong();
-                            statusDeletionNotices.userIdStr = statusObject.value("user_id_str").toString();
-                            emit recievedStatusDeletion(statusDeletionNotices);
-                        }
+                        auto *parseJson = new ParseJson(response);
+                        connect(parseJson, SIGNAL(tweet(TwitterAPI::Object::Tweets)), this, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)));
+                        connect(parseJson, SIGNAL(statusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)),
+                                this, SIGNAL(recievedStatusDeletion(TwitterAPI::Streaming::StatusDeletionNotices)));
+                        connect(parseJson, SIGNAL(finished()), parseJson, SLOT(deleteLater()));
+                        parseJson->start();
                     }
                 }
             }

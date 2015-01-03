@@ -1,9 +1,9 @@
 #include "updatenameqtglobal.h"
 #include "mainwindow.h"
-#ifdef Q_OS_ANDROID
-#include <QtAndroidExtras>
-#include "android/authdialog.h"
-#else
+//#ifdef Q_OS_ANDROID
+//#include <QtAndroidExtras>
+//#include "android/authdialog.h"
+//#else
 #include "authdialog.h"
 #endif
 
@@ -18,9 +18,9 @@ QSettings *settings;
 
 int main(int argc, char *argv[])
 {
-#ifdef Q_OS_ANDROID
-    QAndroidJniObject serviceManager("org/owata_programer/update_name_Qt/ServiceManager");
-#endif
+//#ifdef Q_OS_ANDROID
+//    QAndroidJniObject serviceManager("org/owata_programer/update_name_Qt/ServiceManager");
+//#endif
     using UpdateNameQt::settings;
     int result;
 
@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
         //バージョン名のセット
         QString os;
 #ifdef Q_OS_LINUX
-#ifdef Q_OS_ANDROID
-        os = "Android";
-#else
+//#ifdef Q_OS_ANDROID
+//        os = "Android";
+//#else
         os = "Linux";
-#endif
+//#endif
 #elif defined(Q_OS_MAC)
         os = "MacOS X";
 #elif defined(Q_OS_WIN)
@@ -74,10 +74,10 @@ int main(int argc, char *argv[])
             } while (retry);
         }
 
-#ifdef Q_OS_ANDROID
-        //サービス開始
-        serviceManager.callMethod<void>("start");
-#endif
+//#ifdef Q_OS_ANDROID
+//        //サービス開始
+//        serviceManager.callMethod<void>("start");
+//#endif
 
         MainWindow w;
         w.show();
@@ -86,10 +86,10 @@ int main(int argc, char *argv[])
 
     } while (result == UpdateNameQt::ExitRestart);
 
-#ifdef Q_OS_ANDROID
-    //サービス停止
-    serviceManager.callMethod<void>("stop");
-#endif
+//#ifdef Q_OS_ANDROID
+//    //サービス停止
+//    serviceManager.callMethod<void>("stop");
+//#endif
 
     return result;
 }

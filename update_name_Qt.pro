@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui network
-android: QT += androidextras
+# android: QT += androidextras
 !android: QT += webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -58,12 +58,12 @@ HEADERS  += mainwindow.h \
     twitterAPI/rest/account/updateprofilebackgroundimage.h \
     twitterAPI/rest/account/updateprofilebanner.h
 
-android {
-    SOURCES  += android/authdialog.cpp
-    HEADERS  += android/authdialog.h
-    FORMS    += android/authdialog.ui \
-                android/preferencesdialog.ui
-} else {
+# android {
+#     SOURCES  += android/authdialog.cpp
+#     HEADERS  += android/authdialog.h
+#     FORMS    += android/authdialog.ui \
+#                 android/preferencesdialog.ui
+# } else {
     SOURCES  += authdialog.cpp
     HEADERS  += authdialog.h
     FORMS    += preferencesdialog.ui
@@ -72,15 +72,15 @@ android {
     } else {
         FORMS    += authdialog.ui
     }
-}
+# }
 
 FORMS    += mainwindow.ui
 
-CONFIG += mobility
-MOBILITY = 
+# CONFIG += mobility
+# MOBILITY =
 
-DISTFILES += \
-    android/src/ServiceManager.java
+# DISTFILES += \
+#    android/src/ServiceManager.java
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+# ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "updatenameqtglobal.h"
 
@@ -18,9 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-#ifdef Q_OS_ANDROID
-    ui->saveLogAction->setVisible(false);
-#endif
+//#ifdef Q_OS_ANDROID
+//    ui->saveLogAction->setVisible(false);
+//#endif
 
     //connect
     //ログのクリア

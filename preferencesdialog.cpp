@@ -1,4 +1,4 @@
-﻿#ifdef _MSC_VER
+#ifdef _MSC_VER
 #pragma execution_character_set("utf-8")
 #endif
 
@@ -21,13 +21,13 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     ui(new Ui::PreferencesDialog)
 {
     ui->setupUi(this);
-#ifdef Q_OS_ANDROID
-    //ウィンドウの最大化
-    setWindowState(windowState() | Qt::WindowMaximized);
-    //改行
-    for (QLabel *label : findChildren<QLabel *>())
-        label->setWordWrap(true);
-#endif
+//#ifdef Q_OS_ANDROID
+//    //ウィンドウの最大化
+//    setWindowState(windowState() | Qt::WindowMaximized);
+//    //改行
+//    for (QLabel *label : findChildren<QLabel *>())
+//        label->setWordWrap(true);
+//#endif
 
 #ifndef Q_OS_ANDROID
     //アイコンのセット
@@ -55,23 +55,23 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
     //connect
     //ページの切り替え
-#ifdef Q_OS_ANDROID
-    connect(ui->actionButton, &QPushButton::clicked, [&]() {
-        ui->stackedWidget->setCurrentIndex(1);
-    });
-    connect(ui->commandButton, &QPushButton::clicked, [&]() {
-        ui->stackedWidget->setCurrentIndex(2);
-    });
-    connect(ui->messageButton, &QPushButton::clicked, [&]() {
-        ui->stackedWidget->setCurrentIndex(3);
-    });
-    connect(ui->authButton, &QPushButton::clicked, [&]() {
-        ui->stackedWidget->setCurrentIndex(4);
-    });
-    connect(ui->advancedSettingButton, &QPushButton::clicked, [&]() {
-        ui->stackedWidget->setCurrentIndex(5);
-    });
-#else
+//#ifdef Q_OS_ANDROID
+//    connect(ui->actionButton, &QPushButton::clicked, [&]() {
+//        ui->stackedWidget->setCurrentIndex(1);
+//    });
+//    connect(ui->commandButton, &QPushButton::clicked, [&]() {
+//        ui->stackedWidget->setCurrentIndex(2);
+//    });
+//    connect(ui->messageButton, &QPushButton::clicked, [&]() {
+//        ui->stackedWidget->setCurrentIndex(3);
+//    });
+//    connect(ui->authButton, &QPushButton::clicked, [&]() {
+//        ui->stackedWidget->setCurrentIndex(4);
+//    });
+//    connect(ui->advancedSettingButton, &QPushButton::clicked, [&]() {
+//        ui->stackedWidget->setCurrentIndex(5);
+//    });
+//#else
     connect(ui->actionButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(0);
     });
@@ -87,7 +87,7 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     connect(ui->advancedSettingButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(4);
     });
-#endif
+//#endif
     //ログアウト
     connect(ui->logoutButton, &QPushButton::clicked, [&]() {
         if (QMessageBox::question(this, tr("確認"), tr("Twitterからログアウトしてアプリケーションを再起動します。\nよろしいですか？"),
@@ -117,35 +117,35 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
         }
         QMessageBox::critical(this, tr("エラー"), tr("設定ファイルの削除に失敗しました。\n%1").arg(file.errorString()), QMessageBox::Ok);
     });
-#ifndef Q_OS_ANDROID
-    //ダイアログのボタン
-    connect(ui->buttonBox, &QDialogButtonBox::clicked, [&](QAbstractButton *button) {
-        switch (ui->buttonBox->standardButton(button)) {
-        case QDialogButtonBox::RestoreDefaults:
-            if (QMessageBox::question(this, tr("確認"), tr("設定を標準設定に戻します。\nよろしいですか？"), QMessageBox::Yes, QMessageBox::No)
-                == QMessageBox::Yes) {
-                //認証設定以外を標準設定をセットする
-                for (auto i = UpdateNameQt::defaultSettings.constBegin(); i != UpdateNameQt::defaultSettings.constEnd(); i++)
-                    if (i.key() != "ConsumerKey" || i.key() != "ConsumerSecret" || i.key() != "AccessToken" || i.key() != "AccessTokenSecret")
-                        settings->setValue(i.key(), i.value());
-                loadSettings();
-            }
-            break;
-        case QDialogButtonBox::Apply:
-            saveSettings();
-            break;
-        case QDialogButtonBox::Cancel:
-            reject();
-            break;
-        case QDialogButtonBox::Ok:
-            saveSettings();
-            accept();
-            break;
-        default:
-            break;
-        }
-    });
-#endif
+//#ifndef Q_OS_ANDROID
+//    //ダイアログのボタン
+//    connect(ui->buttonBox, &QDialogButtonBox::clicked, [&](QAbstractButton *button) {
+//        switch (ui->buttonBox->standardButton(button)) {
+//        case QDialogButtonBox::RestoreDefaults:
+//            if (QMessageBox::question(this, tr("確認"), tr("設定を標準設定に戻します。\nよろしいですか？"), QMessageBox::Yes, QMessageBox::No)
+//                == QMessageBox::Yes) {
+//                //認証設定以外を標準設定をセットする
+//                for (auto i = UpdateNameQt::defaultSettings.constBegin(); i != UpdateNameQt::defaultSettings.constEnd(); i++)
+//                    if (i.key() != "ConsumerKey" || i.key() != "ConsumerSecret" || i.key() != "AccessToken" || i.key() != "AccessTokenSecret")
+//                        settings->setValue(i.key(), i.value());
+//                loadSettings();
+//            }
+//            break;
+//        case QDialogButtonBox::Apply:
+//            saveSettings();
+//            break;
+//        case QDialogButtonBox::Cancel:
+//            reject();
+//            break;
+//        case QDialogButtonBox::Ok:
+//            saveSettings();
+//            accept();
+//            break;
+//        default:
+//            break;
+//        }
+//    });
+//#endif
 
     loadSettings();
 }
@@ -212,22 +212,22 @@ void PreferencesDialog::saveSettings()
     settings->setValue("Over20CharName", ui->over20CharNameButton1->isChecked());
 }
 
-void PreferencesDialog::closeEvent(QCloseEvent *)
-{
-#ifdef Q_OS_ANDROID
-    saveSettings();
-#endif
-}
+//void PreferencesDialog::closeEvent(QCloseEvent *)
+//{
+//#ifdef Q_OS_ANDROID
+//    saveSettings();
+//#endif
+//}
 
-void PreferencesDialog::keyReleaseEvent(QKeyEvent *event)
-{
-#ifdef Q_OS_ANDROID
-    if (event->key() == Qt::Key_Back) {
-        if (ui->stackedWidget->currentIndex() == 0)
-            close();
-        else
-            ui->stackedWidget->setCurrentIndex(0);
-        event->accept();
-    }
-#endif
-}
+//void PreferencesDialog::keyReleaseEvent(QKeyEvent *event)
+//{
+//#ifdef Q_OS_ANDROID
+//    if (event->key() == Qt::Key_Back) {
+//        if (ui->stackedWidget->currentIndex() == 0)
+//            close();
+//        else
+//            ui->stackedWidget->setCurrentIndex(0);
+//        event->accept();
+//    }
+//#endif
+//}
