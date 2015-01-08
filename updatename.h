@@ -1,4 +1,4 @@
-﻿#ifndef UPDATENAME_H
+#ifndef UPDATENAME_H
 #define UPDATENAME_H
 
 #include "twitterAPI/streaming/user.h"
@@ -36,7 +36,7 @@ public slots:
     void update(UpdateProfile::UpdateType type, const TwitterAPI::Object::Tweets &updateTweet, const QString newProfile);
 
 private:
-    void postResult(const TwitterAPI::Rest::Statuses::UpdateParameters &parameters);
+    void postResult(TwitterAPI::Rest::Statuses::UpdateParameters parameters);
 
     TwitterAPI::OAuth m_oauth;
     QString m_errorMessage;
@@ -62,6 +62,11 @@ signals:
     void screenNameLookuped(const QString &screenName);
     void error(UpdateName::State state, const QString &errorMessage);
 
+    void startupMessagePosted();
+    void startupMessagePostError(const QString &errorMessage);
+    void quitMessagePosted();
+    void quitMessagePostError(const QString &errorMessage);
+
     void updateStarted(UpdateProfile::UpdateType type, const TwitterAPI::Object::Users &executedUser);
     void updateFinished(UpdateProfile::UpdateType type, const QString &newProfile);
     void resultPosted();
@@ -73,6 +78,8 @@ public slots:
 
 private slots:
     void startUpdateName(const TwitterAPI::Object::Tweets &tweet);
+    void postStartupMessage();
+    void postQuitMessage();
 
 private:
     void run();

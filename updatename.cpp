@@ -1,4 +1,4 @@
-﻿#include "updatename.h"
+#include "updatename.h"
 #include "updatenameqtglobal.h"
 #include "twitterAPI/rest/users/lookup.h"
 #include "twitterAPI/rest/account/updateprofile.h"
@@ -390,16 +390,25 @@ void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Obj
     emit finished();
 }
 
-void UpdateProfile::postResult(const TwitterAPI::Rest::Statuses::UpdateParameters &parameters)
+void UpdateProfile::postResult(TwitterAPI::Rest::Statuses::UpdateParameters parameters)
 {
     TwitterAPI::Rest::Statuses::Update update(m_oauth);
+    QString status = parameters.status;
 
-    update.exec(parameters);
+    for (;;) {
+        update.exec(parameters);
 
-    if (update.errorString().isEmpty())
-        emit resultPosted();
-    else
-        emit resultPostError(update.errorString());
+        if (update.errorString().isEmpty()) {
+            emit resultPosted();
+            break;
+        } else {
+            emit resultPostError(update.errorString());
+            if (update.errorString() == "Status is a duplicate")
+                parameters.status = status + UpdateNameQt::someString();
+            else
+                break;
+        }
+    }
 }
 
 UpdateName::UpdateName(QObject *parent)
@@ -414,6 +423,7 @@ UpdateName::UpdateName(QObject *parent)
     connect(m_userStream, &TwitterAPI::Streaming::User::error, [&](const QString &errorMessage) {
         emit error(UserStream, errorMessage);
     });
+    //connect(this, SIGNAL(finished()), this, SLOT(postQuitMessage()));
 }
 
 UpdateName::~UpdateName()
@@ -451,10 +461,15 @@ void UpdateName::run()
     }
 
     emit running();
+    if (settings->value("EnabledStartupMessage").toBool())
+        postStartupMessage();
 
     //connect(m_userStream, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)), &loop, SLOT(quit()));
     connect(m_userStream, SIGNAL(recievedTweet(TwitterAPI::Object::Tweets)), this, SLOT(startUpdateName(TwitterAPI::Object::Tweets)));
     loop.exec();
+
+    if (settings->value("EnabledQuitMessage").toBool())
+        postQuitMessage();
 }
 
 void UpdateName::stop()
@@ -500,6 +515,44 @@ void UpdateName::startUpdateName(const TwitterAPI::Object::Tweets &tweet)
             //else
                 //continue;
             break;
+        }
+    }
+}
+
+void UpdateName::postStartupMessage()
+{
+    QString status = settings->value("StartupMessage").toString();
+    for (;;) {
+        TwitterAPI::Rest::Statuses::Update statusUpdate(m_oauth);
+        statusUpdate.exec(status);
+        if (statusUpdate.errorString().isEmpty()) {
+            emit startupMessagePosted();
+            break;
+        } else {
+            emit startupMessagePostError(statusUpdate.errorString());
+            if (statusUpdate.errorString() == "Status is a duplicate.")
+                status = settings->value("StartupMessage").toString().append(UpdateNameQt::someString());
+            else
+                break;
+        }
+    }
+}
+
+void UpdateName::postQuitMessage()
+{
+    QString status = settings->value("QuitMessage").toString();
+    for (;;) {
+        TwitterAPI::Rest::Statuses::Update statusUpdate(m_oauth);
+        statusUpdate.exec(status);
+        if (statusUpdate.errorString().isEmpty()) {
+            emit quitMessagePosted();
+            break;
+        } else {
+            emit quitMessagePostError(statusUpdate.errorString());
+            if (statusUpdate.errorString() == "Status is a duplicate.")
+                status = settings->value("QuitMessage").toString().append(UpdateNameQt::someString());
+            else
+                break;
         }
     }
 }
