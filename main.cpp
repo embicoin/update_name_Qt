@@ -5,12 +5,14 @@
 //#include "android/authdialog.h"
 //#else
 #include "authdialog.h"
-#endif
+//#endif
 
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>
 #include <QFile>
+#include <QMenuBar>
+#include <QMessageBox>
 
 namespace UpdateNameQt {
 QSettings *settings;
@@ -27,6 +29,9 @@ int main(int argc, char *argv[])
     do {
         QApplication a(argc, argv);
         QTranslator t;
+        QMenuBar *bar = new QMenuBar(0);
+
+        bar->show();
 
         //日本語化
         t.load("qt_ja", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -60,6 +65,7 @@ int main(int argc, char *argv[])
             bool retry;
             do {
                 AuthDialog auth;
+                auth.setModal(true);
                 retry = false;
                 switch (auth.exec()) {
                 case AuthDialog::AuthSuccessed:
@@ -71,16 +77,20 @@ int main(int argc, char *argv[])
                 default:
                     return 1;
                 }
+                result = UpdateNameQt::ExitRestart;
+                continue;
             } while (retry);
         }
+
+        delete bar;
+
+        MainWindow w;
+        w.show();
 
 //#ifdef Q_OS_ANDROID
 //        //サービス開始
 //        serviceManager.callMethod<void>("start");
 //#endif
-
-        MainWindow w;
-        w.show();
 
         result = a.exec();
 

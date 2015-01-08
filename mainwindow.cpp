@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QDesktopServices>
 #include <QFile>
 
 using UpdateNameQt::settings;
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
 //#ifdef Q_OS_ANDROID
 //    ui->saveLogAction->setVisible(false);
 //#endif
@@ -115,6 +117,7 @@ MainWindow::~MainWindow()
     m_updateName.stop();
     m_updateName.wait();
     delete ui;
+    //delete m_menuBar;
 }
 
 QString MainWindow::updateTypeToString(UpdateProfile::UpdateType type)
