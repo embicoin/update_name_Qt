@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     twitterAPI/object/object.cpp \
     twitterAPI/rest/account/updateprofileimage.cpp \
     twitterAPI/rest/account/updateprofilebackgroundimage.cpp \
-    twitterAPI/rest/account/updateprofilebanner.cpp
+    twitterAPI/rest/account/updateprofilebanner.cpp \
+    updatenameqtglobal.cpp
 
 HEADERS  += mainwindow.h \
     twitterAPI/oauth/oauth.h \

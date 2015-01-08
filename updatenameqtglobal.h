@@ -1,4 +1,4 @@
-﻿#ifndef UPDATENAMEQTGLOBAL
+#ifndef UPDATENAMEQTGLOBAL
 #define UPDATENAMEQTGLOBAL
 
 #ifdef _MSC_VER
@@ -9,6 +9,8 @@
 #include <QSettings>
 
 namespace UpdateNameQt {
+
+QString someString();
 
 enum Over20CharName {
     ChopName,
