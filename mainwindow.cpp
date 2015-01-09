@@ -19,12 +19,55 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    m_menuBar = new QMenuBar(0);
+    //メニューバーのセットアップ
+    auto *fileMenu                  = new QMenu(tr("&ファイル"), m_menuBar);
+    auto *toolsMenu                 = new QMenu(tr("&ツール"), m_menuBar);
+    auto *helpMenu                  = new QMenu(tr("&ヘルプ"), m_menuBar);
+    auto *saveLogAction             = new QAction(tr("ログを保存する"), fileMenu);
+    auto *clearLogAction            = new QAction(tr("ログを削除する"), fileMenu);
+    auto *quitAction                = new QAction(tr("終了(&Q)"), fileMenu);
+    auto *preferencesAction         = new QAction(tr("設定(&P)"), toolsMenu);
+    auto *updateNameSenderAction    = new QAction(tr("update_name送信機"), toolsMenu);
+    auto *aboutAction               = new QAction(tr("update_name_Qtについて"), helpMenu);
+    auto *aboutQtAction             = new QAction(tr("Qtについて"), helpMenu);
+    auto *updateNameQtWebSiteAction = new QAction(tr("update_name_Qtのウェブサイト"), helpMenu);
+
+    //メニューロールの設定
+    quitAction->setMenuRole(QAction::QuitRole);
+    preferencesAction->setMenuRole(QAction::PreferencesRole);
+    aboutAction->setMenuRole(QAction::AboutRole);
+    aboutQtAction->setMenuRole(QAction::AboutQtRole);
+    //メニューのセットアップ
+    fileMenu->addAction(saveLogAction);
+    fileMenu->addAction(clearLogAction);
+    fileMenu->addSeparator();
+    fileMenu->addAction(quitAction);
+    toolsMenu->addAction(preferencesAction);
+    toolsMenu->addAction(updateNameSenderAction);
+    helpMenu->addAction(aboutAction);
+    helpMenu->addAction(aboutQtAction);
+    helpMenu->addAction(updateNameQtWebSiteAction);
+    m_menuBar->addMenu(fileMenu);
+    m_menuBar->addMenu(toolsMenu);
+    m_menuBar->addMenu(helpMenu);
 
 //#ifdef Q_OS_ANDROID
 //    ui->saveLogAction->setVisible(false);
 //#endif
 
     //connect
+    //メニュー
+    connect(saveLogAction, SIGNAL(triggered()), this, SLOT(saveLog()));
+    connect(clearLogAction, SIGNAL(triggered()), ui->logText, SLOT(clear()));
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(preferencesAction, SIGNAL(triggered()), &m_preferencesDialog, SLOT(exec()));
+    //connect(updateNameSenderAction, SIGNAL(triggered()),
+    //connect(aboutAction, SIGNAL(triggered()),
+    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    connect(updateNameQtWebSiteAction, &QAction::triggered, [&]() {
+        QDesktopServices::openUrl(QUrl("http://owataprogramer.orz.hm/works/update_name_Qt.html"));
+    });
     //ログのクリア
     connect(ui->clearLogAction, SIGNAL(triggered()), ui->logText, SLOT(clear()));
     //ログの保存
@@ -117,7 +160,23 @@ MainWindow::~MainWindow()
     m_updateName.stop();
     m_updateName.wait();
     delete ui;
-    //delete m_menuBar;
+    delete m_menuBar;
+}
+
+void MainWindow::saveLog()
+{
+    QString saveFilePath = QFileDialog::getSaveFileName(this, tr("保存"),
+                                                        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+    if (saveFilePath.isEmpty())
+        return;
+
+    QFile saveFile;
+    if (saveFile.open(QFile::WriteOnly | QFile::Text))
+        if (saveFile.write(ui->logText->toPlainText().toUtf8())) {
+            QMessageBox::information(this, tr("保存"), tr("%1\nに保存しました。").arg(saveFilePath), QMessageBox::Ok);
+            return;
+        }
+    QMessageBox::critical(this, tr("エラー"), tr("保存に失敗しました。\n%1").arg(saveFile.errorString()), QMessageBox::Ok);
 }
 
 QString MainWindow::updateTypeToString(UpdateProfile::UpdateType type)

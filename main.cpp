@@ -65,7 +65,6 @@ int main(int argc, char *argv[])
             bool retry;
             do {
                 AuthDialog auth;
-                auth.setModal(true);
                 retry = false;
                 switch (auth.exec()) {
                 case AuthDialog::AuthSuccessed:
@@ -77,8 +76,6 @@ int main(int argc, char *argv[])
                 default:
                     return 1;
                 }
-                result = UpdateNameQt::ExitRestart;
-                continue;
             } while (retry);
         }
 

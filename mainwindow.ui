@@ -459,44 +459,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu_F">
-    <property name="title">
-     <string>ファイル(&amp;F)</string>
-    </property>
-    <addaction name="clearLogAction"/>
-    <addaction name="saveLogAction"/>
-    <addaction name="separator"/>
-    <addaction name="quitAction"/>
-   </widget>
-   <widget class="QMenu" name="menu_T">
-    <property name="title">
-     <string>ツール(&amp;T)</string>
-    </property>
-    <addaction name="preferencesAction"/>
-    <addaction name="updateNameSenderAction"/>
-   </widget>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>ヘルプ（&amp;H)</string>
-    </property>
-    <addaction name="officialSiteAction"/>
-    <addaction name="separator"/>
-    <addaction name="aboutAction"/>
-    <addaction name="aboutQtAction"/>
-   </widget>
-   <addaction name="menu_F"/>
-   <addaction name="menu_T"/>
-   <addaction name="menu"/>
-  </widget>
   <action name="clearLogAction">
    <property name="text">
     <string>ログをクリアする</string>
