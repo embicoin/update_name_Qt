@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     twitterAPI/rest/account/updateprofileimage.cpp \
     twitterAPI/rest/account/updateprofilebackgroundimage.cpp \
     twitterAPI/rest/account/updateprofilebanner.cpp \
-    updatenameqtglobal.cpp
+    updatenameqtglobal.cpp \
+    updatenamesender.cpp
 
 HEADERS  += mainwindow.h \
     twitterAPI/oauth/oauth.h \
@@ -57,7 +58,8 @@ HEADERS  += mainwindow.h \
     twitterAPI/object/object.h \
     twitterAPI/rest/account/updateprofileimage.h \
     twitterAPI/rest/account/updateprofilebackgroundimage.h \
-    twitterAPI/rest/account/updateprofilebanner.h
+    twitterAPI/rest/account/updateprofilebanner.h \
+    updatenamesender.h
 
 # android {
 #     SOURCES  += android/authdialog.cpp
@@ -67,7 +69,8 @@ HEADERS  += mainwindow.h \
 # } else {
     SOURCES  += authdialog.cpp
     HEADERS  += authdialog.h
-    FORMS    += preferencesdialog.ui
+    FORMS    += preferencesdialog.ui \
+    updatenamesender.ui
     win32|win64 {
         FORMS    += windows/authdialog.ui
     } else {
