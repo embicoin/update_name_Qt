@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     twitterAPI/rest/account/updateprofilebackgroundimage.cpp \
     twitterAPI/rest/account/updateprofilebanner.cpp \
     updatenameqtglobal.cpp \
-    updatenamesender.cpp
+    updatenamesender.cpp \
+    aboutdialog.cpp
 
 HEADERS  += mainwindow.h \
     twitterAPI/oauth/oauth.h \
@@ -59,32 +60,22 @@ HEADERS  += mainwindow.h \
     twitterAPI/rest/account/updateprofileimage.h \
     twitterAPI/rest/account/updateprofilebackgroundimage.h \
     twitterAPI/rest/account/updateprofilebanner.h \
-    updatenamesender.h
+    updatenamesender.h \
+    aboutdialog.h
 
-# android {
-#     SOURCES  += android/authdialog.cpp
-#     HEADERS  += android/authdialog.h
-#     FORMS    += android/authdialog.ui \
-#                 android/preferencesdialog.ui
-# } else {
-    SOURCES  += authdialog.cpp
-    HEADERS  += authdialog.h
-    FORMS    += preferencesdialog.ui \
-    updatenamesender.ui
-    win32|win64 {
-        FORMS    += windows/authdialog.ui
-    } else {
-        FORMS    += authdialog.ui
-    }
-# }
+SOURCES  += authdialog.cpp
+HEADERS  += authdialog.h
+FORMS    += preferencesdialog.ui \
+updatenamesender.ui \
+    aboutdialog.ui
+win32|win64 {
+    FORMS    += windows/authdialog.ui
+} else {
+    FORMS    += authdialog.ui
+}
 
 FORMS    += mainwindow.ui
 
-# CONFIG += mobility
-# MOBILITY =
-
-# DISTFILES += \
-#    android/src/ServiceManager.java
-
-# ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+RESOURCES += \
+    resource.qrc
 
