@@ -15,6 +15,9 @@ public:
     explicit UpdateNameSender(QWidget *parent = 0);
     ~UpdateNameSender();
 
+private slots:
+    void on_tweetButton_clicked();
+
 private:
     Ui::UpdateNameSender *ui;
 };
