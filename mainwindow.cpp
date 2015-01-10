@@ -19,11 +19,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_menuBar = new QMenuBar(0);
+    //ウィンドウタイトルの設定
+    setWindowTitle(QApplication::applicationName() + " " + QApplication::applicationVersion());
     //メニューバーのセットアップ
-    auto *fileMenu                  = new QMenu(tr("&ファイル"), m_menuBar);
-    auto *toolsMenu                 = new QMenu(tr("&ツール"), m_menuBar);
-    auto *helpMenu                  = new QMenu(tr("&ヘルプ"), m_menuBar);
+    m_menuBar                       = new QMenuBar(0);
+    auto *fileMenu                  = new QMenu(tr("ファイル(&F)"), m_menuBar);
+    auto *toolsMenu                 = new QMenu(tr("ツール(&T)"), m_menuBar);
+    auto *helpMenu                  = new QMenu(tr("ヘルプ(&H)"), m_menuBar);
     auto *saveLogAction             = new QAction(tr("ログを保存する"), fileMenu);
     auto *clearLogAction            = new QAction(tr("ログを削除する"), fileMenu);
     auto *quitAction                = new QAction(tr("終了(&Q)"), fileMenu);
@@ -33,6 +35,13 @@ MainWindow::MainWindow(QWidget *parent) :
     auto *aboutQtAction             = new QAction(tr("Qtについて"), helpMenu);
     auto *updateNameQtWebSiteAction = new QAction(tr("update_name_Qtのウェブサイト"), helpMenu);
 
+    //アイコンのセットアップ
+#ifndef Q_OS_MAC
+    saveLogAction->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton));
+    clearLogAction->setIcon(QApplication::style()->standardIcon(QStyle::SP_LineEditClearButton));
+    quitAction->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogCloseButton));
+    aboutAction->setIcon(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation));
+#endif
     //メニューロールの設定
     quitAction->setMenuRole(QAction::QuitRole);
     preferencesAction->setMenuRole(QAction::PreferencesRole);
@@ -52,9 +61,16 @@ MainWindow::MainWindow(QWidget *parent) :
     m_menuBar->addMenu(toolsMenu);
     m_menuBar->addMenu(helpMenu);
 
-//#ifdef Q_OS_ANDROID
-//    ui->saveLogAction->setVisible(false);
-//#endif
+    setMenuBar(m_menuBar);
+
+    //システムトレイのセットアップ
+    m_systemTrayIcon           = new QSystemTrayIcon(qApp->windowIcon(), this);
+    auto *iconMenu             = new QMenu(this);
+    auto *showMainWindowAction = new QAction(tr("メインウィンドウを表示"), iconMenu);
+
+    iconMenu->addActions(QList<QAction *>() << showMainWindowAction << quitAction);
+    m_systemTrayIcon->setContextMenu(iconMenu);
+    m_systemTrayIcon->show();
 
     //connect
     //メニュー
@@ -62,35 +78,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(clearLogAction, SIGNAL(triggered()), ui->logText, SLOT(clear()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(preferencesAction, SIGNAL(triggered()), &m_preferencesDialog, SLOT(exec()));
-    //connect(updateNameSenderAction, SIGNAL(triggered()),
-    //connect(aboutAction, SIGNAL(triggered()),
+    connect(updateNameSenderAction, SIGNAL(triggered()), &m_updateNameSender, SLOT(exec()));
+    connect(aboutAction, SIGNAL(triggered()), &m_aboutDialog, SLOT(exec()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(updateNameQtWebSiteAction, &QAction::triggered, [&]() {
         QDesktopServices::openUrl(QUrl("http://owataprogramer.orz.hm/works/update_name_Qt.html"));
     });
-    //ログのクリア
-    connect(ui->clearLogAction, SIGNAL(triggered()), ui->logText, SLOT(clear()));
-    //ログの保存
-    connect(ui->saveLogAction, &QAction::triggered, [&]() {
-        QFileDialog dialog(this, tr("ログファイルの保存"), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-        dialog.selectFile("update_name_Qt_log.txt");
-        dialog.setAcceptMode(QFileDialog::AcceptSave);
-
-        if (dialog.exec() != QFileDialog::Accepted)
-            return;
-
-        QFile file(dialog.selectedFiles().first());
-        if (file.open(QFile::WriteOnly | QFile::Text))
-            if (file.write(ui->logText->toPlainText().toUtf8())) {
-                QMessageBox::information(this, tr("保存しました"), tr("ログファイルを\n%1\nに保存しました。").arg(file.fileName()), QMessageBox::Ok);
-                return;
-            }
-        QMessageBox::critical(this, tr("エラー"), tr("ファイルの保存に失敗しました。\n%1").arg(file.errorString()), QMessageBox::Ok);
+    //アイコン
+    connect(showMainWindowAction, &QAction::triggered, [&]() {
+        setWindowState(Qt::WindowActive);
     });
-    //終了
-    connect(ui->quitAction, SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
-    //設定
-    connect(ui->preferencesAction, SIGNAL(triggered()), &m_preferencesDialog, SLOT(exec()));
 
     //Qtについて
     connect(ui->aboutQtAction, &QAction::triggered, [&]() {
@@ -99,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ログ
     connect(&m_updateName, &UpdateName::started, [&]() {
         QMetaObject::invokeMethod(ui->updateNameSwitch, "setChecked", Qt::QueuedConnection, Q_ARG(bool, true));
-        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを起動しました。")));
+        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを開始しています…")));
     });
     connect(&m_updateName, &UpdateName::screenNameLookuped, [&](const QString &screenName) {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection,
@@ -107,9 +104,11 @@ MainWindow::MainWindow(QWidget *parent) :
     });
     connect(&m_updateName, &UpdateName::running, [&]() {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを開始しました。")));
+        QMetaObject::invokeMethod(m_systemTrayIcon, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, QApplication::applicationName()),Q_ARG(QString, tr("update_nameを開始しました。")));
     });
     connect(&m_updateName, &UpdateName::stopping, [&]() {
-        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを終了しています。")));
+        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを終了しています…")));
     });
     connect(&m_updateName, &UpdateName::waitting, [&](uint waitCount) {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1秒待機します。").arg(waitCount)));
@@ -117,6 +116,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_updateName, &UpdateName::finished, [&]() {
         QMetaObject::invokeMethod(ui->updateNameSwitch, "setChecked", Qt::QueuedConnection, Q_ARG(bool, false));
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを終了しました。")));
+        QMetaObject::invokeMethod(m_systemTrayIcon, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, QApplication::applicationName()),Q_ARG(QString, tr("update_nameを終了しました。")));
     });
     connect(&m_updateName, &UpdateName::error, [&](UpdateName::State state, const QString &errorMessage) {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1のエラー: %2").arg(state == UpdateName::UserStream
@@ -126,9 +127,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_updateName, &UpdateName::updateStarted, [&](UpdateProfile::UpdateType type, const TwitterAPI::Object::Users &executedUser) {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("\"%1@%2\"がupdate_%3を実行しました")
                                                                                               .arg(executedUser.name(), executedUser.screenName(), updateTypeToString(type))));
+        QMetaObject::invokeMethod(m_systemTrayIcon, "showMessage", Qt::QueuedConnection,
+                                  Q_ARG(QString, QApplication::applicationName()),Q_ARG(QString, tr("\"%1@%2\"がupdate_%3を実行しました")
+                                                                                        .arg(executedUser.name(), executedUser.screenName(), updateTypeToString(type))));
     });
     connect(&m_updateName, &UpdateName::updateFinished, [&](UpdateProfile::UpdateType type, const QString &newProfile) {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1を\"%2\"に変更しました。").arg(updateTypeToString(type), newProfile)));
+
     });
     connect(&m_updateName, &UpdateName::resultPosted, [&]() {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("結果をツイートしました。")));
@@ -177,6 +182,12 @@ void MainWindow::saveLog()
             return;
         }
     QMessageBox::critical(this, tr("エラー"), tr("保存に失敗しました。\n%1").arg(saveFile.errorString()), QMessageBox::Ok);
+}
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    if (!settings->value("StaysOnSystemTray").toBool())
+        QApplication::quit();
 }
 
 QString MainWindow::updateTypeToString(UpdateProfile::UpdateType type)
