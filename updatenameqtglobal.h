@@ -30,8 +30,8 @@ const QVariantMap defaultSettings = {
 
     {"StaysOnSystemTray", false},
     {"RetryStatusUpdateOnStatusIsADuplicate", true},
-    {"SaveUpdateHistory", false},
-    {"UpdateHistoryFileName", ""},
+    //{"SaveUpdateHistory", false},
+    //{"UpdateHistoryFileName", ""},
 
     {"EnabledUpdateName", true},
     {"EnabledUpdateNameFormat", false},
@@ -95,6 +95,14 @@ const QVariantMap defaultSettings = {
     {"UpdateBannerSuccessedMessage", "@%{screen_name} bannerを\"%{banner}\"に変更しました。"},
     {"EnabledUpdateBannerFailedMessage", true},
     {"UpdateBannerFailedMessage", "@%{screen_name} bannerの変更に失敗しました。\n%{error}"},
+
+    {"DefaultName", ""},
+    {"DefaultUrl", ""},
+    {"DefaultLocation", ""},
+    {"DefaultDescription", ""},
+    {"DefaultBackground", ""},
+    {"DefaultImage", ""},
+    {"DefaultBanner", ""},
 };
 const QStringList updateCommands = QStringList() << "update_name"
                                                  << "update_url"
@@ -102,7 +110,8 @@ const QStringList updateCommands = QStringList() << "update_name"
                                                  << "update_description"
                                                  << "update_image"
                                                  << "update_background"
-                                                 << "update_banner";
+                                                 << "update_banner"
+                                                 << "default";
 extern QSettings *settings;
 }
 
