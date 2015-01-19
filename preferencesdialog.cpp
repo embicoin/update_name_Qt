@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QDebug>
+#include <QFileDialog>
 
 const QSize PreferencesDialog::ICON_SIZE(20, 20);
 
@@ -60,6 +61,22 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     });
     connect(ui->advancedSettingButton, &QPushButton::clicked, [&]() {
         ui->stackedWidget->setCurrentIndex(4);
+    });
+    //画像の選択
+    connect(ui->selectDefaultBackgroundButton, &QPushButton::clicked, [&]() {
+        QString path = selectImage();
+        if (!path.isEmpty())
+            ui->defaultBackgroundLine->setText(path);
+    });
+    connect(ui->selectDefaultBannerButton, &QPushButton::clicked, [&]() {
+        QString path = selectImage();
+        if (!path.isEmpty())
+            ui->defaultBannerLine->setText(path);
+    });
+    connect(ui->selectDefaultImageButton, &QPushButton::clicked, [&]() {
+        QString path = selectImage();
+        if (!path.isEmpty())
+            ui->defaultImageLine->setText(path);
     });
     //ログアウト
     connect(ui->logoutButton, &QPushButton::clicked, [&]() {
@@ -181,4 +198,20 @@ void PreferencesDialog::saveSettings()
                            .remove(QRegExp("Line$")), line->text());
 
     settings->setValue("Over20CharName", ui->over20CharNameButton1->isChecked());
+}
+
+/**
+ * @brief 画像を選択させるメソッド
+ * @return 画像ファイルのパス
+ */
+QString PreferencesDialog::selectImage()
+{
+    QFileDialog dialog(this, tr("画像の選択"), QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setNameFilters(QStringList() << tr("画像ファイル (*.png *.jpg *.gif)") << tr("すべてのファイル (*)"));
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    if (dialog.exec() == QFileDialog::Accepted)
+        return dialog.selectedFiles().first();
+    else
+        return NULL;
 }

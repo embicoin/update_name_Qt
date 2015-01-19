@@ -51,6 +51,8 @@ const QVariantMap defaultSettings = {
 
     {"EnabledUpdateBanner", true},
 
+    {"EnabledDefault", true},
+
     {"EnabledStartupMessage", true},
     {"StartupMessage", "update_nameを起動しました。"},
     {"EnabledQuitMessage", true},

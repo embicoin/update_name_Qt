@@ -447,6 +447,13 @@
            <widget class="QWidget" name="page_21">
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
+              <widget class="QCheckBox" name="enabledDefaultCommand">
+               <property name="text">
+                <string>defaultコマンドを有効にする</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLabel" name="label">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -460,139 +467,152 @@
               </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
                <item>
-                <widget class="QGroupBox" name="groupBox_3">
-                 <property name="title">
-                  <string>name</string>
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>name:</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_46">
-                  <item>
-                   <widget class="QLineEdit" name="defaultNameLine"/>
-                  </item>
-                 </layout>
                 </widget>
                </item>
                <item>
-                <widget class="QGroupBox" name="groupBox_23">
-                 <property name="title">
-                  <string>url</string>
+                <widget class="QLineEdit" name="defaultNameLine">
+                 <property name="maxLength">
+                  <number>20</number>
                  </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_7">
-                  <item>
-                   <widget class="QLineEdit" name="defaultUrlLine"/>
-                  </item>
-                 </layout>
                 </widget>
                </item>
               </layout>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_26">
-               <property name="title">
-                <string>location</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_49">
-                <item>
-                 <widget class="QLineEdit" name="defaultLocationLine"/>
-                </item>
-               </layout>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <widget class="QLabel" name="label_27">
+                 <property name="text">
+                  <string>url:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="defaultUrlLine">
+                 <property name="maxLength">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_25">
-               <property name="title">
-                <string>description</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_48">
-                <item>
-                 <widget class="QPlainTextEdit" name="defaultDescriptionText">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QLabel" name="label_28">
+                 <property name="text">
+                  <string>location:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="defaultLocationLine">
+                 <property name="maxLength">
+                  <number>30</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QLabel" name="label_29">
+                 <property name="text">
+                  <string>description:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="defaultDescriptionLine">
+                 <property name="maxLength">
+                  <number>160</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                <item>
-                <widget class="QGroupBox" name="groupBox">
-                 <property name="title">
-                  <string>image</string>
+                <widget class="QLabel" name="label_30">
+                 <property name="text">
+                  <string>image:</string>
                  </property>
-                 <layout class="QHBoxLayout" name="horizontalLayout_3">
-                  <item>
-                   <widget class="QPushButton" name="defaultImageButton">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="baseSize">
-                     <size>
-                      <width>0</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>選択</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
                 </widget>
                </item>
                <item>
-                <widget class="QGroupBox" name="groupBox_2">
-                 <property name="title">
-                  <string>banner</string>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_45">
-                  <item>
-                   <widget class="QPushButton" name="defaultBannerButton">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="text">
-                     <string>選択</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
+                <widget class="QLineEdit" name="defaultImageLine"/>
                </item>
                <item>
-                <widget class="QGroupBox" name="groupBox_24">
-                 <property name="title">
-                  <string>background</string>
+                <widget class="QPushButton" name="selectDefaultImageButton">
+                 <property name="text">
+                  <string>参照</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_47">
-                  <item>
-                   <widget class="QPushButton" name="defaultBackgroundButton">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="text">
-                     <string>選択</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QLabel" name="label_31">
+                 <property name="text">
+                  <string>background:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="defaultBackgroundLine"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="selectDefaultBackgroundButton">
+                 <property name="text">
+                  <string>参照</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_10">
+               <item>
+                <widget class="QLabel" name="label_32">
+                 <property name="text">
+                  <string>banner:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="defaultBannerLine"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="selectDefaultBannerButton">
+                 <property name="text">
+                  <string>参照</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_12">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </widget>
@@ -608,7 +628,7 @@
          <item>
           <widget class="QStackedWidget" name="messageStack">
            <property name="currentIndex">
-            <number>4</number>
+            <number>7</number>
            </property>
            <widget class="QWidget" name="page_12">
             <layout class="QVBoxLayout" name="verticalLayout_20">
