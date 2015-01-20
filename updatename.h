@@ -57,6 +57,7 @@ public:
 signals:
     void started();
     void running();
+    void disConnected();
     void waitting(uint waitCount);
     void stopping();
     void screenNameLookuped(const QString &screenName);
