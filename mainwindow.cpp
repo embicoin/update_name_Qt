@@ -110,6 +110,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_updateName, &UpdateName::stopping, [&]() {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_nameを終了しています…")));
     });
+    connect(&m_updateName, &UpdateName::disConnected, [&]() {
+        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("UserStreamから切断されました。")));
+    });
     connect(&m_updateName, &UpdateName::waitting, [&](uint waitCount) {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1秒待機します。").arg(waitCount)));
     });
