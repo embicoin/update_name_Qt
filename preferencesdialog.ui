@@ -122,7 +122,7 @@
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="page">
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -447,7 +447,7 @@
            <widget class="QWidget" name="page_21">
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <widget class="QCheckBox" name="enabledDefaultCommand">
+              <widget class="QCheckBox" name="enabledDefaultCheck">
                <property name="text">
                 <string>defaultコマンドを有効にする</string>
                </property>
@@ -628,7 +628,7 @@
          <item>
           <widget class="QStackedWidget" name="messageStack">
            <property name="currentIndex">
-            <number>7</number>
+            <number>8</number>
            </property>
            <widget class="QWidget" name="page_12">
             <layout class="QVBoxLayout" name="verticalLayout_20">
@@ -1106,6 +1106,65 @@
                 </item>
                 <item>
                  <widget class="QPlainTextEdit" name="updateBannerFailedMessageText"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_22">
+            <layout class="QVBoxLayout" name="verticalLayout_47">
+             <item>
+              <widget class="QGroupBox" name="groupBox_24">
+               <property name="title">
+                <string>default成功時のメッセージ</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_46">
+                <item>
+                 <widget class="QCheckBox" name="enabledDefaultSuccessedMessageCheck">
+                  <property name="text">
+                   <string>defaultが成功した時にツイートする</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_34">
+                  <property name="text">
+                   <string>%{screen_name}はdefaultを実行したユーザーのscreen_nameに置き換えられます。
+メッセージ：</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="defaultSuccessedMessageText"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_23">
+               <property name="title">
+                <string>default失敗時のメッセージ</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_45">
+                <item>
+                 <widget class="QCheckBox" name="enabledUpdateBannerFailedMessageCheck_2">
+                  <property name="text">
+                   <string>defaultが失敗した時にツイートする</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_33">
+                  <property name="text">
+                   <string>%{screen_name}はupdate_bannerを実行したユーザーのscreen_name、
+%{error}はエラーメッセージに置き換えられます。
+メッセージ：</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="defaultFailedMessageText"/>
                 </item>
                </layout>
               </widget>

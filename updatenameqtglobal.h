@@ -98,6 +98,11 @@ const QVariantMap defaultSettings = {
     {"EnabledUpdateBannerFailedMessage", true},
     {"UpdateBannerFailedMessage", "@%{screen_name} bannerの変更に失敗しました。\n%{error}"},
 
+    {"EnabledDefaultSuccessedMessage", true},
+    {"DefaultSuccessedMessage", "@%{screen_name} プロフィールをデフォルトに戻しました。"},
+    {"EnabledDefaultFailedMessage", true},
+    {"DefaultFailedMessage", "@%{screen_name} デフォルトに戻すのに失敗しました。\n%{error}"},
+
     {"DefaultName", ""},
     {"DefaultUrl", ""},
     {"DefaultLocation", ""},
