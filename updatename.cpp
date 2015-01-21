@@ -14,6 +14,7 @@
 #include <QNetworkRequest>
 #include <memory>
 #include <QImage>
+#include <QFile>
 #include <QDebug>
 
 using UpdateNameQt::settings;
@@ -212,7 +213,7 @@ void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Obj
         break;
     case Image:
     case Background:
-    case Banner:
+    case Banner: {
         //画像のダウンロード
         QNetworkAccessManager man;
         std::unique_ptr<QNetworkReply> rep;
@@ -220,7 +221,6 @@ void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Obj
         QEventLoop el;
         QByteArray image;
 
-        //画像のダウンロード
         connect(&man, SIGNAL(finished(QNetworkReply*)), &el, SLOT(quit()));
         connect(&timer, SIGNAL(timeout()), &el, SLOT(quit()));
 
@@ -386,6 +386,92 @@ void UpdateProfile::update(UpdateProfile::UpdateType type, const TwitterAPI::Obj
             }
         }
     }
+        break;
+    case Default: {
+        //プロフィールを標準に戻す処理
+        bool isSuccessed;
+        QStringList failedApiName;
+
+        //Name, Url, Location, Description
+        if (!(settings->value("DefaultName").toString().isEmpty() && settings->value("DefaultUrl").toString().isEmpty()
+              && settings->value("DefaultLocation").toString().isEmpty() && settings->value("DefaultDescription").toString().isEmpty())) {
+            TwitterAPI::Rest::Account::UpdateProfile updateProfile(m_oauth);
+            TwitterAPI::Rest::Account::UpdateProfileParameters parameters;
+
+            if (!settings->value("DefaultName").toString().isEmpty())
+                parameters.name = settings->value("DefaultName").toString();
+            if (!settings->value("DefaultUrl").toString().isEmpty())
+                parameters.url = settings->value("DefaultUrl").toString();
+            if (!settings->value("DefaultLocation").toString().isEmpty())
+                parameters.location = settings->value("DefaultLocation").toString();
+            if (!settings->value("DefaultDescription").toString().isEmpty())
+                parameters.description = settings->value("DefaultDescription").toString();
+
+            updateProfile.exec(parameters);
+
+            isSuccessed = updateProfile.errorString().isEmpty();
+            if (!isSuccessed)
+                failedApiName << "update_profile";
+        }
+        //Background
+        if (!settings->value("DefaultBackground").toString().isEmpty()) {
+            TwitterAPI::Rest::Account::UpdateProfileBackgroundImage updateBackground;
+            QFile backgroundFile(settings->value("DefaultBackground").toString());
+
+            if (backgroundFile.open(QFile::ReadOnly)) {
+                updateBackground.exec(backgroundFile.readAll());
+                backgroundFile.close();
+                isSuccessed = updateBackground.errorString().isEmpty();
+            } else {
+                isSuccessed = false;
+            }
+            if (!isSuccessed)
+                failedApiName << "update_profile_background_image";
+        }
+        //Banner
+        if (!settings->value("DefaultBanner").toString().isEmpty()) {
+            TwitterAPI::Rest::Account::UpdateProfileBanner updateBanner;
+            QFile bannerFile(settings->value("DefaultBanner").toString());
+
+            if (bannerFile.open(QFile::ReadOnly)) {
+                isSuccessed = updateBanner.exec(bannerFile.readAll()) == TwitterAPI::Rest::Account::UpdateProfileBanner::SuccesfullyUploaded;
+                bannerFile.close();
+            } else {
+                isSuccessed = false;
+            }
+            if (!isSuccessed)
+                failedApiName << "update_profile_banner";
+        }
+        //Image
+        if (!settings->value("DefaultImage").toString().isEmpty()) {
+            TwitterAPI::Rest::Account::UpdateProfileImage updateImage;
+            QFile imageFile(settings->value("DefaultImage").toString());
+
+            if (imageFile.open(QFile::ReadOnly)) {
+                updateImage.exec(imageFile.readAll());
+                imageFile.close();
+                isSuccessed = updateImage.errorString().isEmpty();
+            } else {
+                isSuccessed = false;
+            }
+            if (!isSuccessed)
+                failedApiName << "update_profile_image";
+        }
+        if (isSuccessed && settings->value("EnabledDefaultSuccessedMessage").toBool()) {
+            TwitterAPI::Rest::Statuses::UpdateParameters p;
+            p.status = settings->value("DefaultSuccessedMessage").toString().replace("${screen_name}", updateTweet.user().screenName());
+            p.inReplyToStatusId = updateTweet.idStr();
+            postResult(p);
+        } else if (!isSuccessed && settings->value("EnabledDefaultFailedMessage").toBool()) {
+            TwitterAPI::Rest::Statuses::UpdateParameters p;
+            p.status = settings->value("DefaultFailedMessage").toString().replace("${screen_name}", updateTweet.user().screenName())
+                    .replace("${error}", tr("%1に失敗しました。").arg(failedApiName.join(",")));
+            p.inReplyToStatusId = updateTweet.idStr();
+            postResult(p);
+        }
+    }
+        break;
+    }
 
     emit finished();
 }
@@ -480,9 +566,7 @@ void UpdateName::stop()
 
 void UpdateName::startUpdateName(const TwitterAPI::Object::Tweets &tweet)
 {
-    qDebug() << tweet.text();
     if (tweet.text().contains(QRegExp("^.+\\s*\\(@" + m_screenName + "\\).*"))) {
-        qDebug() << "aaaaa";
         UpdateProfile updateProfile(m_oauth);
         auto *updateProfileThread = new QThread;
 
@@ -531,6 +615,8 @@ void UpdateName::startUpdateName(const TwitterAPI::Object::Tweets &tweet)
                     updateProfile.update(UpdateProfile::Background, tweet, profileValue);
                 else if (command == "update_banner")
                     updateProfile.update(UpdateProfile::Banner, tweet, profileValue);
+                else if (command == "default")
+                    updateProfile.update(UpdateProfile::Default, tweet, profileValue);
                 //else
                     //continue;
                 break;
