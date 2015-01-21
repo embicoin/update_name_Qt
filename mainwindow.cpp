@@ -128,10 +128,10 @@ MainWindow::MainWindow(QWidget *parent) :
                                                                                                                             errorMessage)));
     });
     connect(&m_updateName, &UpdateName::updateStarted, [&](UpdateProfile::UpdateType type, const TwitterAPI::Object::Users &executedUser) {
-        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("\"%1@%2\"がupdate_%3を実行しました")
+        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("\"%1@%2\"が%3を実行しました")
                                                                                               .arg(executedUser.name(), executedUser.screenName(), updateTypeToString(type))));
         QMetaObject::invokeMethod(m_systemTrayIcon, "showMessage", Qt::QueuedConnection,
-                                  Q_ARG(QString, QApplication::applicationName()),Q_ARG(QString, tr("\"%1@%2\"がupdate_%3を実行しました")
+                                  Q_ARG(QString, QApplication::applicationName()),Q_ARG(QString, tr("\"%1@%2\"が%3を実行しました")
                                                                                         .arg(executedUser.name(), executedUser.screenName(), updateTypeToString(type))));
     });
     connect(&m_updateName, &UpdateName::updateFinished, [&](UpdateProfile::UpdateType type, const QString &newProfile) {
@@ -142,7 +142,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("結果をツイートしました。")));
     });
     connect(&m_updateName, &UpdateName::updateError, [&](UpdateProfile::UpdateType type, const QString &errorMessage) {
-        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("update_%1に失敗しました。: %2").arg(updateTypeToString(type), errorMessage)));
+        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1に失敗しました。: %2").arg(updateTypeToString(type), errorMessage)));
     });
     connect(&m_updateName, &UpdateName::resultPostError, [&](const QString &errorMessage) {
         QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("結果のツイートに失敗しました。: %1").arg(errorMessage)));
@@ -197,19 +197,21 @@ QString MainWindow::updateTypeToString(UpdateProfile::UpdateType type)
 {
     switch (type) {
     case UpdateProfile::Name:
-        return "name";
+        return "update_name";
     case UpdateProfile::Url:
-        return "url";
+        return "update_url";
     case UpdateProfile::Location:
-        return "location";
+        return "update_location";
     case UpdateProfile::Description:
-        return "description";
+        return "update_description";
     case UpdateProfile::Image:
-        return "image";
+        return "update_image";
     case UpdateProfile::Background:
-        return "background";
+        return "update_background";
     case UpdateProfile::Banner:
-        return "banner";
+        return "update_banner";
+    case UpdateProfile::Default:
+        return "default";
     }
     return NULL;
 }
