@@ -521,11 +521,15 @@ void UpdateProfile::postResult(TwitterAPI::Rest::Statuses::UpdateParameters para
 }
 
 UpdateName::UpdateName(QObject *parent)
-    : QThread(parent),
-      m_userStream(new TwitterAPI::Streaming::User(m_oauth)),
-      m_oauth(settings->value("ConsumerKey").toString(), settings->value("ConsumerSecret").toString(),
-              settings->value("AccessToken").toString(), settings->value("AccessTokenSecret").toString())
+    : QThread(parent)
 {
+    m_oauth.setConsumerKey(settings->value("ConsumerKey").toString());
+    m_oauth.setConsumerSecret(settings->value("ConsumerSecret").toString());
+    m_oauth.setAccessToken(settings->value("AccessToken").toString());
+    m_oauth.setAccessTokenSecret(settings->value("AccessTokenSecret").toString());
+
+    m_userStream = new TwitterAPI::Streaming::User(m_oauth);
+
     connect(m_userStream, SIGNAL(disConnected()), this, SIGNAL(disConnected()));
     connect(m_userStream, SIGNAL(waitting(uint)), this, SIGNAL(waitting(uint)));
     connect(this, SIGNAL(stopping()), m_userStream, SLOT(stop()));
