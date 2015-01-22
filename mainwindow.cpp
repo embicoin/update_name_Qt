@@ -135,7 +135,10 @@ MainWindow::MainWindow(QWidget *parent) :
                                                                                         .arg(executedUser.name(), executedUser.screenName(), updateTypeToString(type))));
     });
     connect(&m_updateName, &UpdateName::updateFinished, [&](UpdateProfile::UpdateType type, const QString &newProfile) {
-        QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1を\"%2\"に変更しました。").arg(updateTypeToString(type), newProfile)));
+        if (type == UpdateProfile::Default)
+            QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("プロフィールをデフォルトに戻しました。")));
+        else
+            QMetaObject::invokeMethod(ui->logText, "appendPlainText", Qt::QueuedConnection, Q_ARG(QString, tr("%1を\"%2\"に変更しました。").arg(updateTypeToString(type), newProfile)));
 
     });
     connect(&m_updateName, &UpdateName::resultPosted, [&]() {
