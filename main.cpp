@@ -26,7 +26,11 @@ int main(int argc, char *argv[])
         bar->show();
 
         //日本語化
+#ifdef QT_DEBUG
         t.load("qt_ja", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#else
+        t.load("qt_ja", a.applicationDirPath());
+#endif
         a.installTranslator(&t);
 
         //設定ファイルの初期化
@@ -34,15 +38,7 @@ int main(int argc, char *argv[])
         settingsKeys = settings->allKeys();
 
         //バージョン名のセット
-        QString os;
-#ifdef Q_OS_LINUX
-        os = "Linux";
-#elif defined(Q_OS_MAC)
-        os = "MacOS X";
-#elif defined(Q_OS_WIN)
-        os = "Windows";
-#endif
-        a.setApplicationVersion("v2.0.1-dev " + os);
+        a.setApplicationVersion("v2.0.1-dev " + QSysInfo::productType());
         //アイコンのセット
         a.setWindowIcon(QIcon(":/icon/icon/icon.png"));
         //常駐できるようにする
