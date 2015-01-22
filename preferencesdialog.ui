@@ -35,8 +35,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>98</width>
-          <height>566</height>
+          <width>131</width>
+          <height>547</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -1148,7 +1148,7 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_45">
                 <item>
-                 <widget class="QCheckBox" name="enabledUpdateBannerFailedMessageCheck_2">
+                 <widget class="QCheckBox" name="enabledDefaultFailedMessageCheck">
                   <property name="text">
                    <string>defaultが失敗した時にツイートする</string>
                   </property>
